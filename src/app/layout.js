@@ -13,11 +13,20 @@ export const metadata = {
     siteName: 'NAUTILUS Terminal',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'NAUTILUS Terminal -- Supply Chain Intelligence',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'NAUTILUS Terminal -- Supply Chain Intelligence',
     description: 'Real-time sourcing intelligence, tariff data, and geopolitical risk -- built for procurement professionals who cannot afford surprises.',
+    images: ['/og-image.png'],
   },
 };
 
