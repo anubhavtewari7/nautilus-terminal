@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 
-const GITHUB_RAW = process.env.GITHUB_MARKET_INTEL_URL || 'https://raw.githubusercontent.com/anubhavtewari7/atlas-terminal/main/public/market-intelligence.json';
+const GITHUB_RAW = process.env.GITHUB_MARKET_INTEL_URL || 'https://raw.githubusercontent.com/anubhavtewari7/nautilus-terminal/main/public/market-intelligence.json';
 // Recipient -- set NOTIFY_TO or ADMIN_NOTIFY_EMAIL in Vercel env vars
 const TO = process.env.NOTIFY_TO || process.env.ADMIN_NOTIFY_EMAIL || '';
 
