@@ -1,0 +1,58 @@
+{
+  "name": "nautilus-terminal",
+  "version": "1.0.0",
+  "description": "NAUTILUS Terminal — Supply Chain Intelligence Desktop App",
+  "main": "main.js",
+  "author": "Anubhav Tewari",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:all": "electron-builder --win --mac"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.nautilus.terminal",
+    "productName": "NAUTILUS Terminal",
+    "copyright": "Copyright © 2026 Anubhav Tewari",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "assets/**"
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "assets/icon.ico",
+      "artifactName": "NAUTILUS-Setup-${version}.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NAUTILUS Terminal"
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "assets/icon.icns",
+      "artifactName": "NAUTILUS-${version}.dmg",
+      "category": "public.app-category.business"
+    },
+    "dmg": {
+      "title": "NAUTILUS Terminal",
+      "background": "assets/dmg-bg.png"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "anubhavtewari7",
+      "repo": "nautilus-terminal"
+    }
+  }
+}
