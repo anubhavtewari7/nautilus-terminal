@@ -871,14 +871,12 @@ export default function Home() {
           A professional-grade intelligence platform that translates live global data into supply chain decisions your team can act on immediately.
         </p>
         <div className="hero-actions">
-          <button className="btn-primary" onClick={scrollToCta}>Request Early Access &rarr;</button>
           <a
-            className="btn-download"
-            href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-Setup-1.0.0.exe"
-            title="Download for Windows"
+            className="btn-primary"
+            href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-Terminal-win32-x64.zip"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.623h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
-            Windows
+            Download for Windows
           </a>
           <a
             className="btn-download"

@@ -7,52 +7,11 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:all": "electron-builder --win --mac"
+    "build:win": "electron-packager . \"NAUTILUS Terminal\" --platform=win32 --arch=x64 --out=dist --overwrite --app-version=1.0.0",
+    "build:mac": "electron-packager . \"NAUTILUS Terminal\" --platform=darwin --arch=x64 --out=dist --overwrite --app-version=1.0.0"
   },
   "devDependencies": {
     "electron": "^29.0.0",
-    "electron-builder": "^24.0.0"
-  },
-  "build": {
-    "appId": "com.nautilus.terminal",
-    "productName": "NAUTILUS Terminal",
-    "copyright": "Copyright © 2026 Anubhav Tewari",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "assets/**"
-    ],
-    "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
-      "icon": "assets/icon.ico",
-      "artifactName": "NAUTILUS-Setup-${version}.exe"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "NAUTILUS Terminal"
-    },
-    "mac": {
-      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
-      "icon": "assets/icon.icns",
-      "artifactName": "NAUTILUS-${version}.dmg",
-      "category": "public.app-category.business"
-    },
-    "dmg": {
-      "title": "NAUTILUS Terminal",
-      "background": "assets/dmg-bg.png"
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "anubhavtewari7",
-      "repo": "nautilus-terminal"
-    }
+    "electron-packager": "^17.1.2"
   }
 }
