@@ -1706,6 +1706,27 @@ export default function Dashboard() {
             )}
 
           </div>
+
+          {/* Terminal capabilities card — fills empty space, hidden once scan runs */}
+          {opportunities.length === 0 && (
+            <div className="bg-[#0a0a0a] border border-white/5 p-4 rounded-xl mt-auto shrink-0">
+              <div className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.25em] mb-3">What NAUTILUS Does</div>
+              <div className="space-y-2.5">
+                {[
+                  { icon: <Factory size={10}/>,     text: 'Surfaces & ranks global sourcing hubs by stability, cost and ESG' },
+                  { icon: <ShieldAlert size={10}/>,  text: 'Monitors live threats — seismic, wildfire, geopolitical incidents' },
+                  { icon: <FileText size={10}/>,     text: 'Generates AI strategic directives and RFQ drafts instantly' },
+                  { icon: <TrendingUp size={10}/>,   text: 'Tracks live commodity prices, FX rates and freight data' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 text-[10px] text-slate-600">
+                    <span className="shrink-0 mt-0.5 opacity-50">{item.icon}</span>
+                    <span className="leading-snug">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </aside>
 
         {/* ════════════════════════════════════
@@ -1735,7 +1756,7 @@ export default function Dashboard() {
             </div>
 
             {/* Globe controls — desktop only (overlaid on globe) */}
-            <div className="hidden lg:flex absolute top-4 left-4 z-10 flex-col gap-1.5">
+            <div className="hidden lg:flex absolute top-4 left-4 z-10 flex-col gap-1 bg-black/55 backdrop-blur-md border border-white/8 rounded-xl p-2">
               <button onClick={() => setShowDayNight(!showDayNight)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg backdrop-blur-md border transition-all text-[11px] font-bold uppercase tracking-widest ${showDayNight ? 'bg-sky-500/15 border-sky-500/30 text-sky-400' : 'bg-black/60 border-white/10 text-slate-300 hover:text-slate-300'}`}>
                 {showDayNight ? <Moon size={12} /> : <Sun size={12} />}
@@ -1762,6 +1783,24 @@ export default function Dashboard() {
                 How it works
               </button>
             </div>
+
+            {/* Empty-state reticle — visible before first scan, sits above globe canvas */}
+            {opportunities.length === 0 && risks.length === 0 && (
+              <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center pointer-events-none select-none hidden lg:flex">
+                <div className="relative flex items-center justify-center mb-5">
+                  <div className="absolute w-40 h-40 rounded-full border border-sky-500/6 animate-pulse" style={{animationDuration:'3s'}} />
+                  <div className="absolute w-28 h-28 rounded-full border border-sky-500/10" />
+                  <div className="absolute w-16 h-16 rounded-full border border-sky-500/18" />
+                  <div className="absolute w-8 h-8 rounded-full border border-sky-500/30" />
+                  <div className="w-3 h-3 rounded-full bg-sky-500/25 border border-sky-500/50" />
+                  {/* crosshair lines */}
+                  <div className="absolute w-20 h-px bg-sky-500/10" />
+                  <div className="absolute h-20 w-px bg-sky-500/10" />
+                </div>
+                <div className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.5em] mb-1">Awaiting Mission</div>
+                <div className="text-[10px] text-slate-700 text-center max-w-[180px] leading-relaxed">Scan a material to surface global hubs &amp; threats</div>
+              </div>
+            )}
 
             {/* Globe controls — mobile compact overlay (bottom strip, doesn't cover globe) */}
             <div className="lg:hidden absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 bg-black/70 backdrop-blur-sm gap-1.5 overflow-x-auto no-scrollbar">
@@ -2021,11 +2060,11 @@ export default function Dashboard() {
 
           {/* Tool buttons — grouped by category */}
           <div className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden flex flex-col min-h-0" data-tour="new-tools">
-            <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar">
+            <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar justify-between">
 
               {/* ── CALCULATORS ── */}
               <div className="px-3 pt-2.5 pb-1">
-                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Calculators</span>
+                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Calculators</span>
               </div>
               {[
                 { icon:<DollarSign size={11}/>,  label:'TLC Calc',    action:()=>setShowTLC(true),              color:'emerald' },
@@ -2045,7 +2084,7 @@ export default function Dashboard() {
 
               {/* ── COMPLIANCE ── */}
               <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
-                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Compliance</span>
+                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Compliance</span>
               </div>
               {[
                 { icon:<FileText size={11}/>,    label:'HS Code',    action:()=>setShowTariff(true),     color:'sky' },
@@ -2068,7 +2107,7 @@ export default function Dashboard() {
 
               {/* ── INTELLIGENCE ── */}
               <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
-                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Intelligence</span>
+                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Intelligence</span>
               </div>
               {[
                 { icon:<ShieldAlert size={11}/>, label:'Risk Score',   action:()=>setShowRisk(true),       color:'rose' },
@@ -2090,7 +2129,7 @@ export default function Dashboard() {
 
               {/* ── MISSIONS ── */}
               <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
-                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Missions</span>
+                <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Missions</span>
               </div>
               {[
                 { icon:<History size={11}/>,   label:`Archive (${missionHistory.length})`, action:()=>setShowHistory(true),     color:'emerald' },
