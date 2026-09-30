@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // --------------------------------------------------------------------------
 // Static baseline -- same 26 ports as PortStatus.js (source of truth here)
 // The live layer augments these with fresh congestion estimates when available
