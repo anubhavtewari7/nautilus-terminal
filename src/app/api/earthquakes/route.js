@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // USGS Earthquake Hazards Program -- free, no API key required
 const USGS_URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson'
 const CACHE_MS  = 30 * 60 * 1000 // 30 minutes

@@ -4,6 +4,8 @@
 // ============================================================
 
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic'
 import { ATLAS_DB, categorizeQuery, CATEGORY_RISKS, pickBestHub } from '@/lib/database';
 import { enrichWithRealTradeData } from '@/lib/comtrade';
 import { rateLimit } from '@/lib/rate-limit';

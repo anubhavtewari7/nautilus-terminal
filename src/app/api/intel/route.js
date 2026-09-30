@@ -3,6 +3,8 @@
 // Requires NEWS_API_KEY environment variable
 import { rateLimit } from '@/lib/rate-limit';
 
+export const dynamic = 'force-dynamic'
+
 // World Bank Political Stability Index 2023 — normalized 0–100
 // Source: World Bank Worldwide Governance Indicators (PV.EST, 2023)
 // Updates annually — static lookup is appropriate

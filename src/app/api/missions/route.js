@@ -14,6 +14,8 @@
 //   DELETE /api/missions?id=N   -- remove mission by timestamp id
 
 import { NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 import { kv } from '@vercel/kv'
 import { rateLimit } from '@/lib/rate-limit'
 import { MAX_MISSION_HISTORY } from '@/lib/terminal-constants'

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic'
+
 // CME / NYMEX / CBOT / ICE futures -- tries Yahoo Finance v8 chart, then Stooq CSV, then static baseline
 // Each ticker is fetched independently so a single failure does not kill the whole panel.
 

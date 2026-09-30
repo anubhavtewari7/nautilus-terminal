@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // --------------------------------------------------------------------------
 // GDELT GEO 2.0 API -- free, no API key, updated every 15 minutes.
 // We query for conflict/terror/unrest themes in supply-chain-critical

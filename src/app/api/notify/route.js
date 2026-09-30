@@ -4,6 +4,8 @@
 // Protected by NOTIFY_SECRET env var -- agent passes Authorization: Bearer <SECRET> header.
 
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic'
 import { rateLimit } from '@/lib/rate-limit';
 
 const MARKET_INTEL_URL = process.env.GITHUB_MARKET_INTEL_URL

@@ -1,4 +1,6 @@
 import { Resend } from 'resend'
+
+export const dynamic = 'force-dynamic'
 import { rateLimit } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)

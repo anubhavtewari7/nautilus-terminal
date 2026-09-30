@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // --------------------------------------------------------------------------
 // NASA FIRMS -- Active Fire / Hotspot Data (no API key required for public CSV)
 // Source: VIIRS SNPP NRT 24-hour global composite
