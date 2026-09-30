@@ -1,15 +1,12 @@
 // /api/missions/route.js -- server-backed mission history per authenticated user.
 //
-// Storage strategy (upgrade path):
-//   1. NOW  -- In-memory Map (resets on cold start / serverless restart).
-//              Missions also persist in localStorage via useMissionHistory, so
-//              users experience no data loss between sessions.
-//   2. NEXT -- Drop in Vercel KV:
-//              import { kv } from '@vercel/kv'
-//              Replace get/set/del calls below with kv.get / kv.set / kv.del.
-//              No other code change needed.
-//   3. AUTH -- When auth is active, missions are scoped per user (email).
-//              Without auth, a shared anonymous bucket is used.
+// Storage strategy:
+//   Primary  -- Vercel KV (persistent across cold starts, 90-day TTL).
+//   Fallback -- In-memory Map (used when KV credentials are absent, e.g. local dev).
+//               Missions also persist in localStorage via useMissionHistory, so
+//               users experience no data loss between sessions in the fallback case.
+//   AUTH     -- When auth is active, missions are scoped per user (email).
+//               Without auth, an IP-scoped anonymous bucket is used.
 //
 // Endpoints:
 //   GET  /api/missions          -- list missions for current user
@@ -17,18 +14,36 @@
 //   DELETE /api/missions?id=N   -- remove mission by timestamp id
 
 import { NextResponse } from 'next/server'
+import { kv } from '@vercel/kv'
 import { rateLimit } from '@/lib/rate-limit'
 import { MAX_MISSION_HISTORY } from '@/lib/terminal-constants'
 
 // In-memory fallback store. Keyed by user id (email or 'anon').
-// Swap for kv.get/kv.set/kv.del when Vercel KV is provisioned.
+// Used when KV credentials are unavailable (local dev without .env.local KV vars).
 const memStore = new Map()
 
-function storeGet(userId) {
-  return memStore.get(userId) || []
+// KV key namespace per user.
+const missionKey = (userId) => `missions:${userId}`
+
+// Read missions for a user — prefers KV, falls back to memStore.
+async function getMissions(userId) {
+  try {
+    const data = await kv.get(missionKey(userId))
+    return Array.isArray(data) ? data : []
+  } catch {
+    return memStore.get(userId) || []
+  }
 }
-function storeSet(userId, missions) {
-  memStore.set(userId, missions)
+
+// Write missions for a user — prefers KV (90-day TTL), falls back to memStore.
+async function saveMissions(userId, missions) {
+  try {
+    await kv.set(missionKey(userId), missions, { ex: 60 * 60 * 24 * 90 })
+    return true
+  } catch {
+    memStore.set(userId, missions)
+    return false
+  }
 }
 
 async function getUserId(request) {
@@ -51,8 +66,11 @@ export async function GET(request) {
   if (!rl.ok) return rl.response
 
   const userId = await getUserId(request)
-  const missions = storeGet(userId)
-  return NextResponse.json({ missions })
+  const missions = await getMissions(userId)
+  return NextResponse.json({
+    missions,
+    storageBackend: process.env.KV_URL ? 'vercel-kv' : 'memory',
+  })
 }
 
 export async function POST(request) {
@@ -83,9 +101,9 @@ export async function POST(request) {
   }
 
   const userId   = await getUserId(request)
-  const existing = storeGet(userId)
+  const existing = await getMissions(userId)
   const updated  = [...existing, mission].slice(-MAX_MISSION_HISTORY)
-  storeSet(userId, updated)
+  await saveMissions(userId, updated)
 
   return NextResponse.json({ mission }, { status: 201 })
 }
@@ -102,8 +120,8 @@ export async function DELETE(request) {
   }
 
   const userId  = await getUserId(request)
-  const updated = storeGet(userId).filter(m => m.id !== id)
-  storeSet(userId, updated)
+  const updated = (await getMissions(userId)).filter(m => m.id !== id)
+  await saveMissions(userId, updated)
 
   return NextResponse.json({ ok: true })
 }
