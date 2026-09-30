@@ -14,7 +14,7 @@ const SYMBOLS = [
 
 // No liquid free futures feed for these -- static reference baseline (updated Sep 2026)
 const STATIC_REF = [
-  { label: 'HRC Steel', unit: '/ton', price: 680, change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09', quality: 'reference', note: 'US Midwest HRC Steel — no free live feed available. Reference: ~$680/ton (Sep 2026). Verify with Steel Market Update or Platts.' },
+  { label: 'HRC Steel', unit: '/st', price: 680, change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09', quality: 'reference', note: 'US Midwest HRC Steel — no free live feed available. Reference: ~$680/ton (Sep 2026). Verify with Steel Market Update or Platts.' },
   { name: 'Aluminum',     unit: '/mt',  price: 2450,  change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
   { name: 'Nickel',       unit: '/mt',  price: 15800, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
   { name: 'Lithium Carb', unit: '/mt',  price: 10500, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },

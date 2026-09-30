@@ -110,9 +110,9 @@ export const ATLAS_DB = {
       id: 'h_ind_1', lat: 41.7, lng: 110.7,
       hub: 'BAOTOU, CHINA', title: 'Global Rare Earth & NdFeB Magnet Core',
       companies: [
-        { name: 'Zhong Ke San Huan (HSMAG)', website: 'https://www.hsmag.com/' },
-        { name: 'JLMAG Rare-Earth Co.', website: 'https://www.jlmag.com/' },
-        { name: 'Earth-Panda Rare Earth', website: 'http://www.earth-panda.com/' }
+        { name: 'Zhong Ke San Huan (HSMAG)', website: 'https://www.hsmag.com/' , turnover: '$100M-$1B' },
+        { name: 'JLMAG Rare-Earth Co.', website: 'https://www.jlmag.com/' , turnover: '$100M-$1B' },
+        { name: 'Earth-Panda Rare Earth', website: 'http://www.earth-panda.com/' , turnover: '$10M-$100M' }
       ],
       desc: 'World\'s dominant hub for NdFeB (neodymium-iron-boron) permanent magnets. Controls ~90% of global rare earth magnet supply. Key source for automotive sensors, EV motors, dashboard actuators, and visor mechanisms.',
       customs: { hts_code: '8505.11', duty_rate: '25% (Sec 301)', compliance_note: 'Subject to Section 301 tariffs. China rare earth export quota regulations apply. CFIUS review for strategic acquisitions.' },
@@ -124,9 +124,9 @@ export const ATLAS_DB = {
       id: 'h_ind_2', lat: 35.6, lng: 139.6,
       hub: 'TOKYO / CHIBA, JAPAN', title: 'Premium Precision Magnetics Hub',
       companies: [
-        { name: 'TDK Corporation', website: 'https://www.tdk.com/' },
-        { name: 'Shin-Etsu Chemical', website: 'https://www.shinetsu.co.jp/' },
-        { name: 'Hitachi Metals (Proterial)', website: 'https://www.proterial.com/' }
+        { name: 'TDK Corporation', website: 'https://www.tdk.com/' , turnover: '>$1B' },
+        { name: 'Shin-Etsu Chemical', website: 'https://www.shinetsu.co.jp/' , turnover: '>$1B' },
+        { name: 'Hitachi Metals (Proterial)', website: 'https://www.proterial.com/' , turnover: '>$1B' }
       ],
       desc: 'World-class precision magnet manufacturing for automotive-grade applications. Key supplier for EV motors, precision sensors, ADAS, sun visor actuator motors, and instrument panel components.',
       customs: { hts_code: '8505.11', duty_rate: '0% (CPTPP)', compliance_note: 'CPTPP origin rules apply. IATF 16949 certified. High-grade automotive specs standard.' },
@@ -138,9 +138,9 @@ export const ATLAS_DB = {
       id: 'h_ind_3', lat: 50.1, lng: 8.6,
       hub: 'HANAU, GERMANY', title: 'European Advanced Magnetics Hub',
       companies: [
-        { name: 'Vacuumschmelze (VAC)', website: 'https://www.vacuumschmelze.com/' },
-        { name: 'Thyssenkrupp Magnetics', website: 'https://www.thyssenkrupp.com/' },
-        { name: 'Arnold Europe GmbH', website: 'https://www.arnoldmagnetics.com/' }
+        { name: 'Vacuumschmelze (VAC)', website: 'https://www.vacuumschmelze.com/' , turnover: '$100M-$1B' },
+        { name: 'Thyssenkrupp Magnetics', website: 'https://www.thyssenkrupp.com/' , turnover: '>$1B' },
+        { name: 'Arnold Europe GmbH', website: 'https://www.arnoldmagnetics.com/' , turnover: '$10M-$100M' }
       ],
       desc: 'Premium rare earth magnets and soft magnetic components for automotive, aerospace, and industrial OEMs. VAC is the global reference for high-coercivity magnets used in harsh automotive environments.',
       customs: { hts_code: '8505.11', duty_rate: '0% (Intra-EU) / 3.7% (MFN)', compliance_note: 'REACH compliance required. CE marking mandatory. EU Conflict Minerals Regulation applies.' },
@@ -152,9 +152,9 @@ export const ATLAS_DB = {
       id: 'h_ind_4', lat: 41.6, lng: -72.7,
       hub: 'CONNECTICUT, USA', title: 'US Domestic Magnetics & Defense',
       companies: [
-        { name: 'Arnold Magnetic Technologies', website: 'https://www.arnoldmagnetics.com/' },
-        { name: 'Electron Energy Corp', website: 'https://www.electronenergy.com/' },
-        { name: 'Bunting Magnetics', website: 'https://www.buntingmagnetics.com/' }
+        { name: 'Arnold Magnetic Technologies', website: 'https://www.arnoldmagnetics.com/' , turnover: '$100M-$1B' },
+        { name: 'Electron Energy Corp', website: 'https://www.electronenergy.com/' , turnover: '<$10M' },
+        { name: 'Bunting Magnetics', website: 'https://www.buntingmagnetics.com/' , turnover: '$10M-$100M' }
       ],
       desc: 'Domestic US magnet manufacturing for defense, aerospace, and automotive supply chains. 100% non-China origin. Buy American compliant. Critical for ITAR-controlled programs.',
       customs: { hts_code: '8505.11', duty_rate: '0% (Domestic)', compliance_note: 'ITAR / DFARS compliant. Buy America Act eligible. DoD conflict mineral reporting certified.' },
@@ -166,9 +166,9 @@ export const ATLAS_DB = {
       id: 'h_ind_5', lat: 37.6, lng: 126.9,
       hub: 'GYEONGGI, S. KOREA', title: 'Korea Precision Components Hub',
       companies: [
-        { name: 'Samsung Electro-Mechanics', website: 'https://www.samsungsem.com/' },
-        { name: 'LS Magnetics', website: 'https://www.lselectric.co.kr/' },
-        { name: 'Korea Magnet Institute (KMI)', website: 'https://www.kmi.re.kr/' }
+        { name: 'Samsung Electro-Mechanics', website: 'https://www.samsungsem.com/' , turnover: '>$1B' },
+        { name: 'LS Magnetics', website: 'https://www.lselectric.co.kr/' , turnover: '$10M-$100M' },
+        { name: 'Korea Magnet Institute (KMI)', website: 'https://www.kmi.re.kr/' , turnover: '$10M-$100M' }
       ],
       desc: 'Growing hub for precision magnets and electromagnetic components. Serves global automotive and consumer electronics OEMs under KORUS FTA preferences.',
       customs: { hts_code: '8505.11', duty_rate: '0% (KORUS)', compliance_note: 'KORUS FTA rates apply for US imports. Korean origin certification required.' },
@@ -180,9 +180,9 @@ export const ATLAS_DB = {
       id: 'h_ind_6', lat: 19.0, lng: 73.0,
       hub: 'PUNE, INDIA', title: 'India Industrial Components Hub',
       companies: [
-        { name: 'Harsha Engineers', website: 'https://www.harshaengineers.com/' },
-        { name: 'Lakshmi Ring Travellers', website: 'https://www.lrtindia.com/' },
-        { name: 'Precision Camshafts', website: 'https://www.pcl.in/' }
+        { name: 'Harsha Engineers', website: 'https://www.harshaengineers.com/' , turnover: '$100M-$1B' },
+        { name: 'Lakshmi Ring Travellers', website: 'https://www.lrtindia.com/' , turnover: '$10M-$100M' },
+        { name: 'Precision Camshafts', website: 'https://www.pcl.in/' , turnover: '$10M-$100M' }
       ],
       desc: 'Fast-growing alternative source for precision industrial components, bearings, and engineered parts. Strong growth in automotive-grade manufacturing capabilities.',
       customs: { hts_code: '8505.11', duty_rate: '0% (GSTP)', compliance_note: 'GSP/GSTP preferences available for eligible products. QC audits recommended.' },
@@ -198,9 +198,9 @@ export const ATLAS_DB = {
       id: 'h_tech_1', lat: 24.8, lng: 120.9,
       hub: 'HSINCHU, TAIWAN', title: 'Global Semiconductor Nexus',
       companies: [
-        { name: 'TSMC', website: 'https://www.tsmc.com/' },
-        { name: 'Foxconn', website: 'https://www.foxconn.com/' },
-        { name: 'MediaTek', website: 'https://www.mediatek.com/' }
+        { name: 'TSMC', website: 'https://www.tsmc.com/' , turnover: '>$1B' },
+        { name: 'Foxconn', website: 'https://www.foxconn.com/' , turnover: '>$1B' },
+        { name: 'MediaTek', website: 'https://www.mediatek.com/' , turnover: '>$1B' }
       ],
       desc: 'The absolute center of global advanced semiconductor manufacturing. TSMC produces 90%+ of the world\'s most advanced logic chips.',
       customs: { hts_code: '8542.31', duty_rate: '0% (ITA)', compliance_note: 'Export controls on advanced nodes (< 14nm) apply. US BIS license may be required.' },
@@ -212,9 +212,9 @@ export const ATLAS_DB = {
       id: 'h_tech_2', lat: 37.3, lng: 127.0,
       hub: 'GYEONGGI, S. KOREA', title: 'Memory & Display Cluster',
       companies: [
-        { name: 'Samsung Electronics', website: 'https://www.samsung.com/' },
-        { name: 'SK Hynix', website: 'https://www.skhynix.com/' },
-        { name: 'LG Display', website: 'https://www.lgdisplay.com/' }
+        { name: 'Samsung Electronics', website: 'https://www.samsung.com/' , turnover: '>$1B' },
+        { name: 'SK Hynix', website: 'https://www.skhynix.com/' , turnover: '>$1B' },
+        { name: 'LG Display', website: 'https://www.lgdisplay.com/' , turnover: '>$1B' }
       ],
       desc: 'World leader in memory chips (DRAM/NAND) and OLED display panels. Primary source for smartphone and automotive display supply chains.',
       customs: { hts_code: '8542.32', duty_rate: '0% (KORUS)', compliance_note: 'KORUS FTA applies for US imports. ECCN classification for advanced memory.' },
@@ -226,9 +226,9 @@ export const ATLAS_DB = {
       id: 'h_tech_3', lat: 22.5, lng: 113.9,
       hub: 'SHENZHEN, CHINA', title: 'Hardware Innovation Bay',
       companies: [
-        { name: 'BYD Electronics', website: 'https://www.byd.com/' },
-        { name: 'Huawei Technologies', website: 'https://www.huawei.com/' },
-        { name: 'Luxshare Precision', website: 'https://www.luxshare-ict.com/' }
+        { name: 'BYD Electronics', website: 'https://www.byd.com/' , turnover: '>$1B' },
+        { name: 'Huawei Technologies', website: 'https://www.huawei.com/' , turnover: '>$1B' },
+        { name: 'Luxshare Precision', website: 'https://www.luxshare-ict.com/' , turnover: '>$1B' }
       ],
       desc: 'Unmatched speed and scale for consumer electronics assembly and PCBs. 48-hour prototype capability.',
       customs: { hts_code: '8517.70', duty_rate: '25% (Sec 301)', compliance_note: 'Check BIS Entity List. Section 301 tariffs apply. CFIUS restrictions on tech transfers.' },
@@ -240,9 +240,9 @@ export const ATLAS_DB = {
       id: 'h_tech_4', lat: 33.3, lng: -111.9,
       hub: 'ARIZONA, USA', title: 'Silicon Desert (CHIPS Act)',
       companies: [
-        { name: 'TSMC Arizona', website: 'https://www.tsmc.com/' },
-        { name: 'Intel Foundry', website: 'https://www.intel.com/' },
-        { name: 'NXP Semiconductors', website: 'https://www.nxp.com/' }
+        { name: 'TSMC Arizona', website: 'https://www.tsmc.com/' , turnover: '>$1B' },
+        { name: 'Intel Foundry', website: 'https://www.intel.com/' , turnover: '>$1B' },
+        { name: 'NXP Semiconductors', website: 'https://www.nxp.com/' , turnover: '>$1B' }
       ],
       desc: 'Rapidly growing domestic US semiconductor manufacturing hub fueled by $52B CHIPS and Science Act investment.',
       customs: { hts_code: '8542.31', duty_rate: '0% (Domestic)', compliance_note: 'Domestic Origin. CHIPS Act incentives may apply. ITAR compliant.' },
@@ -254,9 +254,9 @@ export const ATLAS_DB = {
       id: 'h_tech_5', lat: 10.8, lng: 106.6,
       hub: 'HO CHI MINH, VIETNAM', title: 'China+1 Assembly Hub',
       companies: [
-        { name: 'Pegatron', website: 'https://www.pegatroncorp.com/' },
-        { name: 'Compal Electronics', website: 'https://www.compal.com/' },
-        { name: 'Jabil Vietnam', website: 'https://www.jabil.com/' }
+        { name: 'Pegatron', website: 'https://www.pegatroncorp.com/' , turnover: '>$1B' },
+        { name: 'Compal Electronics', website: 'https://www.compal.com/' , turnover: '>$1B' },
+        { name: 'Jabil Vietnam', website: 'https://www.jabil.com/' , turnover: '>$1B' }
       ],
       desc: 'Primary China+1 destination for electronics assembly moving out of China. Apple, Samsung, and Google all expanding here.',
       customs: { hts_code: '8517.70', duty_rate: '0% (MFN)', compliance_note: 'Origin verification critical. Substantial transformation rules apply.' },
@@ -268,9 +268,9 @@ export const ATLAS_DB = {
       id: 'h_tech_6', lat: 5.4, lng: 100.3,
       hub: 'PENANG, MALAYSIA', title: 'Backend Semiconductor Hub',
       companies: [
-        { name: 'ASE Group', website: 'https://www.aseglobal.com/' },
-        { name: 'Infineon Malaysia', website: 'https://www.infineon.com/' },
-        { name: 'Intel Penang', website: 'https://www.intel.com/' }
+        { name: 'ASE Group', website: 'https://www.aseglobal.com/' , turnover: '>$1B' },
+        { name: 'Infineon Malaysia', website: 'https://www.infineon.com/' , turnover: '>$1B' },
+        { name: 'Intel Penang', website: 'https://www.intel.com/' , turnover: '>$1B' }
       ],
       desc: 'Global hub for semiconductor OSAT (Outsourced Semiconductor Assembly and Test). 13% of global OSAT volume.',
       customs: { hts_code: '8542.90', duty_rate: '0% (ITA)', compliance_note: 'Standard ITA tech compliance. No additional tariff barriers.' },
@@ -286,9 +286,9 @@ export const ATLAS_DB = {
       id: 'h_ag_1', lat: 41.8, lng: -88.1,
       hub: 'ILLINOIS, USA', title: 'Midwest Protein Processing Hub',
       companies: [
-        { name: 'OSI Group', website: 'https://www.osigroup.com/' },
-        { name: 'Cargill Meat Solutions', website: 'https://www.cargill.com/' },
-        { name: 'Tyson Foods', website: 'https://www.tysonfoods.com/' }
+        { name: 'OSI Group', website: 'https://www.osigroup.com/' , turnover: '>$1B' },
+        { name: 'Cargill Meat Solutions', website: 'https://www.cargill.com/' , turnover: '>$1B' },
+        { name: 'Tyson Foods', website: 'https://www.tysonfoods.com/' , turnover: '>$1B' }
       ],
       desc: 'Primary supplier cluster for North American QSR chains (McDonald\'s global partner since 1955). USDA-inspected, FSMA-compliant.',
       customs: { hts_code: '0202.30', duty_rate: '0% (Domestic)', compliance_note: 'USDA FSIS inspected. FSMA compliant. No import duties for domestic supply.' },
@@ -300,9 +300,9 @@ export const ATLAS_DB = {
       id: 'h_ag_2', lat: -15.6, lng: -56.1,
       hub: 'MATO GROSSO, BRAZIL', title: 'Global Protein & Soy Nexus',
       companies: [
-        { name: 'JBS S.A.', website: 'https://jbs.com.br/' },
-        { name: 'Marfrig Global Foods', website: 'https://www.marfrig.com.br/' },
-        { name: 'BRF S.A.', website: 'https://ri.brf-global.com/' }
+        { name: 'JBS S.A.', website: 'https://jbs.com.br/' , turnover: '>$1B' },
+        { name: 'Marfrig Global Foods', website: 'https://www.marfrig.com.br/' , turnover: '>$1B' },
+        { name: 'BRF S.A.', website: 'https://ri.brf-global.com/' , turnover: '>$1B' }
       ],
       desc: 'World\'s largest exporter of beef and soy products. Very high volume capacity but significant ESG and traceability risks.',
       customs: { hts_code: '0202.30', duty_rate: '26.4% (Quota)', compliance_note: 'Check TRQ (Tariff Rate Quota) availability. Sanitary certificate mandatory.' },
@@ -314,9 +314,9 @@ export const ATLAS_DB = {
       id: 'h_ag_3', lat: -34.6, lng: -58.3,
       hub: 'PAMPAS, ARGENTINA', title: 'Premium Grass-Fed Protein',
       companies: [
-        { name: 'Swift Argentina', website: 'https://www.swift.com.ar/' },
-        { name: 'ArreBeef', website: 'https://www.arrebeef.com/' },
-        { name: 'Minerva Foods', website: 'https://www.minervafoods.com/' }
+        { name: 'Swift Argentina', website: 'https://www.swift.com.ar/' , turnover: '$100M-$1B' },
+        { name: 'ArreBeef', website: 'https://www.arrebeef.com/' , turnover: '$10M-$100M' },
+        { name: 'Minerva Foods', website: 'https://www.minervafoods.com/' , turnover: '>$1B' }
       ],
       desc: 'Renowned for high-quality, grass-fed beef at competitive prices. Lower carbon intensity than Brazil.',
       customs: { hts_code: '0202.30', duty_rate: '26.4% (Quota)', compliance_note: 'Subject to export tax policies. TRQ quota limits apply.' },
@@ -328,9 +328,9 @@ export const ATLAS_DB = {
       id: 'h_ag_4', lat: 51.5, lng: 5.0,
       hub: 'BRABANT, NETHERLANDS', title: 'EU Agri-Tech Processing Hub',
       companies: [
-        { name: 'Vion Food Group', website: 'https://www.vionfoodgroup.com/' },
-        { name: 'FrieslandCampina', website: 'https://www.frieslandcampina.com/' },
-        { name: 'Agrifirm', website: 'https://www.agrifirm.nl/' }
+        { name: 'Vion Food Group', website: 'https://www.vionfoodgroup.com/' , turnover: '>$1B' },
+        { name: 'FrieslandCampina', website: 'https://www.frieslandcampina.com/' , turnover: '>$1B' },
+        { name: 'Agrifirm', website: 'https://www.agrifirm.nl/' , turnover: '$100M-$1B' }
       ],
       desc: 'Highly automated, high-yield European agricultural and processing hub. World leader in sustainable farming technology.',
       customs: { hts_code: '0202.30', duty_rate: '12.8% + €303/100kg', compliance_note: 'Strict EU sanitary/phytosanitary (SPS) rules. EUDR compliance mandatory.' },
@@ -342,9 +342,9 @@ export const ATLAS_DB = {
       id: 'h_ag_5', lat: -37.8, lng: 144.9,
       hub: 'VICTORIA, AUSTRALIA', title: 'APAC Premium Protein Export',
       companies: [
-        { name: 'Teys Australia', website: 'https://teysgroup.com/' },
-        { name: 'AACo (Australian Agricultural Co)', website: 'https://aaco.com.au/' },
-        { name: 'JBS Australia', website: 'https://www.jbssa.com.au/' }
+        { name: 'Teys Australia', website: 'https://teysgroup.com/' , turnover: '$100M-$1B' },
+        { name: 'AACo (Australian Agricultural Co)', website: 'https://aaco.com.au/' , turnover: '$100M-$1B' },
+        { name: 'JBS Australia', website: 'https://www.jbssa.com.au/' , turnover: '>$1B' }
       ],
       desc: 'Major supplier of premium beef to Asian markets (Japan, Korea, China). Strong AUSFTA tariff advantages.',
       customs: { hts_code: '0202.30', duty_rate: '0% (AUSFTA)', compliance_note: 'AUSFTA origin rules apply. MSA grading preferred for premium markets.' },
@@ -516,9 +516,9 @@ export const ATLAS_DB = {
       id: 'h_met_1', lat: -23.5, lng: -68.4,
       hub: 'ATACAMA, CHILE', title: 'Global Lithium & Copper Core',
       companies: [
-        { name: 'SQM', website: 'https://www.sqm.com/' },
-        { name: 'Codelco', website: 'https://www.codelco.com/' },
-        { name: 'Albemarle Corporation', website: 'https://www.albemarle.com/' }
+        { name: 'SQM', website: 'https://www.sqm.com/' , turnover: '>$1B' },
+        { name: 'Codelco', website: 'https://www.codelco.com/' , turnover: '>$1B' },
+        { name: 'Albemarle Corporation', website: 'https://www.albemarle.com/' , turnover: '>$1B' }
       ],
       desc: 'The "Saudi Arabia of Lithium." Primary source of EV battery-grade lithium carbonate and the world\'s largest copper reserves.',
       customs: { hts_code: '2836.91', duty_rate: '0% (US-Chile FTA)', compliance_note: 'Strategic mineral export regulations. Environmental permit tracking required.' },
@@ -530,9 +530,9 @@ export const ATLAS_DB = {
       id: 'h_met_2', lat: -21.1, lng: 116.0,
       hub: 'PILBARA, AUSTRALIA', title: 'Iron Ore & Hard Rock Lithium',
       companies: [
-        { name: 'BHP Group', website: 'https://www.bhp.com/' },
-        { name: 'Rio Tinto', website: 'https://www.riotinto.com/' },
-        { name: 'Pilbara Minerals', website: 'https://pilbaraminerals.com.au/' }
+        { name: 'BHP Group', website: 'https://www.bhp.com/' , turnover: '>$1B' },
+        { name: 'Rio Tinto', website: 'https://www.riotinto.com/' , turnover: '>$1B' },
+        { name: 'Pilbara Minerals', website: 'https://pilbaraminerals.com.au/' , turnover: '$100M-$1B' }
       ],
       desc: 'Massive scale iron ore and spodumene (hard rock lithium) extraction. World\'s most reliable mining jurisdiction.',
       customs: { hts_code: '2601.11', duty_rate: '0% (AUSFTA)', compliance_note: 'Clean origin. AUSFTA duty-free access to US market.' },
@@ -544,9 +544,9 @@ export const ATLAS_DB = {
       id: 'h_met_3', lat: 39.9, lng: 116.4,
       hub: 'HEBEI, CHINA', title: 'Steel & Rare Earth Processing Mega-Hub',
       companies: [
-        { name: 'HBIS Group', website: 'http://www.hbisco.com/' },
-        { name: 'Baowu Steel Group', website: 'http://www.baowugroup.com/' },
-        { name: 'China Northern Rare Earth', website: 'https://www.northernrareearth.com/' }
+        { name: 'HBIS Group', website: 'http://www.hbisco.com/' , turnover: '>$1B' },
+        { name: 'Baowu Steel Group', website: 'http://www.baowugroup.com/' , turnover: '>$1B' },
+        { name: 'China Northern Rare Earth', website: 'https://www.northernrareearth.com/' , turnover: '>$1B' }
       ],
       desc: 'The largest concentration of steel processing and rare earth separation capacity in the world. Cost-dominant but heavily tariffed.',
       customs: { hts_code: '7208.10', duty_rate: '25% (Sec 232 + 301)', compliance_note: 'Subject to both Section 232 (national security) and Section 301 (trade) tariffs.' },
@@ -558,9 +558,9 @@ export const ATLAS_DB = {
       id: 'h_met_4', lat: 40.4, lng: -79.9,
       hub: 'PITTSBURGH, USA', title: 'US Domestic Steel & Aluminum',
       companies: [
-        { name: 'US Steel Corporation', website: 'https://www.ussteel.com/' },
-        { name: 'Alcoa Corporation', website: 'https://www.alcoa.com/' },
-        { name: 'Nucor Steel', website: 'https://www.nucor.com/' }
+        { name: 'US Steel Corporation', website: 'https://www.ussteel.com/' , turnover: '>$1B' },
+        { name: 'Alcoa Corporation', website: 'https://www.alcoa.com/' , turnover: '>$1B' },
+        { name: 'Nucor Steel', website: 'https://www.nucor.com/' , turnover: '>$1B' }
       ],
       desc: 'Domestic US supplier for high-grade steel and aluminum for automotive, infrastructure, and defense. 100% tariff-free.',
       customs: { hts_code: '7208', duty_rate: '0% (Domestic)', compliance_note: 'Buy America Act compliant. Section 232 exempt (domestic origin).' },
@@ -572,9 +572,9 @@ export const ATLAS_DB = {
       id: 'h_met_5', lat: -11.2, lng: 27.5,
       hub: 'ZAMBIA / DRC', title: 'African Copper & Cobalt Belt',
       companies: [
-        { name: 'Glencore', website: 'https://www.glencore.com/' },
-        { name: 'Ivanhoe Mines', website: 'https://www.ivanhoemines.com/' },
-        { name: 'First Quantum Minerals', website: 'https://www.first-quantum.com/' }
+        { name: 'Glencore', website: 'https://www.glencore.com/' , turnover: '>$1B' },
+        { name: 'Ivanhoe Mines', website: 'https://www.ivanhoemines.com/' , turnover: '$100M-$1B' },
+        { name: 'First Quantum Minerals', website: 'https://www.first-quantum.com/' , turnover: '>$1B' }
       ],
       desc: 'Copper and cobalt extraction at massive scale. Critical for EV batteries (cobalt) and power infrastructure (copper). Artisanal mining risk in DRC.',
       customs: { hts_code: '7403.11', duty_rate: '1% (MFN)', compliance_note: 'OECD Due Diligence required. Cobalt from DRC requires conflict minerals audit (RMI).' },
@@ -590,9 +590,9 @@ export const ATLAS_DB = {
       id: 'h_tex_1', lat: 23.8, lng: 90.4,
       hub: 'DHAKA, BANGLADESH', title: 'RMG (Ready-Made Garments) Hub',
       companies: [
-        { name: 'Ha-Meem Group', website: 'https://www.hameemgroup.net/' },
-        { name: 'Beximco', website: 'https://www.beximco.com/' },
-        { name: 'DBL Group', website: 'https://dblgroup.com/' }
+        { name: 'Ha-Meem Group', website: 'https://www.hameemgroup.net/' , turnover: '$100M-$1B' },
+        { name: 'Beximco', website: 'https://www.beximco.com/' , turnover: '$100M-$1B' },
+        { name: 'DBL Group', website: 'https://dblgroup.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'World\'s 2nd largest apparel exporter. Extremely competitive cost base for high-volume, fast fashion manufacturing.',
       customs: { hts_code: '6109.10', duty_rate: '16.5% (MFN)', compliance_note: 'Strict labor audits required (ACCORD/RSC). GSP benefits phased out for US market.' },
@@ -604,9 +604,9 @@ export const ATLAS_DB = {
       id: 'h_tex_2', lat: 10.8, lng: 106.6,
       hub: 'HO CHI MINH, VIETNAM', title: 'Performance Apparel & Footwear',
       companies: [
-        { name: 'Pou Chen Group', website: 'https://www.pouchen.com/' },
-        { name: 'Vinatex', website: 'https://vinatex.com.vn/' },
-        { name: 'Eclat Textile', website: 'https://www.eclat.com.tw/' }
+        { name: 'Pou Chen Group', website: 'https://www.pouchen.com/' , turnover: '>$1B' },
+        { name: 'Vinatex', website: 'https://vinatex.com.vn/' , turnover: '$100M-$1B' },
+        { name: 'Eclat Textile', website: 'https://www.eclat.com.tw/' , turnover: '$100M-$1B' }
       ],
       desc: 'Premium athletic wear and footwear manufacturing. Nike, Adidas, and Under Armour\'s primary production hub.',
       customs: { hts_code: '6404.11', duty_rate: '20% (MFN)', compliance_note: 'Verify forced labor chain of custody. Vietnamese origin certification critical.' },
@@ -618,9 +618,9 @@ export const ATLAS_DB = {
       id: 'h_tex_3', lat: 41.0, lng: 28.9,
       hub: 'ISTANBUL, TURKEY', title: 'Euro-Nearshore Fashion Hub',
       companies: [
-        { name: 'LC Waikiki', website: 'https://corporate.lcwaikiki.com/' },
-        { name: 'Mavi Jeans', website: 'https://www.mavi.com/' },
-        { name: 'Kiğılı', website: 'https://www.kigili.com/' }
+        { name: 'LC Waikiki', website: 'https://corporate.lcwaikiki.com/' , turnover: '>$1B' },
+        { name: 'Mavi Jeans', website: 'https://www.mavi.com/' , turnover: '$100M-$1B' },
+        { name: 'Kiğılı', website: 'https://www.kigili.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'Fast turnaround, high-quality cotton and denim production for the European market. 2-3 week lead time vs 12+ weeks from Asia.',
       customs: { hts_code: '6203.42', duty_rate: '0% (EU Customs Union)', compliance_note: 'Rapid border clearance to EU. Turkish origin certificate required for preferential access.' },
@@ -632,9 +632,9 @@ export const ATLAS_DB = {
       id: 'h_tex_4', lat: 21.0, lng: 72.8,
       hub: 'GUJARAT, INDIA', title: 'Global Cotton & Textile Mill',
       companies: [
-        { name: 'Arvind Ltd', website: 'https://www.arvind.com/' },
-        { name: 'Welspun India', website: 'https://www.welspunindia.com/' },
-        { name: 'Raymond Group', website: 'https://www.raymond.in/' }
+        { name: 'Arvind Ltd', website: 'https://www.arvind.com/' , turnover: '$100M-$1B' },
+        { name: 'Welspun India', website: 'https://www.welspunindia.com/' , turnover: '$100M-$1B' },
+        { name: 'Raymond Group', website: 'https://www.raymond.in/' , turnover: '$100M-$1B' }
       ],
       desc: 'Massive scale vertical integration from raw cotton spinning to finished home textiles. OECD-compliant supply chains.',
       customs: { hts_code: '5208.11', duty_rate: '10% (MFN)', compliance_note: 'Ensure no Xinjiang cotton blending. Indian origin certification required. UFLPA risk low.' },
@@ -653,9 +653,9 @@ export const ATLAS_DB = {
       id: 'h_pla_1', lat: 22.5, lng: 114.1,
       hub: 'GUANGDONG, CHINA', title: 'Global Injection Molding & Polymer Hub',
       companies: [
-        { name: 'Kingfa Sci & Tech', website: 'https://www.kingfa.com/' },
-        { name: 'Sinopec (polymer resins)', website: 'https://www.sinopec.com/' },
-        { name: 'Hi-Tech Mold & Engineering', website: 'https://www.hitechmold.com/' }
+        { name: 'Kingfa Sci & Tech', website: 'https://www.kingfa.com/' , turnover: '$100M-$1B' },
+        { name: 'Sinopec (polymer resins)', website: 'https://www.sinopec.com/' , turnover: '>$1B' },
+        { name: 'Hi-Tech Mold & Engineering', website: 'https://www.hitechmold.com/' , turnover: '$10M-$100M' }
       ],
       desc: 'World\'s largest plastic parts manufacturing cluster. Unmatched capacity for high-volume injection molding, blow molding, and overmolding across automotive, consumer, and industrial applications. Key hub for TPE, ABS, and PP compound production.',
       customs: { hts_code: '3926.90.99', duty_rate: '5.3% + 25% (Sec 301)', compliance_note: 'Section 301 List 3 tariffs apply to most finished plastic articles. Verify REACH and RoHS compliance for EU re-export.' },
@@ -667,9 +667,9 @@ export const ATLAS_DB = {
       id: 'h_pla_2', lat: 49.4, lng: 8.7,
       hub: 'RHINE VALLEY, GERMANY', title: 'European Specialty Polymer Hub',
       companies: [
-        { name: 'BASF SE', website: 'https://www.basf.com/' },
-        { name: 'Covestro', website: 'https://www.covestro.com/' },
-        { name: 'Lanxess', website: 'https://www.lanxess.com/' }
+        { name: 'BASF SE', website: 'https://www.basf.com/' , turnover: '>$1B' },
+        { name: 'Covestro', website: 'https://www.covestro.com/' , turnover: '>$1B' },
+        { name: 'Lanxess', website: 'https://www.lanxess.com/' , turnover: '>$1B' }
       ],
       desc: 'Global center for engineering thermoplastics, specialty resins, and polyurethane systems. BASF and Covestro supply automotive OEMs worldwide with IATF-grade nylon, PBT, and polycarbonate. Preferred source for high-performance, REACH-compliant polymers.',
       customs: { hts_code: '3908.10.00', duty_rate: '0% (EU–US MFN for polyamides)', compliance_note: 'REACH registration mandatory for EU-origin imports into EU. No Section 301. Preferred source for sustainability-focused supply chains.' },
@@ -681,9 +681,9 @@ export const ATLAS_DB = {
       id: 'h_pla_3', lat: 29.7, lng: -95.0,
       hub: 'HOUSTON / BAYTOWN, USA', title: 'North American Polyolefin Hub',
       companies: [
-        { name: 'ExxonMobil Chemical', website: 'https://www.exxonmobilchemical.com/' },
-        { name: 'LyondellBasell', website: 'https://www.lyondellbasell.com/' },
-        { name: 'Braskem America', website: 'https://www.braskem.com.br/' }
+        { name: 'ExxonMobil Chemical', website: 'https://www.exxonmobilchemical.com/' , turnover: '>$1B' },
+        { name: 'LyondellBasell', website: 'https://www.lyondellbasell.com/' , turnover: '>$1B' },
+        { name: 'Braskem America', website: 'https://www.braskem.com.br/' , turnover: '>$1B' }
       ],
       desc: 'World\'s largest concentration of polyolefin (PP, PE, LLDPE) production. Domestic US supply with zero tariff exposure, short lead times, and full traceability. Preferred for USMCA-origin compliance and reshoring supply chains.',
       customs: { hts_code: '3902.10.00', duty_rate: '0% (domestic)', compliance_note: 'No import duties for domestic supply. USMCA-compliant for Canada/Mexico export. FDA food-contact grades available.' },
@@ -695,9 +695,9 @@ export const ATLAS_DB = {
       id: 'h_pla_4', lat: 22.3, lng: 73.1,
       hub: 'VADODARA / SURAT, INDIA', title: 'Asia Polymer & Compounding Hub',
       companies: [
-        { name: 'Reliance Industries (polymers)', website: 'https://www.ril.com/' },
-        { name: 'Supreme Industries', website: 'https://www.supreme.co.in/' },
-        { name: 'Atul Ltd', website: 'https://www.atulltd.com/' }
+        { name: 'Reliance Industries (polymers)', website: 'https://www.ril.com/' , turnover: '>$1B' },
+        { name: 'Supreme Industries', website: 'https://www.supreme.co.in/' , turnover: '$100M-$1B' },
+        { name: 'Atul Ltd', website: 'https://www.atulltd.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'Reliance Industries operates the world\'s largest single-site refinery-petrochemical complex. Growing hub for polymer compounding, masterbatch, and specialty plastic components. Competitive cost base with improving quality standards.',
       customs: { hts_code: '3901.20.00', duty_rate: '0% (GSP suspended; MFN 6.5%)', compliance_note: 'India GSP benefits suspended for US importers. MFN rate applies. Strong cost advantage for commodity grades.' },
@@ -709,9 +709,9 @@ export const ATLAS_DB = {
       id: 'h_pla_5', lat: 35.5, lng: 129.4,
       hub: 'ULSAN, SOUTH KOREA', title: 'Specialty Elastomer & Engineering Polymer Hub',
       companies: [
-        { name: 'LG Chem', website: 'https://www.lgchem.com/' },
-        { name: 'Lotte Chemical', website: 'https://www.lottechem.com/' },
-        { name: 'SK Geo Centric', website: 'https://www.skgeocentric.com/' }
+        { name: 'LG Chem', website: 'https://www.lgchem.com/' , turnover: '>$1B' },
+        { name: 'Lotte Chemical', website: 'https://www.lottechem.com/' , turnover: '>$1B' },
+        { name: 'SK Geo Centric', website: 'https://www.skgeocentric.com/' , turnover: '>$1B' }
       ],
       desc: 'Global leader in specialty elastomers, ABS, and engineering plastics. LG Chem supplies automotive-grade ABS and SAN to Hyundai, GM, and Ford. KORUS FTA eliminates import duties for US buyers. Strong quality and traceability standards.',
       customs: { hts_code: '4002.59.00', duty_rate: '0% (KORUS FTA)', compliance_note: 'KORUS FTA duty elimination on synthetic rubber and most polymer grades. Korean origin documentation required.' },
@@ -723,9 +723,9 @@ export const ATLAS_DB = {
       id: 'h_pla_6', lat: 1.3, lng: 103.7,
       hub: 'JURONG ISLAND, SINGAPORE', title: 'SE Asia Chemical & Polymer Gateway',
       companies: [
-        { name: 'Shell Chemicals Asia', website: 'https://www.shell.com/' },
-        { name: 'ExxonMobil Chemical Asia', website: 'https://www.exxonmobilchemical.com/' },
-        { name: 'Mitsui Chemicals Asia', website: 'https://www.mitsuichemicals.com/' }
+        { name: 'Shell Chemicals Asia', website: 'https://www.shell.com/' , turnover: '>$1B' },
+        { name: 'ExxonMobil Chemical Asia', website: 'https://www.exxonmobilchemical.com/' , turnover: '>$1B' },
+        { name: 'Mitsui Chemicals Asia', website: 'https://www.mitsuichemicals.com/' , turnover: '>$1B' }
       ],
       desc: 'Jurong Island hosts 100+ chemical and petrochemical companies on a single industrial island. Key trading and production hub for polyolefins, PVC, and specialty chemicals for the ASEAN region. Excellent logistics, zero political supply risk.',
       customs: { hts_code: '3904.10.00', duty_rate: '6.5% (MFN PVC)', compliance_note: 'Singapore Free Trade Agreements with US (USSFTA) provide 0% duty on most goods. Favorable duty treatment.' },
@@ -739,10 +739,10 @@ export const ATLAS_DB = {
       id: 'h_che_1', lat: 51.5, lng: 6.8,
       hub: 'RHINE-RUHR, GERMANY', title: 'European Specialty Chemicals & Coatings Hub',
       companies: [
-        { name: 'BASF', website: 'https://www.basf.com/' },
-        { name: 'Evonik Industries', website: 'https://www.evonik.com/' },
-        { name: 'Covestro', website: 'https://www.covestro.com/' },
-        { name: 'Lanxess', website: 'https://www.lanxess.com/' }
+        { name: 'BASF', website: 'https://www.basf.com/' , turnover: '>$1B' },
+        { name: 'Evonik Industries', website: 'https://www.evonik.com/' , turnover: '>$1B' },
+        { name: 'Covestro', website: 'https://www.covestro.com/' , turnover: '>$1B' },
+        { name: 'Lanxess', website: 'https://www.lanxess.com/' , turnover: '>$1B' }
       ],
       desc: 'BASF Ludwigshafen — largest integrated chemical complex in the world. Evonik and Lanxess adjacent. Covers adhesives, coatings, lubricants, surfactants, specialty polymers, and industrial gases. EU REACH compliance built-in.',
       customs: { hts_code: '3814.00.10', duty_rate: '3.7% (MFN solvents)', compliance_note: 'EU REACH registration required for >1 tonne/year. Dangerous Goods shipping (IMDG/ADR). SDS mandatory for all chemical imports.' },
@@ -754,10 +754,10 @@ export const ATLAS_DB = {
       id: 'h_che_2', lat: 29.7, lng: -95.3,
       hub: 'HOUSTON, USA', title: 'US Gulf Coast Petrochemicals & Lubricants Hub',
       companies: [
-        { name: 'Dow Chemical', website: 'https://www.dow.com/' },
-        { name: 'Huntsman Corporation', website: 'https://www.huntsman.com/' },
-        { name: 'LyondellBasell', website: 'https://www.lyondellbasell.com/' },
-        { name: 'Celanese', website: 'https://www.celanese.com/' }
+        { name: 'Dow Chemical', website: 'https://www.dow.com/' , turnover: '>$1B' },
+        { name: 'Huntsman Corporation', website: 'https://www.huntsman.com/' , turnover: '>$1B' },
+        { name: 'LyondellBasell', website: 'https://www.lyondellbasell.com/' , turnover: '>$1B' },
+        { name: 'Celanese', website: 'https://www.celanese.com/' , turnover: '>$1B' }
       ],
       desc: 'Texas Gulf Coast hosts 40% of US chemical production. Ethylene crackers, polyurethane systems, adhesives, epoxies, specialty lubricants, and industrial solvents. Proximity to Permian Basin feedstocks drives cost advantage.',
       customs: { hts_code: '2710.19.11', duty_rate: '0.1¢/barrel (lubricants)', compliance_note: 'EPA TSCA compliance required. Hazmat shipping regulations (49 CFR). California Prop 65 labeling for CA sales.' },
@@ -769,9 +769,9 @@ export const ATLAS_DB = {
       id: 'h_che_3', lat: 1.3, lng: 103.7,
       hub: 'JURONG ISLAND, SINGAPORE', title: 'Asia Pacific Adhesives & Coating Chemicals Hub',
       companies: [
-        { name: 'Henkel Asia-Pacific', website: 'https://www.henkel-adhesives.com/' },
-        { name: 'H.B. Fuller', website: 'https://www.hbfuller.com/' },
-        { name: 'Momentive Performance Materials', website: 'https://www.momentive.com/' }
+        { name: 'Henkel Asia-Pacific', website: 'https://www.henkel-adhesives.com/' , turnover: '>$1B' },
+        { name: 'H.B. Fuller', website: 'https://www.hbfuller.com/' , turnover: '>$1B' },
+        { name: 'Momentive Performance Materials', website: 'https://www.momentive.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'Jurong Island Singapore: premier APAC hub for adhesives, sealants, and specialty coatings serving electronics, automotive, and construction. Excellent bonded-warehouse infrastructure and ASEAN trade hub status.',
       customs: { hts_code: '3506.10.00', duty_rate: '0% (Singapore FTA)', compliance_note: 'REACH-equivalent Singapore Chemical Control Order. Hazmat IMDG compliance for export. APAC regulatory mapping service available.' },
@@ -785,9 +785,9 @@ export const ATLAS_DB = {
       id: 'h_pkg_1', lat: 39.9, lng: 116.4,
       hub: 'BEIJING/TIANJIN, CHINA', title: 'Global Corrugated & Rigid Packaging Hub',
       companies: [
-        { name: 'Nine Dragons Paper', website: 'https://www.ndpaper.com/' },
-        { name: 'Lee & Man Paper', website: 'https://www.leemanpaper.com/' },
-        { name: 'Greatview Aseptic', website: 'https://www.greatviewpack.com/' }
+        { name: 'Nine Dragons Paper', website: 'https://www.ndpaper.com/' , turnover: '>$1B' },
+        { name: 'Lee & Man Paper', website: 'https://www.leemanpaper.com/' , turnover: '$100M-$1B' },
+        { name: 'Greatview Aseptic', website: 'https://www.greatviewpack.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'China produces 55% of global corrugated packaging and leads in rigid plastic containers, aseptic cartons, and flexible pouches. Nine Dragons alone runs 40+ paper mills. Major sourcing hub for boxes, clamshells, blister packs, and shrink film.',
       customs: { hts_code: '4819.10.00', duty_rate: '25% (Section 301 + 14.6% MFN)', compliance_note: 'FSC certification recommended for paper products. FDCA compliance for food-contact packaging. California AB 2287 recycled content rules.' },
@@ -799,10 +799,10 @@ export const ATLAS_DB = {
       id: 'h_pkg_2', lat: 48.8, lng: 2.3,
       hub: 'FRANCE / BENELUX', title: 'European Glass & Premium Packaging Hub',
       companies: [
-        { name: 'Verallia', website: 'https://www.verallia.com/' },
-        { name: 'Ardagh Group', website: 'https://www.ardaghgroup.com/' },
-        { name: 'Smurfit Kappa', website: 'https://www.smurfitkappa.com/' },
-        { name: 'DS Smith', website: 'https://www.dssmith.com/' }
+        { name: 'Verallia', website: 'https://www.verallia.com/' , turnover: '>$1B' },
+        { name: 'Ardagh Group', website: 'https://www.ardaghgroup.com/' , turnover: '>$1B' },
+        { name: 'Smurfit Kappa', website: 'https://www.smurfitkappa.com/' , turnover: '>$1B' },
+        { name: 'DS Smith', website: 'https://www.dssmith.com/' , turnover: '>$1B' }
       ],
       desc: 'France and Benelux are the center of European glass bottle, luxury packaging, and sustainable paperboard production. Verallia and Ardagh lead glass container output. Smurfit Kappa and DS Smith supply corrugated and circular packaging across EU.',
       customs: { hts_code: '7010.90.10', duty_rate: '5% (MFN glass containers)', compliance_note: 'EU Packaging and Packaging Waste Directive (PPWD) compliance. Extended Producer Responsibility (EPR) registration required in EU markets.' },
@@ -814,10 +814,10 @@ export const ATLAS_DB = {
       id: 'h_pkg_3', lat: 33.7, lng: -84.4,
       hub: 'ATLANTA, USA', title: 'North American Labels & Flexible Packaging Hub',
       companies: [
-        { name: 'Avery Dennison', website: 'https://www.averydennison.com/' },
-        { name: 'CCL Industries', website: 'https://www.cclind.com/' },
-        { name: 'Sealed Air', website: 'https://www.sealedair.com/' },
-        { name: 'Berry Global', website: 'https://www.berryglobal.com/' }
+        { name: 'Avery Dennison', website: 'https://www.averydennison.com/' , turnover: '>$1B' },
+        { name: 'CCL Industries', website: 'https://www.cclind.com/' , turnover: '$100M-$1B' },
+        { name: 'Sealed Air', website: 'https://www.sealedair.com/' , turnover: '>$1B' },
+        { name: 'Berry Global', website: 'https://www.berryglobal.com/' , turnover: '>$1B' }
       ],
       desc: 'US Southeast hub for pressure-sensitive labels, shrink sleeves, flexible pouches, and protective packaging. Avery Dennison and CCL dominate labels. Sealed Air and Berry Global lead flexible and protective packaging.',
       customs: { hts_code: '4821.10.20', duty_rate: '0% (most labels, domestic)', compliance_note: 'FDA 21 CFR for food-contact. FTC Green Guides for recyclability claims. California SB 54 plastic packaging recycled content law.' },
@@ -831,10 +831,10 @@ export const ATLAS_DB = {
       id: 'h_med_1', lat: 22.3, lng: 114.2,
       hub: 'HONG KONG / SHENZHEN', title: 'Asia Pacific Medical Device Manufacturing Hub',
       companies: [
-        { name: 'Mindray Medical', website: 'https://www.mindray.com/' },
-        { name: 'Medtronic China', website: 'https://www.medtronic.com/' },
-        { name: 'Lepu Medical', website: 'https://www.lepumedical.com/' },
-        { name: 'Microport Scientific', website: 'https://www.microport.com/' }
+        { name: 'Mindray Medical', website: 'https://www.mindray.com/' , turnover: '>$1B' },
+        { name: 'Medtronic China', website: 'https://www.medtronic.com/' , turnover: '>$1B' },
+        { name: 'Lepu Medical', website: 'https://www.lepumedical.com/' , turnover: '$100M-$1B' },
+        { name: 'Microport Scientific', website: 'https://www.microport.com/' , turnover: '$100M-$1B' }
       ],
       desc: 'Shenzhen–Hong Kong corridor is the leading APAC hub for medical device manufacturing: diagnostics equipment, imaging, surgical tools, patient monitoring, and consumables. Lower-tier devices increasingly exported globally. Class II/III manufacturing under NMPA oversight.',
       customs: { hts_code: '9018.90.60', duty_rate: '0% (MFN surgical instruments)', compliance_note: 'FDA 510(k) or PMA required for US market entry. CE marking for EU. NMPA registration in China. Quality System Regulation (QSR) 21 CFR Part 820.' },
@@ -846,10 +846,10 @@ export const ATLAS_DB = {
       id: 'h_med_2', lat: 47.6, lng: 9.5,
       hub: 'LAKE CONSTANCE, GERMANY/SWITZERLAND', title: 'European Pharma API & MedTech Cluster',
       companies: [
-        { name: 'Novartis', website: 'https://www.novartis.com/' },
-        { name: 'Roche', website: 'https://www.roche.com/' },
-        { name: 'B. Braun', website: 'https://www.bbraun.com/' },
-        { name: 'Siemens Healthineers', website: 'https://www.siemens-healthineers.com/' }
+        { name: 'Novartis', website: 'https://www.novartis.com/' , turnover: '>$1B' },
+        { name: 'Roche', website: 'https://www.roche.com/' , turnover: '>$1B' },
+        { name: 'B. Braun', website: 'https://www.bbraun.com/' , turnover: '>$1B' },
+        { name: 'Siemens Healthineers', website: 'https://www.siemens-healthineers.com/' , turnover: '>$1B' }
       ],
       desc: 'Basel–Lake Constance triangle hosts the world\'s highest concentration of pharmaceutical API producers and high-end MedTech. Roche and Novartis dominate APIs. B. Braun leads infusion and surgical systems. Siemens Healthineers anchors imaging and diagnostics.',
       customs: { hts_code: '2941.10.00', duty_rate: '0% (MFN antibiotics/APIs)', compliance_note: 'EMA GMP certification required. US FDA import alert risk on non-compliant API manufacturers. ICH Q7 Good Manufacturing Practice for APIs. Swiss-EU bilateral regulatory alignment.' },
@@ -861,10 +861,10 @@ export const ATLAS_DB = {
       id: 'h_med_3', lat: 17.4, lng: 78.5,
       hub: 'HYDERABAD, INDIA', title: 'Global Generic Pharma API & Formulations Hub',
       companies: [
-        { name: 'Dr. Reddy\'s Laboratories', website: 'https://www.drreddys.com/' },
-        { name: 'Aurobindo Pharma', website: 'https://www.aurobindo.com/' },
-        { name: 'Hetero Drugs', website: 'https://www.heterodrugs.com/' },
-        { name: 'Divi\'s Laboratories', website: 'https://www.divislaboratories.com/' }
+        { name: 'Dr. Reddy\'s Laboratories', website: 'https://www.drreddys.com/' , turnover: '$10M-$100M' },
+        { name: 'Aurobindo Pharma', website: 'https://www.aurobindo.com/' , turnover: '>$1B' },
+        { name: 'Hetero Drugs', website: 'https://www.heterodrugs.com/' , turnover: '$100M-$1B' },
+        { name: 'Divi\'s Laboratories', website: 'https://www.divislaboratories.com/' , turnover: '$10M-$100M' }
       ],
       desc: 'Hyderabad is the pharmacy capital of India — and arguably the world for generics. India supplies 40% of generic drugs consumed in the US and 25% globally. API manufacturing cost advantage of 30–50% vs. Western producers.',
       customs: { hts_code: '2941.90.00', duty_rate: '0% (generics MFN)', compliance_note: 'FDA import alerts active on select manufacturers (check FDA database). WHO GMP and US FDA 21 CFR cGMP compliance required. Drug Master File (DMF) registration for US market.' },
@@ -878,10 +878,10 @@ export const ATLAS_DB = {
       id: 'h_mac_1', lat: 48.1, lng: 11.6,
       hub: 'BAVARIA, GERMANY', title: 'Precision Machinery & Industrial Equipment Hub',
       companies: [
-        { name: 'Siemens AG', website: 'https://www.siemens.com/' },
-        { name: 'MAN Energy Solutions', website: 'https://www.man-es.com/' },
-        { name: 'KSB Group', website: 'https://www.ksb.com/' },
-        { name: 'Trumpf', website: 'https://www.trumpf.com/' }
+        { name: 'Siemens AG', website: 'https://www.siemens.com/' , turnover: '>$1B' },
+        { name: 'MAN Energy Solutions', website: 'https://www.man-es.com/' , turnover: '>$1B' },
+        { name: 'KSB Group', website: 'https://www.ksb.com/' , turnover: '>$1B' },
+        { name: 'Trumpf', website: 'https://www.trumpf.com/' , turnover: '>$1B' }
       ],
       desc: 'Bavaria and Baden-Württemberg are the global center for Mittelstand precision machinery: CNC machining centers, industrial pumps, compressors, valves, hydraulics, and laser cutting systems. "Made in Germany" machinery commands 20–40% premium and 10–15 year asset life.',
       customs: { hts_code: '8413.70.20', duty_rate: '0% (industrial pumps, EU origin)', compliance_note: 'CE machinery directive 2006/42/EC. ATEX certification for explosive atmospheres. Pressure Equipment Directive (PED) for pressure vessels. Export control EAR/ITAR for dual-use equipment.' },
@@ -893,10 +893,10 @@ export const ATLAS_DB = {
       id: 'h_mac_2', lat: 31.2, lng: 121.5,
       hub: 'YANGTZE DELTA, CHINA', title: 'High-Volume Industrial Machinery & CNC Hub',
       companies: [
-        { name: 'Haas Automation China', website: 'https://www.haascnc.com/' },
-        { name: 'SANY Group', website: 'https://www.sanygroup.com/' },
-        { name: 'Zoomlion', website: 'https://www.zoomlion.com/' },
-        { name: 'DMG Mori China', website: 'https://www.dmgmori.com/' }
+        { name: 'Haas Automation China', website: 'https://www.haascnc.com/' , turnover: '>$1B' },
+        { name: 'SANY Group', website: 'https://www.sanygroup.com/' , turnover: '>$1B' },
+        { name: 'Zoomlion', website: 'https://www.zoomlion.com/' , turnover: '>$1B' },
+        { name: 'DMG Mori China', website: 'https://www.dmgmori.com/' , turnover: '>$1B' }
       ],
       desc: 'Shanghai–Suzhou–Hangzhou triangle leads global output of CNC machine tools, injection molding machines, industrial robots, compressors, pumps, and heavy construction equipment. 70% of world\'s machine tool production. Quality range from OEM-grade to budget.',
       customs: { hts_code: '8457.10.00', duty_rate: '25% (Section 301 CNC machining centers)', compliance_note: 'Section 301 tariffs apply to most Chinese machinery. CE/UL certification may be absent — verify for US/EU market entry. Import scrutiny on strategic manufacturing equipment.' },
@@ -908,10 +908,10 @@ export const ATLAS_DB = {
       id: 'h_mac_3', lat: 34.7, lng: 135.5,
       hub: 'OSAKA / NAGOYA, JAPAN', title: 'Japan Precision Pumps, Valves & Automation Hub',
       companies: [
-        { name: 'Ebara Corporation', website: 'https://www.ebara.co.jp/' },
-        { name: 'Nidec', website: 'https://www.nidec.com/' },
-        { name: 'Fanuc', website: 'https://www.fanuc.co.jp/' },
-        { name: 'Keyence', website: 'https://www.keyence.com/' }
+        { name: 'Ebara Corporation', website: 'https://www.ebara.co.jp/' , turnover: '>$1B' },
+        { name: 'Nidec', website: 'https://www.nidec.com/' , turnover: '>$1B' },
+        { name: 'Fanuc', website: 'https://www.fanuc.co.jp/' , turnover: '>$1B' },
+        { name: 'Keyence', website: 'https://www.keyence.com/' , turnover: '>$1B' }
       ],
       desc: 'Osaka–Nagoya corridor specializes in ultra-precision industrial automation: servo motors, CNC controllers (Fanuc dominates globally), centrifugal and vacuum pumps (Ebara), and precision measurement (Keyence). Highest reliability and lowest defect rates in the industry.',
       customs: { hts_code: '8413.60.00', duty_rate: '0% (centrifugal pumps, MFN)', compliance_note: 'Japan-US Trade Agreement duty relief on most machinery. JIS certification for domestic use. Export controls on high-precision CNC (Wassenaar Arrangement). Lead times 16–24 weeks for precision units.' },

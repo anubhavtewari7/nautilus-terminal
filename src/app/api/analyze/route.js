@@ -8,50 +8,6 @@ import { ATLAS_DB, categorizeQuery, CATEGORY_RISKS, pickBestHub } from '@/lib/da
 import { enrichWithRealTradeData } from '@/lib/comtrade';
 import { rateLimit } from '@/lib/rate-limit';
 
-// Module-level constant -- built once per cold start, not on every request
-const CATEGORY_SIGNALS = {
-  industrial:      ['motor','pump','valve','bearing','gearbox','shaft','seal','coupling','flange','fastener','bolt','nut','hydraulic','pneumatic','actuator','compressor','filter','conveyor','crane','hoist','magnet','neodymium','ndfeb','ferrite','rare earth','solenoid','gear','precision'],
-  automotive:      ['automotive','vehicle','electric','truck','tire','tyre','brake','suspension','chassis','transmission','usmca','stamping','die-cast'],
-  electronics:     ['semiconductor','chip','pcb','circuit','display','sensor','microcontroller','processor','memory','transistor','wafer','foundry','substrate'],
-  metals:          ['steel','aluminum','copper','lithium','cobalt','nickel','zinc','iron','alloy','casting','forging','ingot','coil','plate','bar','wire','tube'],
-  agriculture:     ['grain','wheat','corn','soybean','rice','cotton','sugar','coffee','cocoa','palm','fertilizer','pesticide','seed','crop','livestock','poultry','seafood'],
-  textiles:        ['textile','apparel','cotton','polyester','nylon','garment','fabric','yarn','fiber','denim','knit','woven'],
-  plastics:        ['plastic','polymer','elastomer','rubber','resin','injection','molding','abs','polypropylene','polyethylene','pvc','composite','epoxy','carbon'],
-  chemicals:       ['chemical','adhesive','coating','lubricant','solvent','surfactant','reagent','acid','base','catalyst','additive','pigment'],
-  packaging:       ['packaging','corrugated','carton','bottle','container','flexible','shrink','paperboard','label','blister'],
-  medical:         ['pharmaceutical','medical','drug','device','surgical','clinical','gmp','sterile','generic','biosimilar','implant','diagnostic'],
-  machinery:       ['machine','equipment','cnc','lathe','mill','press','robot','automation','conveyor','capital','industrial','tooling'],
-  ev_battery:      ['battery','cathode','anode','electrolyte','lithium','nmc','lfp','prismatic','cylindrical','gigafactory','bms'],
-  semiconductor:   ['fab','foundry','wafer','lithography','etch','deposition','tsmc','asml','mask','dram','nand','logic','analog'],
-  renewable_energy:['solar','wind','panel','turbine','inverter','pv','polysilicon','blade','storage','grid'],
-  food:           ['food','beverage','drink','sauce','spice','grain','dairy','meat','fish','frozen','snack','confection','nutrition'],
-  wood_paper:     ['wood','timber','lumber','plywood','mdf','paper','pulp','cardboard','kraft','cellulose','veneer'],
-  construction:   ['glass','cement','concrete','brick','tile','ceramic','gypsum','insulation','roofing','aggregate'],
-  consumer_goods: ['consumer','personal','care','cosmetic','beauty','household','cleaning','hygiene','health','wellness'],
-  aerospace:      ['aerospace','aircraft','avionics','turbine','fuselage','composite','airframe','nacelle','landing'],
-  energy_oil_gas: ['oil','gas','petroleum','pipeline','refinery','drilling','wellhead','offshore','lng','lpg'],
-  mining:         ['mining','ore','mineral','extraction','quarry','bauxite','manganese','chromite','phosphate'],
-  luxury_goods:   ['luxury','leather','handbag','watch','jewel','diamond','gold','fashion','couture','bespoke'],
-  cosmetics:      ['cosmetic','skincare','lipstick','fragrance','perfume','lotion','serum','makeup','formulation'],
-  cold_chain:     ['cold','refrigerated','frozen','chilled','temperature','pharma','vaccine','perishable','reefer'],
-  telecom:        ['telecom','antenna','router','switch','fiber','optic','cable','5g','tower','basestation'],
-  furniture:      ['furniture','chair','table','desk','sofa','cabinet','shelf','upholstery','foam','mattress'],
-  sports_outdoor: ['sports','outdoor','athletic','fitness','camping','cycling','hiking','yoga','gym','equipment'],
-  toys_games:     ['toy','game','puzzle','doll','board','plush','educational','child','infant','juvenile'],
-  pet_animal:     ['pet','animal','feed','veterinary','aquaculture','livestock','poultry','kibble','collar'],
-  printing_media: ['print','media','ink','paper','publishing','packaging','label','flexo','offset','digital'],
-  hvac:           ['hvac','heating','cooling','ventilation','air','conditioning','compressor','refrigerant','duct'],
-  water_treatment:['water','treatment','filtration','membrane','purification','desalination','pump','valve'],
-  defense_military:['defense','military','armament','weapon','ballistic','radar','sonar','tactical','secure'],
-  maritime:       ['maritime','ship','vessel','hull','propeller','marine','naval','offshore','dock','port'],
-  railway:        ['railway','rail','locomotive','rolling','stock','bogie','track','signaling','metro','tram'],
-  robotics_automation:['robot','automation','cobot','gripper','servo','actuator','plc','scada','vision','lidar'],
-  instruments_scientific:['instrument','scientific','lab','analytical','sensor','calibration','measurement','spectrometer'],
-  glass_ceramics: ['glass','ceramic','technical','refractor','porcelain','borosilicate','fiberglass','fused'],
-  paint_coatings: ['paint','coating','primer','epoxy','lacquer','varnish','pigment','binder','additive','resin'],
-  nutraceuticals: ['nutraceutical','supplement','vitamin','probiotic','omega','herbal','botanical','extract','capsule'],
-}
-
 export async function POST(req) {
   const rl = await rateLimit(req, { limit: 10, windowMs: 60_000 })
   if (!rl.ok) return rl.response
@@ -69,12 +25,6 @@ export async function POST(req) {
     if (!category) {
       return NextResponse.json({ code: 'UNCLASSIFIED_QUERY', error: 'No sourcing category matched. Add the material, product type, or application and try again.' }, { status: 422 });
     }
-
-    // category is guaranteed non-null here (route 422s above if null).
-    // categorizeQuery returning a match is the only trustworthy confidence signal;
-    // the CATEGORY_SIGNALS keyword check below was redundant and caused false positives
-    // for valid queries whose surface tokens didn't exactly match signal keywords.
-    const isLowConfidence = false
 
     const baseOpportunities = ATLAS_DB[category]
     if (!baseOpportunities?.length) {
@@ -164,13 +114,11 @@ export async function POST(req) {
     const comtradeHits = opportunities.filter(o => o.comtrade_enriched || o.tradeValue).length
     const comtradeBonus = Math.min(30, comtradeHits * 10)
     const hubBonus = Math.min(30, opportunities.length * 6)
-    const match_confidence = isLowConfidence
-      ? 32
-      : Math.min(92, 20 + categoryMatched + comtradeBonus + hubBonus)
+    const match_confidence = Math.min(92, 20 + categoryMatched + comtradeBonus + hubBonus)
 
     const data = {
       category,
-      low_confidence: isLowConfidence,
+      low_confidence: false,
       match_confidence,
       match_confidence_note: 'Score reflects: category match (20pts) + Comtrade live trade data coverage (up to 30pts) + sourcing hub breadth (up to 30pts). Not a statistical confidence interval.',
       directive: {
@@ -180,9 +128,7 @@ export async function POST(req) {
                         ? 'Domestic Ground / Rail Transport'
                         : `Ocean / Air -- ${selectedHub.logistics?.port_wait_days} day avg lead time`,
         summary:
-          (isLowConfidence
-            ? `⚠️ No exact category match for "${query}" -- showing closest global sourcing hubs. Refine your search (e.g. add material type, application, or industry) for a precise match. `
-            : `Strategic scan complete for "${query}" (${categoryLabel}). `) +
+          `Strategic scan complete for "${query}" (${categoryLabel}). ` +
           `Identified ${opportunities.length} global sourcing hub${opportunities.length > 1 ? 's' : ''}. ` +
           `Primary recommendation: ${selectedHub.hub} -- ${selectedHub.desc.split('.')[0]}.`,
         tariff_alert:

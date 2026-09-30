@@ -92,7 +92,7 @@ function mergePortWatchData(portWatchFeatures, baselinePorts) {
     const attr = f.attributes || f
     const raw = attr.portname || attr.PORTNAME || ''
     const normalized = normalizePortName(raw)
-    if (normalized) lookup[normalized] = attr
+    if (normalized && !lookup[normalized]) lookup[normalized] = attr
   }
 
   let liveCount = 0
