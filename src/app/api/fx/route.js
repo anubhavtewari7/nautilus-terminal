@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // Free API, no key required
-    const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=CNY,EUR,BRL,MXN,JPY,KRW,INR,SGD', {
+    const res = await fetch('https://api.frankfurter.app/latest?from=USD&to=CNY,EUR,BRL,MXN,JPY,KRW,INR,SGD,GBP,CAD,AUD,THB,VND', {
       next: { revalidate: 3600 } // cache for 1 hour
     });
     if (!res.ok) throw new Error(`Frankfurter API returned ${res.status}`);
@@ -22,6 +22,11 @@ export async function GET() {
         KRW: { rate: data.rates.KRW, country: 'South Korea', flag: '🇰🇷', impact: 'Key for semiconductor supply chain' },
         INR: { rate: data.rates.INR, country: 'India', flag: '🇮🇳', impact: 'India+1 strategy cost indicator' },
         SGD: { rate: data.rates.SGD, country: 'Singapore', flag: '🇸🇬', impact: 'APAC logistics hub benchmark' },
+        GBP: { rate: data.rates.GBP, country: 'United Kingdom', flag: '🇬🇧', impact: data.rates.GBP < 0.79 ? 'GBP soft — UK sourcing costs lower for US buyers' : 'GBP firm — monitor UK procurement costs' },
+        CAD: { rate: data.rates.CAD, country: 'Canada', flag: '🇨🇦', impact: data.rates.CAD > 1.38 ? 'CAD weak — Canadian inputs cheaper' : 'CAD near parity — stable for USMCA trade' },
+        AUD: { rate: data.rates.AUD, country: 'Australia', flag: '🇦🇺', impact: data.rates.AUD > 1.55 ? 'AUD soft — Australian commodities cheaper' : 'AUD firm — monitor mining input costs' },
+        THB: { rate: data.rates.THB, country: 'Thailand', flag: '🇹🇭', impact: 'THB — monitor for automotive/electronics sourcing' },
+        VND: { rate: data.rates.VND, country: 'Vietnam', flag: '🇻🇳', impact: data.rates.VND > 25000 ? 'VND weak — Vietnamese manufacturing costs favorable' : 'VND stable — monitor for nearshoring opportunities' },
       }
     };
     return NextResponse.json(enriched);

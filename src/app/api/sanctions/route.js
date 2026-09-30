@@ -4,7 +4,11 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 
 // OFAC SDN condensed list -- plain text, no API key required
-const OFAC_SDN_URL = 'https://www.treasury.gov/ofac/downloads/sdnlist.txt'
+// Try current OFAC URL first, fall back to legacy
+const OFAC_URLS = [
+  'https://ofac.treasury.gov/downloads/sdn.txt',
+  'https://www.treasury.gov/ofac/downloads/sdnlist.txt',
+]
 const CACHE_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 // Module-level in-memory cache (resets on cold start)
@@ -72,35 +76,40 @@ function scoreName(sdnName, query) {
   return 0
 }
 
+async function fetchSdnList() {
+  for (const url of OFAC_URLS) {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+      const res = await fetch(url, {
+        signal: controller.signal,
+        headers: { 'User-Agent': 'NAUTILUS-Terminal/1.0 (sanctions-screening)' },
+      })
+      clearTimeout(timeout)
+      if (!res.ok) continue
+      const text = await res.text()
+      const names = parseSdnText(text)
+      if (names.length > 100) return names // valid parse
+    } catch {}
+  }
+  return null // both URLs failed
+}
+
 async function loadSdnList() {
   // Return from cache if still fresh
   if (_cache && Date.now() - new Date(_cache.fetchedAt).getTime() < CACHE_MS) {
     return { names: _cache.names, cached: true, fetchedAt: _cache.fetchedAt }
   }
 
-  // Fetch with a 10-second timeout
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 10_000)
+  const names = await fetchSdnList()
 
-  try {
-    const res = await fetch(OFAC_SDN_URL, {
-      signal: controller.signal,
-      headers: { 'User-Agent': 'NAUTILUS-Terminal/1.0 (sanctions-screening)' },
-    })
-    clearTimeout(timer)
-
-    if (!res.ok) throw new Error(`OFAC responded ${res.status}`)
-
-    const text = await res.text()
-    const names = parseSdnText(text)
-    const fetchedAt = new Date().toISOString()
-
-    _cache = { names, fetchedAt }
-    return { names, cached: false, fetchedAt }
-  } catch (err) {
-    clearTimeout(timer)
-    throw err
+  if (!names || names.length < 100) {
+    return { names: null, cached: false, fetchedAt: null }
   }
+
+  const fetchedAt = new Date().toISOString()
+  _cache = { names, fetchedAt }
+  return { names, cached: false, fetchedAt }
 }
 
 export async function GET(request) {
@@ -116,6 +125,15 @@ export async function GET(request) {
 
   try {
     const { names, cached, fetchedAt } = await loadSdnList()
+
+    if (!names || names.length < 100) {
+      return NextResponse.json({
+        matches: [],
+        error: 'OFAC SDN list could not be loaded — both primary and fallback URLs failed or returned insufficient data',
+        fallbackMode: true,
+        totalLoaded: 0,
+      })
+    }
 
     // Score and filter
     const scored = names

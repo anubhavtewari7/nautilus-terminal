@@ -15,11 +15,11 @@ const SYMBOLS = [
 
 // No liquid free futures feed for these -- static reference baseline (updated Sep 2026)
 const STATIC_REF = [
-  { name: 'Aluminum',     unit: '/mt',  price: 2450,  change: +0.5, last_updated: '2026-09' },
-  { name: 'Nickel',       unit: '/mt',  price: 15800, change: -0.9, last_updated: '2026-09' },
-  { name: 'Lithium Carb', unit: '/mt',  price: 10500, change: -3.1, last_updated: '2026-09' },
-  { name: 'Rare Earth',   unit: '/kg',  price: 168,   change: +6.8, last_updated: '2026-09' },
-  { name: 'NdFeB Magnet', unit: '/kg',  price: 88,    change: +4.2, last_updated: '2026-09' },
+  { name: 'Aluminum',     unit: '/mt',  price: 2450,  change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
+  { name: 'Nickel',       unit: '/mt',  price: 15800, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
+  { name: 'Lithium Carb', unit: '/mt',  price: 10500, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
+  { name: 'Rare Earth',   unit: '/kg',  price: 168,   change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
+  { name: 'NdFeB Magnet', unit: '/kg',  price: 88,    change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
 ];
 
 function fmt(price, dp) {
@@ -227,10 +227,11 @@ export async function GET() {
     name: r.name,
     unit: r.unit,
     price: fmt(r.price, 0),
-    change: (r.change >= 0 ? '+' : '') + r.change.toFixed(1) + '%',
-    up: r.change >= 0,
+    change: r.change,
+    up: r.up,
     live: false,
     src: 'static',
+    static_as_of: r.static_as_of,
   }));
 
   // Determine data quality: 'live' = real-time YF, 'delayed' = daily Stooq, 'reference' = static only

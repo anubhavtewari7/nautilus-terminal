@@ -163,12 +163,12 @@ export async function POST(req) {
     const categoryLabel = categoryLabels[category] || 'commodity';
 
     // Confidence based on: category match quality + Comtrade enrichment coverage + hub count
-    const categoryMatched = category !== null ? 20 : 0
+    const categoryMatched = 20
     const comtradeHits = opportunities.filter(o => o.comtrade_enriched || o.tradeValue).length
     const comtradeBonus = Math.min(30, comtradeHits * 10)
     const hubBonus = Math.min(30, opportunities.length * 6)
     const match_confidence = isLowConfidence
-      ? 45
+      ? 32
       : Math.min(92, 20 + categoryMatched + comtradeBonus + hubBonus)
 
     const data = {

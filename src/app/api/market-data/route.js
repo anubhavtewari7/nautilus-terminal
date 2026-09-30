@@ -40,6 +40,17 @@ const COMMODITY_KEYWORDS = {
   'Rare Earths': ['rare earth', 'neodymium', 'cobalt', 'critical minerals', 'graphite'],
 }
 
+function detectCommodityDirection(text) {
+  const t = (text || '').toLowerCase()
+  const upWords = ['rise', 'rises', 'rising', 'surge', 'surges', 'up', 'gain', 'gains', 'higher', 'increase', 'rally', 'soar', 'jump', 'climbs', 'record high']
+  const downWords = ['fall', 'falls', 'falling', 'drop', 'drops', 'down', 'decline', 'declines', 'lower', 'decrease', 'plunge', 'slump', 'tumble', 'dip', 'weakens', 'crash']
+  const upCount = upWords.filter(w => t.includes(w)).length
+  const downCount = downWords.filter(w => t.includes(w)).length
+  if (upCount > downCount) return 'UP'
+  if (downCount > upCount) return 'DOWN'
+  return 'NEUTRAL'
+}
+
 function buildCommodityNotes(articles) {
   const notes = []
   for (const [commodity, keywords] of Object.entries(COMMODITY_KEYWORDS)) {
@@ -53,6 +64,7 @@ function buildCommodityNotes(articles) {
         source: relevant[0].source?.name || 'NewsAPI',
         url: relevant[0].url,
         timestamp: relevant[0].publishedAt,
+        direction: detectCommodityDirection(relevant[0].title + ' ' + (relevant[0].description || '')),
       })
     }
   }

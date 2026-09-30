@@ -488,7 +488,8 @@ export default function Dashboard() {
       setMarketData({
         confidence_score: 60,
         currency: { pair: 'USD/INDEX', rate: 104.2, impact: 'Stable' },
-        price_history: [{ month:'Q1',price:95 },{ month:'Q2',price:88 },{ month:'Q3',price:97 },{ month:'Q4',price:105 }],
+        price_history: null,
+        price_history_note: 'Price chart unavailable — server intelligence offline. Visit worldbank.org/en/research/commodity-markets for current price indices.',
         rfq_template: `Dear Procurement Team,\n\nWe are initiating a sourcing inquiry for: ${activeQuery}.\n\nPlease provide unit pricing, lead time, freight terms, and ESG certification status.\n\nEstimated Annual Volume: [Insert]\nIncoterm Preference: [DDP / FOB / CIF]\n\nBest regards,\n[Your Name] — Procurement`
       })
       saveMission(activeQuery, hubs, fbDir)

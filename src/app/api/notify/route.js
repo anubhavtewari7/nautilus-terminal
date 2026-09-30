@@ -94,6 +94,8 @@ export async function GET(request) {
     </tr>`;
   }).join('');
 
+  const APP_URL = `${process.env.NAUTILUS_PUBLIC_URL || 'https://nautilus-terminal.vercel.app'}/terminal`
+
   const subject = `Nautilus Terminal -- ${high.length} HIGH, ${medium.length} MEDIUM alerts | ${ts}`;
 
   const html = `
@@ -129,7 +131,7 @@ export async function GET(request) {
     ${commHtml}
   </table>` : ''}
 
-  <a href="https://nautilus-terminal.vercel.app/terminal"
+  <a href="${APP_URL}"
      style="display:inline-block;background:#38bdf8;color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:13px">
     Open Nautilus Terminal
   </a>
