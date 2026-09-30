@@ -288,53 +288,59 @@ const CITIES = [
   { name: 'Durban',       lat: -29.87,  lng:  31.04 },
 ]
 
-function CityLabels() {
+function CityLabel({ city }) {
   const { camera } = useThree()
-  const [zoom, setZoom] = useState(false)
+  const htmlRef = useRef()
 
+  const R = 2.04
+  const phi   = (90 - city.lat) * (Math.PI / 180)
+  const theta = (city.lng + 180) * (Math.PI / 180)
+  const pos = [
+    -R * Math.sin(phi) * Math.cos(theta),
+     R * Math.cos(phi),
+     R * Math.sin(phi) * Math.sin(theta),
+  ]
+
+  // Hide label text when camera is far; always show micro dot
   useFrame(() => {
-    const dist = camera.position.length()
-    setZoom(dist < 5.5)
+    if (htmlRef.current) {
+      htmlRef.current.style.opacity = camera.position.length() < 5.5 ? '0.9' : '0'
+    }
   })
 
   return (
+    <mesh position={pos}>
+      <sphereGeometry args={[0.012, 5, 5]} />
+      <meshBasicMaterial color="#38bdf8" />
+      <Html distanceFactor={6} zIndexRange={[50, 0]}>
+        <div
+          ref={htmlRef}
+          className="pointer-events-none select-none"
+          style={{
+            color: '#38bdf8',
+            fontSize: '8px',
+            fontFamily: 'monospace',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            textShadow: '0 0 6px rgba(0,0,0,1)',
+            opacity: 0,
+            transform: 'translateX(5px)',
+            transition: 'opacity 0.2s',
+          }}
+        >
+          {city.name}
+        </div>
+      </Html>
+    </mesh>
+  )
+}
+
+function CityLabels() {
+  return (
     <>
-      {CITIES.map(city => {
-        const R = 2.04
-        const phi   = (90 - city.lat) * (Math.PI / 180)
-        const theta = (city.lng + 180) * (Math.PI / 180)
-        const pos = [
-          -R * Math.sin(phi) * Math.cos(theta),
-           R * Math.cos(phi),
-           R * Math.sin(phi) * Math.sin(theta),
-        ]
-        return (
-          <mesh key={city.name} position={pos}>
-            {/* Always-visible micro dot */}
-            <sphereGeometry args={[0.009, 5, 5]} />
-            <meshBasicMaterial color="#38bdf8" />
-            {/* Label — only shown when zoomed in */}
-            {zoom && (
-              <Html distanceFactor={6} zIndexRange={[50, 0]}>
-                <div className="pointer-events-none select-none" style={{
-                  color: '#38bdf8',
-                  fontSize: '7px',
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  textShadow: '0 0 4px rgba(0,0,0,0.9)',
-                  opacity: 0.85,
-                  transform: 'translateX(4px)',
-                }}>
-                  {city.name}
-                </div>
-              </Html>
-            )}
-          </mesh>
-        )
-      })}
+      {CITIES.map(city => <CityLabel key={city.name} city={city} />)}
     </>
   )
 }
