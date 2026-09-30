@@ -1000,9 +1000,9 @@ export default function Dashboard() {
             <div className="flex-1 min-w-0">
               <div className="text-[9px] text-slate-300 uppercase tracking-[0.2em] font-bold">Active Mission</div>
               <div onClick={() => setShowSearch(true)} data-tour="mission"
-                className="text-[12px] font-bold text-sky-400 uppercase truncate cursor-pointer hover:text-sky-300 transition-colors"
+                className={`text-[12px] font-bold uppercase truncate cursor-pointer transition-colors ${opportunities.length > 0 ? 'text-sky-400 hover:text-sky-300' : 'text-slate-500 hover:text-slate-400'}`}
                 title="Click to start new scan">
-                {profile.material}
+                {opportunities.length > 0 ? profile.material : 'Scan to begin →'}
               </div>
             </div>
             <button onClick={() => setShowSearch(true)}
@@ -1025,7 +1025,7 @@ export default function Dashboard() {
                 { id: 'surveillance', label: 'Surv',     color: 'cyan'    },
               ].map((t, idx) => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
-                  className={`basis-1/4 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
+                  className={`basis-1/4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-all border-b-2 ${
                     idx < 4 ? 'border-t-0' : 'border-t border-t-white/5'
                   } ${
                     activeTab === t.id
@@ -1707,10 +1707,10 @@ export default function Dashboard() {
 
           </div>
 
-          {/* Terminal capabilities card — fills empty space, hidden once scan runs */}
+          {/* Terminal capabilities card — visible before first scan */}
           {opportunities.length === 0 && (
-            <div className="bg-[#0a0a0a] border border-white/5 p-4 rounded-xl mt-auto shrink-0">
-              <div className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.25em] mb-3">What NAUTILUS Does</div>
+            <div className="bg-[#0a0a0a] border border-white/8 p-4 rounded-xl shrink-0">
+              <div className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.25em] mb-3">What NAUTILUS Does</div>
               <div className="space-y-2.5">
                 {[
                   { icon: <Factory size={10}/>,     text: 'Surfaces & ranks global sourcing hubs by stability, cost and ESG' },
@@ -1718,8 +1718,8 @@ export default function Dashboard() {
                   { icon: <FileText size={10}/>,     text: 'Generates AI strategic directives and RFQ drafts instantly' },
                   { icon: <TrendingUp size={10}/>,   text: 'Tracks live commodity prices, FX rates and freight data' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[10px] text-slate-600">
-                    <span className="shrink-0 mt-0.5 opacity-50">{item.icon}</span>
+                  <div key={i} className="flex items-start gap-2 text-[10px] text-slate-500">
+                    <span className="shrink-0 mt-0.5 text-sky-500/60">{item.icon}</span>
                     <span className="leading-snug">{item.text}</span>
                   </div>
                 ))}
@@ -1756,7 +1756,7 @@ export default function Dashboard() {
             </div>
 
             {/* Globe controls — desktop only (overlaid on globe) */}
-            <div className="hidden lg:flex absolute top-4 left-4 z-10 flex-col gap-1 bg-black/55 backdrop-blur-md border border-white/8 rounded-xl p-2">
+            <div className="hidden lg:flex absolute top-4 left-4 z-10 flex-col gap-1 bg-black/75 backdrop-blur-md border border-white/12 rounded-xl p-2 shadow-xl">
               <button onClick={() => setShowDayNight(!showDayNight)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg backdrop-blur-md border transition-all text-[11px] font-bold uppercase tracking-widest ${showDayNight ? 'bg-sky-500/15 border-sky-500/30 text-sky-400' : 'bg-black/60 border-white/10 text-slate-300 hover:text-slate-300'}`}>
                 {showDayNight ? <Moon size={12} /> : <Sun size={12} />}
@@ -2067,17 +2067,15 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Calculators</span>
               </div>
               {[
-                { icon:<DollarSign size={11}/>,  label:'TLC Calc',    action:()=>setShowTLC(true),              color:'emerald' },
-                { icon:<Calculator size={11}/>,  label:'Tariff Calc', action:()=>setShowTariffCalc(true),       color:'sky' },
-                { icon:<TrendingUp size={11}/>,  label:'FX Impact',   action:()=>setShowCurrencyCalc(true),     color:'emerald' },
-                { icon:<Ship size={11}/>,        label:'Ocean Rates', action:()=>setShowOcean(true),            color:'sky' },
+                { icon:<DollarSign size={11}/>,  label:'TLC Calc',    action:()=>setShowTLC(true) },
+                { icon:<Calculator size={11}/>,  label:'Tariff Calc', action:()=>setShowTariffCalc(true) },
+                { icon:<TrendingUp size={11}/>,  label:'FX Impact',   action:()=>setShowCurrencyCalc(true) },
+                { icon:<Ship size={11}/>,        label:'Ocean Rates', action:()=>setShowOcean(true) },
               ].map((t, i) => (
                 <button key={i} onClick={t.action}
                   title={t.label}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
-                    ${t.color==='emerald' ? 'border-l-emerald-500/40 text-emerald-400 hover:bg-emerald-500/8 hover:border-l-emerald-400' :
-                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
-                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2 border-l-white/10 text-slate-400 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400">
+                  <span className="shrink-0 opacity-60">{t.icon}</span>
                   <span className="truncate leading-none">{t.label}</span>
                 </button>
               ))}
@@ -2087,20 +2085,16 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Compliance</span>
               </div>
               {[
-                { icon:<FileText size={11}/>,    label:'HS Code',    action:()=>setShowTariff(true),     color:'sky' },
-                { icon:<Zap size={11}/>,         label:'Compliance', action:()=>setShowCompliance(true), color:'amber' },
-                { icon:<Shield size={11}/>,      label:'Sanctions',  action:()=>setShowSanctions(true),  color:'rose' },
-                { icon:<ShieldOff size={11}/>,   label:'Dual-Use',   action:()=>setShowDualUse(true),    color:'rose' },
-                { icon:<Leaf size={11}/>,        label:'FTA Check',  action:()=>setShowFta(true),        color:'emerald' },
+                { icon:<FileText size={11}/>,    label:'HS Code',    action:()=>setShowTariff(true) },
+                { icon:<Zap size={11}/>,         label:'Compliance', action:()=>setShowCompliance(true) },
+                { icon:<Shield size={11}/>,      label:'Sanctions',  action:()=>setShowSanctions(true) },
+                { icon:<ShieldOff size={11}/>,   label:'Dual-Use',   action:()=>setShowDualUse(true) },
+                { icon:<Leaf size={11}/>,        label:'FTA Check',  action:()=>setShowFta(true) },
               ].map((t, i) => (
                 <button key={i} onClick={t.action}
                   title={t.label}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
-                    ${t.color==='emerald' ? 'border-l-emerald-500/40 text-emerald-400 hover:bg-emerald-500/8 hover:border-l-emerald-400' :
-                      t.color==='rose'    ? 'border-l-rose-500/40 text-rose-400 hover:bg-rose-500/8 hover:border-l-rose-400' :
-                      t.color==='amber'   ? 'border-l-amber-500/40 text-amber-400 hover:bg-amber-500/8 hover:border-l-amber-400' :
-                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
-                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2 border-l-white/10 text-slate-400 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400">
+                  <span className="shrink-0 opacity-60">{t.icon}</span>
                   <span className="truncate leading-none">{t.label}</span>
                 </button>
               ))}
@@ -2110,19 +2104,15 @@ export default function Dashboard() {
                 <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em]">Intelligence</span>
               </div>
               {[
-                { icon:<ShieldAlert size={11}/>, label:'Risk Score',   action:()=>setShowRisk(true),       color:'rose' },
-                { icon:<Anchor size={11}/>,      label:'Ports',        action:()=>setShowPorts(true),      color:'sky' },
-                { icon:<Factory size={11}/>,     label:'BOM Analyzer', action:()=>setShowBom(true),        color:'violet' },
-                { icon:<Scale size={11}/>,       label:'Incoterms',    action:()=>setShowIncoterms(true),  color:'purple' },
+                { icon:<ShieldAlert size={11}/>, label:'Risk Score',   action:()=>setShowRisk(true) },
+                { icon:<Anchor size={11}/>,      label:'Ports',        action:()=>setShowPorts(true) },
+                { icon:<Factory size={11}/>,     label:'BOM Analyzer', action:()=>setShowBom(true) },
+                { icon:<Scale size={11}/>,       label:'Incoterms',    action:()=>setShowIncoterms(true) },
               ].map((t, i) => (
                 <button key={i} onClick={t.action}
                   title={t.label}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
-                    ${t.color==='rose'   ? 'border-l-rose-500/40 text-rose-400 hover:bg-rose-500/8 hover:border-l-rose-400' :
-                      t.color==='violet' ? 'border-l-violet-500/40 text-violet-400 hover:bg-violet-500/8 hover:border-l-violet-400' :
-                      t.color==='purple' ? 'border-l-purple-500/40 text-purple-400 hover:bg-purple-500/8 hover:border-l-purple-400' :
-                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
-                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2 border-l-white/10 text-slate-400 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400">
+                  <span className="shrink-0 opacity-60">{t.icon}</span>
                   <span className="truncate leading-none">{t.label}</span>
                 </button>
               ))}

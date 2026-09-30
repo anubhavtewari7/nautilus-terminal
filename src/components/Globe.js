@@ -190,7 +190,7 @@ function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints,
 
       <mesh ref={meshRef} rotation={[-0.25, 0, 0]}>
         <sphereGeometry args={[2, 64, 64]} />
-        <meshPhongMaterial map={texture} shininess={5} emissive="#ffffff" emissiveIntensity={0.1} />
+        <meshPhongMaterial map={texture} shininess={5} emissive="#ffffff" emissiveIntensity={0.18} />
         
         <mesh>
           <sphereGeometry args={[2.005, 32, 32]} />
@@ -291,9 +291,10 @@ export default function Globe({ risks = [], opportunities = [], chokepoints = []
     <div className="w-full h-full">
       <Canvas shadows gl={{ antialias: true }}>
         <PerspectiveCamera makeDefault position={[0, 1.8, 5.8]} />
-        <ambientLight intensity={2.5} />
-        <pointLight position={[10, 10, 10]} intensity={4} color="#ffffff" />
-        <pointLight position={[-10, 10, 5]} intensity={2} color="#38bdf8" />
+        <ambientLight intensity={3.5} />
+        <pointLight position={[10, 10, 10]} intensity={5} color="#ffffff" />
+        <pointLight position={[-10, 10, 5]} intensity={2.5} color="#38bdf8" />
+        <pointLight position={[0, -10, 5]} intensity={1.5} color="#ffffff" />
 
         <React.Suspense fallback={<Html center><div className="text-sky-400 font-mono text-[10px] animate-pulse">SYNCING_MAP...</div></Html>}>
           <Earth
