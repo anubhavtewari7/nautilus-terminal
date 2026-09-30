@@ -366,12 +366,6 @@ function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints,
       {/* Atmospheric glow — always visible, sits outside the Earth sphere */}
       <Atmosphere />
 
-      {/* Country border lines (zoom-independent, always rendered) */}
-      <CountryBorders />
-
-      {/* City labels — micro-dots always visible, text labels appear when zoomed in */}
-      <CityLabels />
-
       {/* Night-side overlay -- sibling to the Earth mesh; sun direction is
           corrected each frame by -earthRotY so it stays geographically accurate */}
       {showDayNight && <NightOverlay earthRotRef={earthRotY} />}
@@ -386,7 +380,11 @@ function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints,
           emissive="#ffffff"
           emissiveIntensity={0.12}
         />
-        
+
+        {/* Country borders + city labels inside the rotating Earth mesh so they spin with it */}
+        <CountryBorders />
+        <CityLabels />
+
         <mesh>
           <sphereGeometry args={[2.005, 32, 32]} />
           <meshBasicMaterial color="#38bdf8" wireframe transparent opacity={0.05} />
