@@ -288,9 +288,14 @@ const CITIES = [
   { name: 'Durban',       lat: -29.87,  lng:  31.04 },
 ]
 
+const _worldPos = new THREE.Vector3()
+const _camDir   = new THREE.Vector3()
+
 function CityLabel({ city }) {
   const { camera } = useThree()
-  const htmlRef = useRef()
+  const htmlRef  = useRef()
+  const meshRef  = useRef()
+  const dotRef   = useRef()
 
   const R = 2.04
   const phi   = (90 - city.lat) * (Math.PI / 180)
@@ -301,38 +306,52 @@ function CityLabel({ city }) {
      R * Math.sin(phi) * Math.sin(theta),
   ]
 
-  // Hide label text when camera is far; always show micro dot
   useFrame(() => {
-    if (htmlRef.current) {
-      const dist = camera.position.length()
-      const opacity = dist < 4.5 ? 0.9 : dist > 7.0 ? 0 : (7.0 - dist) / 2.5 * 0.9
-      htmlRef.current.style.opacity = String(opacity)
-    }
+    if (!meshRef.current) return
+    // World position of this city after Earth rotation
+    meshRef.current.getWorldPosition(_worldPos)
+    // Unit vector from Earth centre toward camera
+    _camDir.copy(camera.position).normalize()
+    // Positive dot → city is on the near hemisphere; negative → behind the globe
+    const onFront = _worldPos.dot(_camDir) > 0.05
+    const dist = camera.position.length()
+    const opacity = onFront
+      ? (dist < 4.5 ? 0.9 : dist > 7.0 ? 0 : (7.0 - dist) / 2.5 * 0.9)
+      : 0
+    if (htmlRef.current) htmlRef.current.style.opacity = String(opacity)
+    if (dotRef.current)  dotRef.current.style.opacity  = onFront ? '1' : '0'
   })
 
   return (
-    <mesh position={pos}>
+    <mesh ref={meshRef} position={pos}>
+      {/* Tiny dot — visibility controlled via dotRef */}
       <sphereGeometry args={[0.012, 5, 5]} />
       <meshBasicMaterial color="#38bdf8" />
       <Html distanceFactor={6} zIndexRange={[50, 0]}>
-        <div
-          ref={htmlRef}
-          className="pointer-events-none select-none"
-          style={{
-            color: '#38bdf8',
-            fontSize: '8px',
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            whiteSpace: 'nowrap',
-            textShadow: '0 0 6px rgba(0,0,0,1)',
-            opacity: 0,
-            transform: 'translateX(5px)',
-            transition: 'opacity 0.2s',
-          }}
-        >
-          {city.name}
+        <div style={{ pointerEvents: 'none', userSelect: 'none' }}>
+          <div
+            ref={dotRef}
+            style={{ width: 4, height: 4, borderRadius: '50%', background: '#38bdf8', marginBottom: 2 }}
+          />
+          <div
+            ref={htmlRef}
+            className="pointer-events-none select-none"
+            style={{
+              color: '#38bdf8',
+              fontSize: '8px',
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              textShadow: '0 0 6px rgba(0,0,0,1)',
+              opacity: 0,
+              transform: 'translateX(5px)',
+              transition: 'opacity 0.15s',
+            }}
+          >
+            {city.name}
+          </div>
         </div>
       </Html>
     </mesh>
