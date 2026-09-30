@@ -121,8 +121,35 @@ export default function SanctionsChecker({ onClose }) {
   const [result, setResult] = useState(null)
   const [entityMatches, setEntityMatches] = useState([])
   const [checked, setChecked] = useState(false)
+  const [ofacLiveMatches, setOfacLiveMatches] = useState(null) // null = not yet run
+  const [ofacLoading, setOfacLoading] = useState(false)
+  const [ofacFallback, setOfacFallback] = useState(false)
 
-  const runCheck = () => {
+  /** Call the server-side OFAC SDN route for live matching */
+  const checkOfacLive = async (entityName) => {
+    setOfacLoading(true)
+    setOfacLiveMatches(null)
+    setOfacFallback(false)
+    try {
+      const res = await fetch(`/api/sanctions?q=${encodeURIComponent(entityName)}`)
+      if (!res.ok) throw new Error(`API responded ${res.status}`)
+      const data = await res.json()
+      if (data.fallbackMode) {
+        setOfacFallback(true)
+        setOfacLiveMatches([])
+      } else {
+        setOfacLiveMatches(data.matches || [])
+        setOfacFallback(false)
+      }
+    } catch {
+      setOfacFallback(true)
+      setOfacLiveMatches([])
+    } finally {
+      setOfacLoading(false)
+    }
+  }
+
+  const runCheck = async () => {
     const entityLower = entity.toLowerCase()
     const countryLower = country.toLowerCase()
 
@@ -161,7 +188,7 @@ export default function SanctionsChecker({ onClose }) {
       countryResult = { country: country, ofac: 'UNKNOWN', eu: 'UNKNOWN', un: 'UNKNOWN', level: 'UNKNOWN', program: 'No match in database', note: 'Manually verify against OFAC SDN list, EU Consolidated List, and UN Sanctions List. Country not found in Nautilus database.' }
     }
 
-    // Check entity name against SDN keywords
+    // Check entity name against SDN keywords (fast, local)
     const matches = entityLower
       ? SDN_KEYWORDS.filter(k => entityLower.includes(k.keyword))
       : []
@@ -169,6 +196,14 @@ export default function SanctionsChecker({ onClose }) {
     setResult(countryResult)
     setEntityMatches(matches)
     setChecked(true)
+
+    // Kick off live OFAC API check if an entity name was provided
+    if (entity.trim()) {
+      checkOfacLive(entity.trim())
+    } else {
+      setOfacLiveMatches(null)
+      setOfacFallback(false)
+    }
   }
 
   const cfg = result ? (LEVEL_CONFIG[result.level] || LEVEL_CONFIG.UNKNOWN) : null
@@ -265,7 +300,7 @@ export default function SanctionsChecker({ onClose }) {
           </div>
 
           <button
-            onClick={runCheck}
+            onClick={() => runCheck()}
             disabled={!entity.trim() && !country.trim()}
             className="w-full h-11 bg-rose-500 text-white font-bold text-[12px] uppercase tracking-widest hover:bg-rose-400 transition-all disabled:opacity-30 rounded-xl flex items-center justify-center gap-2"
           >
@@ -328,6 +363,70 @@ export default function SanctionsChecker({ onClose }) {
               ) : (
                 <p className="text-[12px] text-slate-400 leading-relaxed">
                   No keyword matches against Nautilus&apos; curated SDN/Entity List database. <strong className="text-amber-400">Always verify</strong> against the official OFAC SDN, EU Consolidated, and UN SC lists before transacting.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* OFAC SDN Live Results */}
+          {checked && entity && (ofacLoading || ofacLiveMatches !== null || ofacFallback) && (
+            <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
+              <div className="flex items-center gap-2.5 mb-3">
+                {ofacLoading
+                  ? <Loader2 size={16} className="text-sky-400 animate-spin" />
+                  : ofacFallback
+                    ? <Info size={16} className="text-amber-400" />
+                    : ofacLiveMatches && ofacLiveMatches.length > 0
+                      ? <AlertTriangle size={16} className="text-rose-400" />
+                      : <CheckCircle size={16} className="text-emerald-400" />
+                }
+                <div>
+                  <div className="text-[11px] text-slate-500 uppercase tracking-widest">OFAC SDN Matches (Live)</div>
+                  <div className={`text-[13px] font-bold mt-0.5 ${
+                    ofacLoading ? 'text-sky-400'
+                    : ofacFallback ? 'text-amber-400'
+                    : ofacLiveMatches && ofacLiveMatches.length > 0 ? 'text-rose-400'
+                    : 'text-emerald-400'
+                  }`}>
+                    {ofacLoading
+                      ? 'Querying live OFAC SDN list…'
+                      : ofacFallback
+                        ? 'Live check unavailable'
+                        : ofacLiveMatches && ofacLiveMatches.length > 0
+                          ? `${ofacLiveMatches.length} SDN name match${ofacLiveMatches.length > 1 ? 'es' : ''} found`
+                          : 'No SDN name matches found'
+                    }
+                  </div>
+                </div>
+              </div>
+
+              {ofacFallback && (
+                <p className="text-[11px] text-amber-300/70 leading-relaxed">
+                  Live OFAC check unavailable — using reference list only. Verify manually at{' '}
+                  <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-200">sanctionssearch.ofac.treas.gov</a>.
+                </p>
+              )}
+
+              {!ofacLoading && !ofacFallback && ofacLiveMatches && ofacLiveMatches.length > 0 && (
+                <div className="space-y-2">
+                  {ofacLiveMatches.map((m, i) => (
+                    <div key={i} className="bg-black/20 rounded-lg p-3 flex items-center justify-between gap-3">
+                      <span className="text-[12px] font-mono text-white">{m.name}</span>
+                      <span className="text-[10px] font-bold text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded shrink-0">
+                        Score {m.score}
+                      </span>
+                    </div>
+                  ))}
+                  <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                    These names appear on the OFAC SDN list and closely match your search. Verify directly at{' '}
+                    <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener noreferrer" className="underline hover:text-sky-300 text-sky-400">OFAC SDN Search</a>.
+                  </p>
+                </div>
+              )}
+
+              {!ofacLoading && !ofacFallback && ofacLiveMatches && ofacLiveMatches.length === 0 && (
+                <p className="text-[12px] text-slate-400 leading-relaxed">
+                  No close name matches found in the live OFAC SDN list (13,000+ entries). <strong className="text-amber-400">Always verify</strong> against the official search tool for full-text matching.
                 </p>
               )}
             </div>

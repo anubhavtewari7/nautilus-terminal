@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { mergePortWatchData } from '@/lib/port-data'
 
 // --------------------------------------------------------------------------
 // Static baseline -- same 26 ports as PortStatus.js (source of truth here)
@@ -36,34 +35,80 @@ const BASELINE_PORTS = [
 
 // --------------------------------------------------------------------------
 // IMF PortWatch ArcGIS REST endpoint (free, no API key)
-// Returns vessel call counts as a congestion proxy.
-// We fetch outFields=* so the query never 400s on missing field names --
-// then we do flexible key matching against whatever the service returns.
+// Daily_Ports_Data — actual available fields: portid, portname, iso3, date,
+// portcalls, portcalls_cargo, portcalls_tanker, import, export
 // --------------------------------------------------------------------------
-const PORTWATCH_BASE =
-  'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/PortWatch_Ports/FeatureServer/0/query'
 const PORTWATCH_URL =
-  PORTWATCH_BASE + '?where=1%3D1&outFields=*&f=json&resultRecordCount=200'
+  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,portcalls,portcalls_cargo,import,export&orderByFields=date+DESC&resultRecordCount=500&f=json'
 
 const CACHE_MS  = 30 * 60 * 1000
 let _cache     = null
 let _cacheTime = 0
 
-// Flexible field extractor -- handles whatever the ArcGIS service actually exposes
-function extractPortAttr(attrs) {
-  const k = Object.keys(attrs)
-  const find = (...names) => {
-    for (const n of names) {
-      const m = k.find(key => key.toLowerCase() === n.toLowerCase())
-      if (m !== undefined && attrs[m] !== null) return attrs[m]
-    }
-    return null
-  }
+// Derive congestion proxy from real PortWatch vessel-call fields
+function extractPortAttr(attr) {
+  if (!attr) return null
+  const portcalls = attr.portcalls ?? attr.PORTCALLS
+  const portcalls_cargo = attr.portcalls_cargo ?? attr.PORTCALLS_CARGO
+  const importVol = attr.import ?? attr.IMPORT
+  const exportVol = attr.export ?? attr.EXPORT
+  if (portcalls == null) return null
+  // Derive a congestion proxy: high portcalls relative to cargo split indicates congestion
+  // Use portcalls as activity indicator, derive wait estimate from cargo ratio
+  const cargoRatio = portcalls > 0 ? (portcalls_cargo ?? 0) / portcalls : 0
+  // Normalize portcalls to a 0-100 "activity" score (portcalls > 80/day = very busy)
+  const activityScore = Math.min(100, Math.round((portcalls / 80) * 100))
+  // Congestion proxy: high activity + high cargo ratio = more congestion
+  const congestionProxy = Math.min(100, Math.round(activityScore * (0.5 + cargoRatio * 0.5)))
+  // Wait time estimate: rough heuristic (high congestion ports = higher wait)
+  const waitEstimate = congestionProxy > 70 ? 3 + Math.round((congestionProxy - 70) / 10)
+                     : congestionProxy > 40 ? 1 + Math.round((congestionProxy - 40) / 30)
+                     : 0.5
   return {
-    PORT_NAME:       find('port_name', 'portname', 'name', 'portid', 'port', 'label') || null,
-    CONGESTION_INDEX: find('congestion_index', 'congestion', 'cong_index', 'congest_idx') || null,
-    WAIT_DAYS:       find('wait_days', 'wait', 'waittime', 'delay_days', 'avg_wait') || null,
-    TREND:           find('trend', 'congestion_trend', 'trend_dir') || null,
+    congestion: congestionProxy,
+    waitDays: parseFloat(waitEstimate.toFixed(1)),
+    portcalls: portcalls,
+    importVol: importVol,
+    exportVol: exportVol,
+    trend: congestionProxy > 60 ? 'elevated' : congestionProxy > 30 ? 'normal' : 'low',
+    dataSource: 'IMF PortWatch (live vessel call data)',
+  }
+}
+
+function mergePortWatchData(portWatchFeatures, baselinePorts) {
+  const lookup = {}
+  for (const f of portWatchFeatures) {
+    const attr = f.attributes || f
+    const name = (attr.portname || '').toLowerCase().trim()
+    if (name) lookup[name] = attr
+  }
+  let liveCount = 0
+  const ports = baselinePorts.map(bp => {
+    const bpName = bp.name.toLowerCase()
+    // Try exact match first, then partial
+    const match = lookup[bpName]
+      || Object.entries(lookup).find(([k]) => k.includes(bpName) || bpName.includes(k))?.[1]
+    if (match) {
+      const enriched = extractPortAttr(match)
+      if (enriched) {
+        liveCount += 1
+        return {
+          ...bp,
+          congestion: enriched.congestion,
+          waitDays: enriched.waitDays,
+          trend: enriched.trend,
+          liveEnriched: true,
+          portcalls: enriched.portcalls,
+          liveDataSource: 'IMF PortWatch — live vessel call data',
+        }
+      }
+    }
+    return { ...bp, liveEnriched: false }
+  })
+  return {
+    ports,
+    liveCount,
+    source: liveCount > 0 ? 'IMF PortWatch + Reference Baseline' : 'Reference Baseline',
   }
 }
 
@@ -81,7 +126,7 @@ async function fetchPortWatch() {
   const json = await res.json()
   if (json.error) throw new Error(`PortWatch error: ${json.error.message || JSON.stringify(json.error)}`)
   if (!json.features?.length) throw new Error('No PortWatch features')
-  return json.features.map(f => extractPortAttr(f.attributes))
+  return json.features
 }
 
 export async function GET() {
@@ -90,9 +135,10 @@ export async function GET() {
       return NextResponse.json(_cache)
     }
 
-    let result = mergePortWatchData(BASELINE_PORTS)
+    let result = mergePortWatchData([], BASELINE_PORTS)
     try {
-      result = mergePortWatchData(BASELINE_PORTS, await fetchPortWatch())
+      const features = await fetchPortWatch()
+      result = mergePortWatchData(features, BASELINE_PORTS)
     } catch (error) {
       console.info('[/api/ports] Live values unavailable; retaining static baseline:', error.message)
     }
@@ -101,7 +147,7 @@ export async function GET() {
       updated: new Date().toISOString(),
       dataSource: 'Reference baseline — industry estimates based on 2024 throughput data and current market intelligence. Live enrichment via IMF PortWatch when available.',
       disclaimer: 'Congestion % and wait times are editorial estimates. Verify with your freight forwarder or carrier before operational decisions.',
-      isLiveEnriched: false, // will be updated if PortWatch enrichment succeeds
+      isLiveEnriched: result.liveCount > 0,
     }
 
     _cache     = payload
@@ -113,7 +159,7 @@ export async function GET() {
     console.error('[/api/ports]', err.message)
     // Hard fallback -- return static baseline unmodified
     return NextResponse.json({
-      ports:    mergePortWatchData(BASELINE_PORTS).ports,
+      ports:    mergePortWatchData([], BASELINE_PORTS).ports,
       source:   'Reference Baseline',
       liveCount: 0,
       updated:  new Date().toISOString(),
