@@ -143,33 +143,25 @@ export async function GET() {
       // Strategy A: CAMEO theme codes (precise, may fail on some API versions)
       // Strategy B: Plain keyword terms (broader, more reliable fallback)
       const gdeltBase = 'https://api.gdeltproject.org/api/v2/geo/geo'
-      const strategies = [
-        // A: theme codes (proper GDELT 2.0 format)
-        encodeURIComponent(
-          '(theme:TERROR OR theme:MILITARY OR theme:ARMED_CONFLICT OR theme:PROTEST OR theme:UNREST_CLOSURES) ' +
-          '-theme:ARTS -theme:CULTURE -theme:SPORT'
-        ),
-        // B: plain keywords -- works even when theme: prefix is unsupported
-        encodeURIComponent('war OR conflict OR military OR attack OR protest OR sanction OR blockade'),
-      ]
+      // Keyword-based query — reliable across all GDELT API versions
+      const q = encodeURIComponent('war OR conflict OR military OR attack OR protest OR sanction OR blockade')
+      const url = `${gdeltBase}?query=${q}&mode=PointData&format=GeoJSON&timespan=7d&maxpoints=500&geores=1`
 
       let geojson = null
-      for (const q of strategies) {
-        const url = `${gdeltBase}?query=${q}&mode=PointData&format=GeoJSON&timespan=7d&maxpoints=500&geores=1`
-        try {
-          const res = await fetch(url, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (compatible; NautilusTerminal/2.0)',
-              'Accept': 'application/json, */*',
-            },
-            signal: AbortSignal.timeout(10000),
-            next: { revalidate: 3600 },
-          })
-          if (!res.ok) continue
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; NautilusTerminal/2.0)',
+            'Accept': 'application/json, */*',
+          },
+          signal: AbortSignal.timeout(10000),
+          next: { revalidate: 3600 },
+        })
+        if (res.ok) {
           const json = await res.json()
-          if (json.features?.length) { geojson = json; break }
-        } catch { continue }
-      }
+          if (json.features?.length) geojson = json
+        }
+      } catch { /* fall through to fallback below */ }
 
       if (!geojson) throw new Error('All GDELT query strategies returned no data')
 

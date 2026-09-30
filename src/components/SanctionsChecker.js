@@ -250,9 +250,9 @@ export default function SanctionsChecker({ onClose }) {
             <AlertTriangle size={13} style={{ color: '#FBBF24', flexShrink: 0, marginTop: 2 }} />
             <p style={{ fontSize: 11, color: 'rgba(237,244,255,0.65)', lineHeight: 1.55, margin: 0 }}>
               <strong style={{ color: '#FBBF24' }}>Reference only — not a compliance tool.</strong>{' '}
-              This screen checks a curated reference list and is <em>not</em> connected to the live OFAC SDN list
-              (13,000+ entries), EU Consolidated List, or UN Security Council list. Do not rely on this for
-              export compliance decisions. Always screen against official government databases and consult a
+              This tool runs two checks: (1) a curated local keyword list for instant results, and (2) a live
+              query against the real OFAC SDN list (~13,000+ entries) fetched from the US Treasury. Results are
+              for reference only — not a substitute for formal compliance screening. Always verify with a
               licensed trade compliance officer.{' '}
               <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener noreferrer"
                  style={{ color: '#38BDF8', textDecoration: 'underline' }}>

@@ -95,9 +95,10 @@ export async function DELETE(request) {
   if (!rl.ok) return rl.response
 
   const { searchParams } = new URL(request.url)
-  const id = Number(searchParams.get('id'))
-  if (id == null || !Number.isFinite(id)) {
-    return NextResponse.json({ error: 'id query param required (numeric timestamp)' }, { status: 400 })
+  const rawId = searchParams.get('id')
+  const id = Number(rawId)
+  if (!rawId || !Number.isFinite(id) || id <= 0) {
+    return NextResponse.json({ error: 'Missing or invalid id parameter' }, { status: 400 })
   }
 
   const userId  = await getUserId(request)

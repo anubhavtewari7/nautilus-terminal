@@ -199,6 +199,7 @@ export async function POST(req) {
 
       market_data: {
         match_confidence,
+        confidence_score: match_confidence,   // backward-compat alias for terminal UI
         currency: { pair: 'USD/INDEX', rate: 104.2, impact: 'Stable', stale_as_of: '2026-09', note: 'Reference rate — verify with live DXY' },
         price_history: null,
         price_history_note: 'Historical price chart unavailable — real-time price indices require a paid data subscription (Bloomberg, Refinitiv, or OPIS). Use the Commodities panel for current spot prices.',

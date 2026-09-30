@@ -70,7 +70,7 @@ function extractPortAttr(attr) {
     portcalls: portcalls,
     importVol: importVol,
     exportVol: exportVol,
-    trend: congestionProxy > 60 ? 'elevated' : congestionProxy > 30 ? 'normal' : 'low',
+    trend: congestionProxy > 60 ? 'up' : 'stable',
     dataSource: 'IMF PortWatch (live vessel call data)',
   }
 }

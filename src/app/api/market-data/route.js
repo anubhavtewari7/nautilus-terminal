@@ -126,7 +126,8 @@ async function fetchFromNewsAPI() {
   const apiKey = process.env.NEWS_API_KEY;
   if (!apiKey) throw new Error('NEWS_API_KEY not set');
 
-  const res = await fetch(`${NEWSAPI_URL}&apiKey=${apiKey}`, {
+  const res = await fetch(NEWSAPI_URL, {
+    headers: { 'X-Api-Key': apiKey },
     next: { revalidate: 3600 },
   });
 

@@ -19,6 +19,13 @@ function esc(str) {
     .replace(/"/g, '&quot;')
 }
 
+// Safely format a date value, returning 'Unknown' for missing or invalid dates
+function safeDate(val) {
+  if (!val) return 'Unknown'
+  const d = new Date(val)
+  return isNaN(d.getTime()) ? 'Unknown' : d.toUTCString().replace(' GMT', ' UTC')
+}
+
 // Validate that a string is a safe https:// URL before using it as an href
 function safeHref(url) {
   try {
@@ -70,7 +77,7 @@ export async function GET(request) {
   const alerts = data.alerts || [];
   const high   = alerts.filter(a => a.severity === 'HIGH');
   const medium = alerts.filter(a => a.severity === 'MEDIUM');
-  const ts     = new Date(data.lastUpdated).toUTCString().replace(' GMT', ' UTC');
+  const ts     = safeDate(data.lastUpdated);
 
   // Build HIGH alert list HTML (all dynamic content escaped)
   const highHtml = high.slice(0, 5).map(a => {
