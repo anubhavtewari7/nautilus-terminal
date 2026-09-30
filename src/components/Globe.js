@@ -122,7 +122,7 @@ function ChokepointMarker({ cp }) {
         <meshBasicMaterial color={color} transparent opacity={0.18} />
       </mesh>
 
-      <Html distanceFactor={8} zIndexRange={[90, 0]}>
+      <Html zIndexRange={[90, 0]}>
         <div className="pointer-events-none select-none">
           {hovered && (
             <motion.div
@@ -469,11 +469,11 @@ function Marker({ node, color, type, onNodeClick }) {
         <meshBasicMaterial color={color} transparent opacity={0.2} />
       </mesh>
       
-      <Html distanceFactor={8} zIndexRange={[100, 0]}>
+      <Html zIndexRange={[100, 0]}>
         <div className="pointer-events-none select-none">
           {hovered && (
-            <motion.div 
-              initial={{ opacity: 0, x: -10 }} 
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }} 
               className="flex flex-col bg-black/90 border-l-2 px-3 py-2 shadow-2xl rounded-r-lg" 
               style={{ borderColor: color }}
