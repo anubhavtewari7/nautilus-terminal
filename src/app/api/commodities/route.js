@@ -3,6 +3,17 @@ import { NextResponse } from 'next/server';
 // CME / NYMEX / CBOT / ICE futures -- tries Yahoo Finance v8 chart, then Stooq CSV, then static baseline
 // Each ticker is fetched independently so a single failure does not kill the whole panel.
 
+// Sanity bounds: if a live price falls outside these ranges, reject it as garbage data.
+// This guards against Yahoo Finance returning malformed or stale near-zero values.
+const PRICE_BOUNDS = {
+  'BZ=F':  { min: 30,    max: 250   }, // Brent crude $/bbl
+  'HG=F':  { min: 1.5,   max: 20    }, // Copper $/lb (historically 1.5–10, allow headroom)
+  'CT=F':  { min: 0.30,  max: 3.00  }, // Cotton $/lb after mult 0.01 applied
+  'ZS=F':  { min: 4,     max: 30    }, // Soybeans $/bu after mult 0.01 applied
+  'GC=F':  { min: 500,   max: 15000 }, // Gold $/oz
+  'NG=F':  { min: 0.5,   max: 50    }, // Nat Gas $/MMBtu
+};
+
 const SYMBOLS = [
   { yf: 'BZ=F',  stooq: 'brent.f', name: 'Brent Crude', unit: '/bbl',   mult: 1,    dp: 2 },
   { yf: 'HG=F',  stooq: 'hg.f',    name: 'Copper',      unit: '/lb',    mult: 1,    dp: 2 }, // YF/Stooq return USD/lb directly (not cents)
@@ -157,14 +168,22 @@ async function fetchMetalsLive(metalKey) {
   }
 }
 
+function inBounds(yf, finalPrice) {
+  const b = PRICE_BOUNDS[yf];
+  if (!b) return true;
+  return finalPrice >= b.min && finalPrice <= b.max;
+}
+
 async function fetchTicker(cfg) {
   // Try Yahoo Finance first
   try {
     const result = await fetchYahooChart(cfg.yf);
+    const finalPrice = result.price * cfg.mult;
+    if (!inBounds(cfg.yf, finalPrice)) throw new Error(`YF price ${finalPrice} out of bounds for ${cfg.yf}`);
     return {
       name: cfg.name,
       unit: cfg.unit,
-      price: fmt(result.price * cfg.mult, cfg.dp),
+      price: fmt(finalPrice, cfg.dp),
       change: (result.pct >= 0 ? '+' : '') + result.pct.toFixed(1) + '%',
       up: result.pct >= 0,
       live: true,
@@ -175,10 +194,12 @@ async function fetchTicker(cfg) {
     if (cfg.stooq) {
       try {
         const result = await fetchStooq(cfg.stooq);
+        const finalPrice = result.price * cfg.mult;
+        if (!inBounds(cfg.yf, finalPrice)) throw new Error(`Stooq price ${finalPrice} out of bounds for ${cfg.yf}`);
         return {
           name: cfg.name,
           unit: cfg.unit,
-          price: fmt(result.price * cfg.mult, cfg.dp),
+          price: fmt(finalPrice, cfg.dp),
           change: (result.pct >= 0 ? '+' : '') + result.pct.toFixed(1) + '%',
           up: result.pct >= 0,
           live: false,
