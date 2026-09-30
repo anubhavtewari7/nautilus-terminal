@@ -304,7 +304,9 @@ function CityLabel({ city }) {
   // Hide label text when camera is far; always show micro dot
   useFrame(() => {
     if (htmlRef.current) {
-      htmlRef.current.style.opacity = camera.position.length() < 5.5 ? '0.9' : '0'
+      const dist = camera.position.length()
+      const opacity = dist < 4.5 ? 0.9 : dist > 7.0 ? 0 : (7.0 - dist) / 2.5 * 0.9
+      htmlRef.current.style.opacity = String(opacity)
     }
   })
 
