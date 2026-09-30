@@ -1011,43 +1011,27 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* ── Primary Tab Navigation ── */}
+          {/* ── Primary Tab Navigation — single scrollable row ── */}
           <div className="bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shrink-0" data-tour="tabs">
-            {/* Row 1: Command | Sourcing | Risk | Compliance */}
-            <div className="grid grid-cols-4 border-b border-white/5">
+            <div className="flex overflow-x-auto no-scrollbar" data-tour="surv-tab">
               {[
-                { id: 'command',     label: 'Command',    color: 'sky' },
-                { id: 'sourcing',    label: 'Sourcing',   color: 'emerald' },
-                { id: 'risk',        label: 'Risk',       color: 'rose' },
-                { id: 'compliance',  label: 'Compliance', color: 'amber' },
+                { id: 'command',      label: 'Command',  color: 'sky'     },
+                { id: 'sourcing',     label: 'Sourcing', color: 'emerald' },
+                { id: 'risk',         label: 'Risk',     color: 'rose'    },
+                { id: 'compliance',   label: 'Comply',   color: 'amber'   },
+                { id: 'cost',         label: 'Cost',     color: 'amber'   },
+                { id: 'intelligence', label: 'Intel',    color: 'sky'     },
+                { id: 'reports',      label: 'Reports',  color: 'purple'  },
+                { id: 'surveillance', label: 'Surv',     color: 'cyan'    },
               ].map(t => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
-                  className={`py-2 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
+                  className={`flex-shrink-0 px-3 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
                     activeTab === t.id
                       ? t.color === 'emerald' ? 'text-emerald-400 border-emerald-400 bg-emerald-500/5'
                       : t.color === 'rose'    ? 'text-rose-400 border-rose-400 bg-rose-500/5'
                       : t.color === 'amber'   ? 'text-amber-400 border-amber-400 bg-amber-500/5'
-                      : 'text-sky-400 border-sky-400 bg-sky-500/5'
-                      : 'border-transparent text-slate-300 hover:text-slate-300'
-                  }`}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            {/* Row 2: Cost | Intelligence | Reports | Surveillance */}
-            <div className="grid grid-cols-4" data-tour="surv-tab">
-              {[
-                { id: 'cost',          label: 'Cost',         color: 'amber' },
-                { id: 'intelligence',  label: 'Intel',        color: 'sky' },
-                { id: 'reports',       label: 'Reports',      color: 'purple' },
-                { id: 'surveillance',  label: 'Surv',         color: 'cyan' },
-              ].map(t => (
-                <button key={t.id} onClick={() => setActiveTab(t.id)}
-                  className={`py-2 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
-                    activeTab === t.id
-                      ? t.color === 'amber'  ? 'text-amber-400 border-amber-400 bg-amber-500/5'
-                      : t.color === 'purple' ? 'text-purple-400 border-purple-400 bg-purple-500/5'
-                      : t.color === 'cyan'   ? 'text-cyan-400 border-cyan-400 bg-cyan-500/5'
+                      : t.color === 'purple'  ? 'text-purple-400 border-purple-400 bg-purple-500/5'
+                      : t.color === 'cyan'    ? 'text-cyan-400 border-cyan-400 bg-cyan-500/5'
                       : 'text-sky-400 border-sky-400 bg-sky-500/5'
                       : 'border-transparent text-slate-300 hover:text-slate-300'
                   }`}>
@@ -2027,57 +2011,110 @@ export default function Dashboard() {
         ════════════════════════════════════ */}
         <div className="hidden lg:flex flex-col w-40 shrink-0 gap-2" data-tour="tools">
 
-          {/* Tool buttons */}
-          <div className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden flex flex-col" data-tour="new-tools">
-            {/* Header */}
-            <div className="px-3 py-2.5 border-b border-white/5 shrink-0">
-              <span className="text-[8px] font-bold text-slate-300 uppercase tracking-[0.2em]">Tools</span>
-            </div>
-            {/* Buttons */}
-            <div className="flex-1 overflow-y-auto flex flex-col py-1">
+          {/* Primary CTA — always visible at the top */}
+          <button onClick={() => setShowSearch(true)}
+            className="w-full h-10 bg-sky-500 text-black font-bold uppercase text-[11px] hover:bg-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.3)] rounded-xl tracking-widest flex items-center justify-center gap-1.5 transition-all shrink-0">
+            <SearchCode size={12} /> Scan
+          </button>
+
+          {/* Tool buttons — grouped by category */}
+          <div className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden flex flex-col min-h-0" data-tour="new-tools">
+            <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar">
+
+              {/* ── CALCULATORS ── */}
+              <div className="px-3 pt-2.5 pb-1">
+                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Calculators</span>
+              </div>
               {[
-                { icon:<FileText size={11}/>,    label:'HS Code',     action:()=>setShowTariff(true),     color:'sky' },
-                { icon:<History size={11}/>,     label:`Archive (${missionHistory.length})`, action:()=>setShowHistory(true), color:'emerald' },
-                { icon:<BarChart3 size={11}/>,   label:'Compare',     action:()=>setShowComparison(true), color:'sky',    disabled:opportunities.length < 2, disabledTooltip: opportunities.length === 0 ? 'Run a scan to enable comparison' : 'Requires 2+ sourcing hubs' },
-                { icon:<DollarSign size={11}/>,  label:'TLC Calc',    action:()=>setShowTLC(true),        color:'emerald' },
-                { icon:<Scale size={11}/>,       label:'Incoterms',   action:()=>setShowIncoterms(true),  color:'purple' },
-                { icon:<ShieldAlert size={11}/>, label:'Risk Score',  action:()=>setShowRisk(true),       color:'rose' },
-                { icon:<Anchor size={11}/>,      label:'Ports',       action:()=>setShowPorts(true),      color:'sky' },
-                { icon:<Zap size={11}/>,         label:'Compliance',  action:()=>setShowCompliance(true), color:'amber' },
-                { icon:<Factory size={11}/>,     label:'BOM Analyzer',action:()=>setShowBom(true),        color:'violet' },
-                { icon:<Shield size={11}/>,      label:'Sanctions',   action:()=>setShowSanctions(true),  color:'rose' },
-                { icon:<Ship size={11}/>,        label:'Ocean Rates', action:()=>setShowOcean(true),      color:'sky' },
-                { icon:<Leaf size={11}/>,        label:'FTA Check',   action:()=>setShowFta(true),        color:'emerald' },
-                { icon:<Calculator size={11}/>,  label:'Tariff Calc', action:()=>setShowTariffCalc(true),  color:'sky' },
-                { icon:<TrendingUp size={11}/>,  label:'FX Impact',   action:()=>setShowCurrencyCalc(true),color:'emerald' },
-                { icon:<ShieldOff size={11}/>,   label:'Dual-Use',    action:()=>setShowDualUse(true),     color:'rose' },
+                { icon:<DollarSign size={11}/>,  label:'TLC Calc',    action:()=>setShowTLC(true),              color:'emerald' },
+                { icon:<Calculator size={11}/>,  label:'Tariff Calc', action:()=>setShowTariffCalc(true),       color:'sky' },
+                { icon:<TrendingUp size={11}/>,  label:'FX Impact',   action:()=>setShowCurrencyCalc(true),     color:'emerald' },
+                { icon:<Ship size={11}/>,        label:'Ocean Rates', action:()=>setShowOcean(true),            color:'sky' },
               ].map((t, i) => (
-                <button key={i} onClick={t.disabled ? undefined : t.action} disabled={t.disabled}
-                  title={t.disabled ? (t.disabledTooltip || 'Requires a scan') : t.label}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2 disabled:opacity-25
+                <button key={i} onClick={t.action}
+                  title={t.label}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
                     ${t.color==='emerald' ? 'border-l-emerald-500/40 text-emerald-400 hover:bg-emerald-500/8 hover:border-l-emerald-400' :
-                      t.color==='rose'    ? 'border-l-rose-500/40 text-rose-400 hover:bg-rose-500/8 hover:border-l-rose-400' :
-                      t.color==='purple'  ? 'border-l-purple-500/40 text-purple-400 hover:bg-purple-500/8 hover:border-l-purple-400' :
-                      t.color==='amber'   ? 'border-l-amber-500/40 text-amber-400 hover:bg-amber-500/8 hover:border-l-amber-400' :
-                      t.color==='violet'  ? 'border-l-violet-500/40 text-violet-400 hover:bg-violet-500/8 hover:border-l-violet-400' :
                       'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
                   <span className="shrink-0 opacity-70">{t.icon}</span>
                   <span className="truncate leading-none">{t.label}</span>
                 </button>
               ))}
+
+              {/* ── COMPLIANCE ── */}
+              <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
+                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Compliance</span>
+              </div>
+              {[
+                { icon:<FileText size={11}/>,    label:'HS Code',    action:()=>setShowTariff(true),     color:'sky' },
+                { icon:<Zap size={11}/>,         label:'Compliance', action:()=>setShowCompliance(true), color:'amber' },
+                { icon:<Shield size={11}/>,      label:'Sanctions',  action:()=>setShowSanctions(true),  color:'rose' },
+                { icon:<ShieldOff size={11}/>,   label:'Dual-Use',   action:()=>setShowDualUse(true),    color:'rose' },
+                { icon:<Leaf size={11}/>,        label:'FTA Check',  action:()=>setShowFta(true),        color:'emerald' },
+              ].map((t, i) => (
+                <button key={i} onClick={t.action}
+                  title={t.label}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
+                    ${t.color==='emerald' ? 'border-l-emerald-500/40 text-emerald-400 hover:bg-emerald-500/8 hover:border-l-emerald-400' :
+                      t.color==='rose'    ? 'border-l-rose-500/40 text-rose-400 hover:bg-rose-500/8 hover:border-l-rose-400' :
+                      t.color==='amber'   ? 'border-l-amber-500/40 text-amber-400 hover:bg-amber-500/8 hover:border-l-amber-400' :
+                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
+                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  <span className="truncate leading-none">{t.label}</span>
+                </button>
+              ))}
+
+              {/* ── INTELLIGENCE ── */}
+              <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
+                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Intelligence</span>
+              </div>
+              {[
+                { icon:<ShieldAlert size={11}/>, label:'Risk Score',   action:()=>setShowRisk(true),       color:'rose' },
+                { icon:<Anchor size={11}/>,      label:'Ports',        action:()=>setShowPorts(true),      color:'sky' },
+                { icon:<Factory size={11}/>,     label:'BOM Analyzer', action:()=>setShowBom(true),        color:'violet' },
+                { icon:<Scale size={11}/>,       label:'Incoterms',    action:()=>setShowIncoterms(true),  color:'purple' },
+              ].map((t, i) => (
+                <button key={i} onClick={t.action}
+                  title={t.label}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2
+                    ${t.color==='rose'   ? 'border-l-rose-500/40 text-rose-400 hover:bg-rose-500/8 hover:border-l-rose-400' :
+                      t.color==='violet' ? 'border-l-violet-500/40 text-violet-400 hover:bg-violet-500/8 hover:border-l-violet-400' :
+                      t.color==='purple' ? 'border-l-purple-500/40 text-purple-400 hover:bg-purple-500/8 hover:border-l-purple-400' :
+                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
+                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  <span className="truncate leading-none">{t.label}</span>
+                </button>
+              ))}
+
+              {/* ── MISSIONS ── */}
+              <div className="px-3 pt-2.5 pb-1 border-t border-white/5 mt-1">
+                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-[0.2em]">Missions</span>
+              </div>
+              {[
+                { icon:<History size={11}/>,   label:`Archive (${missionHistory.length})`, action:()=>setShowHistory(true),     color:'emerald' },
+                { icon:<BarChart3 size={11}/>, label:'Compare',                             action:()=>setShowComparison(true), color:'sky',
+                  disabled:opportunities.length < 2, disabledTooltip: opportunities.length === 0 ? 'Run a scan to enable comparison' : 'Requires 2+ sourcing hubs' },
+              ].map((t, i) => (
+                <button key={i} onClick={t.disabled ? undefined : t.action} disabled={t.disabled}
+                  title={t.disabled ? (t.disabledTooltip || 'Requires a scan') : t.label}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-all text-left border-l-2 disabled:opacity-25
+                    ${t.color==='emerald' ? 'border-l-emerald-500/40 text-emerald-400 hover:bg-emerald-500/8 hover:border-l-emerald-400' :
+                      'border-l-sky-500/30 text-slate-300 hover:bg-sky-500/8 hover:text-sky-400 hover:border-l-sky-400'}`}>
+                  <span className="shrink-0 opacity-70">{t.icon}</span>
+                  <span className="truncate leading-none">{t.label}</span>
+                </button>
+              ))}
+
+              <div className="pb-1" />
             </div>
           </div>
 
-          {/* Primary CTAs */}
+          {/* Secondary CTAs */}
           <div className="flex flex-col gap-2 shrink-0" data-tour="pdf">
             <button onClick={exportToPDF} disabled={isExportingPDF || opportunities.length === 0}
               title={opportunities.length === 0 ? "Run a scan to enable PDF export" : isExportingPDF ? "Generating Executive Mission Brief (PDF)..." : "Export Executive Mission Brief (PDF)"}
               className="w-full h-9 border border-white/15 text-white hover:bg-white/8 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 disabled:opacity-25">
               <Download size={11} /> {isExportingPDF ? 'Generating' : 'Export PDF'}
-            </button>
-            <button onClick={() => setShowSearch(true)}
-              className="w-full h-10 bg-sky-500 text-black font-bold uppercase text-[11px] hover:bg-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.3)] rounded-xl tracking-widest flex items-center justify-center gap-1.5 transition-all">
-              <SearchCode size={12} /> Scan
             </button>
             <button onClick={() => setShowResetConfirm(true)}
               className="w-full h-8 border border-rose-500/20 text-rose-500/60 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-500/5 rounded-xl text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all">
@@ -2812,7 +2849,7 @@ export default function Dashboard() {
         return (
           <div className="hidden lg:flex fixed bottom-5 left-5 z-[120] items-center gap-2 bg-black/80 border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-md shadow-2xl">
             <div className={`w-1.5 h-1.5 rounded-full ${dotColor} animate-pulse`} />
-            <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">System_Integrity: {health}%</span>
+            <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">SYS · {health}%</span>
           </div>
         )
       })()}
