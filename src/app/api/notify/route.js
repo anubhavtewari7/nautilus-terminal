@@ -142,7 +142,7 @@ export async function GET(request) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Nautilus Agent <onboarding@resend.dev>',
+      from: `Nautilus Agent <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`,
       to: [TO],
       subject,
       html,

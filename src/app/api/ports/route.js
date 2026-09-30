@@ -96,7 +96,13 @@ export async function GET() {
     } catch (error) {
       console.info('[/api/ports] Live values unavailable; retaining static baseline:', error.message)
     }
-    const payload = { ...result, updated: new Date().toISOString() }
+    const payload = {
+      ...result,
+      updated: new Date().toISOString(),
+      dataSource: 'Reference baseline — industry estimates based on 2024 throughput data and current market intelligence. Live enrichment via IMF PortWatch when available.',
+      disclaimer: 'Congestion % and wait times are editorial estimates. Verify with your freight forwarder or carrier before operational decisions.',
+      isLiveEnriched: false, // will be updated if PortWatch enrichment succeeds
+    }
 
     _cache     = payload
     _cacheTime = Date.now()
@@ -108,9 +114,11 @@ export async function GET() {
     // Hard fallback -- return static baseline unmodified
     return NextResponse.json({
       ports:    mergePortWatchData(BASELINE_PORTS).ports,
-      source:   'Static Baseline',
+      source:   'Reference Baseline',
       liveCount: 0,
       updated:  new Date().toISOString(),
+      dataSource: 'Reference baseline — industry estimates based on 2024 throughput data.',
+      disclaimer: 'Congestion % and wait times are editorial estimates. Verify with your freight forwarder or carrier before operational decisions.',
       error:    err.message
     })
   }

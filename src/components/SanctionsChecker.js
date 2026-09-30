@@ -35,6 +35,33 @@ const COUNTRY_RISK = {
   'usa': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'Domestic. No restrictions.' },
   'uk': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. US-UK bilateral trade strong post-Brexit.' },
   'united kingdom': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. US-UK bilateral trade strong post-Brexit.' },
+  // Additional sanctioned / high-risk countries
+  'mali': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'Mali Sanctions', note: 'UN arms embargo. Targeted sanctions on individuals linked to political violence. Monitor closely for military-linked entities.' },
+  'eritrea': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'Eritrea Sanctions', note: 'Arms embargo. Targeted sanctions remain in place. General trade possible with due diligence.' },
+  'libya': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'Libya Sanctions', note: 'Arms embargo active. Targeted sanctions on individuals/entities. Oil sector requires careful counterparty vetting.' },
+  'haiti': { ofac: 'TARGETED', eu: 'CLEAR', un: 'TARGETED', level: 'ELEVATED', program: 'Haiti Gang Sanctions', note: 'UN and OFAC targeted sanctions on gang leaders post-2022. Commercial transactions generally possible with vetting.' },
+  'central african republic': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'CAR Sanctions', note: 'UN arms embargo. Targeted designations. Wagner/Russia-linked entities present — screen carefully.' },
+  'south sudan': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'South Sudan Sanctions', note: 'Arms embargo and targeted individual sanctions. Oil sector active but requires full counterparty due diligence.' },
+  'congo': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'DRC Sanctions', note: 'Arms embargo. Conflict minerals (coltan, cassiterite, gold, wolframite) require OECD Due Diligence documentation. Screen mining entities.' },
+  'democratic republic of congo': { ofac: 'TARGETED', eu: 'TARGETED', un: 'TARGETED', level: 'ELEVATED', program: 'DRC Sanctions', note: 'Arms embargo. Conflict minerals require OECD Due Diligence documentation. Screen mining entities thoroughly.' },
+  'turkey': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor re: Russia exposure)', note: 'No sanctions. NATO member and EU customs union. Monitor for potential secondary sanctions exposure due to Turkey-Russia trade flows. Screen individual entities for Russia links.' },
+  'pakistan': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (FATF grey-listed 2018-2022)', note: 'No active sanctions. Removed from FATF grey list in 2022. Textiles, chemicals, sports goods major exports. Standard due diligence applies.' },
+  'nigeria': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None', note: 'No sanctions. Largest African economy. Oil, agriculture, tech. Standard AML/KYC due diligence advised.' },
+  'indonesia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Key supply chain hub for palm oil, nickel, coal, textiles, electronics. Strong FDI environment.' },
+  'thailand': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Major electronics, automotive, and agriculture exporter. RCEP member.' },
+  'bangladesh': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Global apparel and textiles hub. Monitor labour compliance standards (RMG sector).' },
+  'cambodia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor for UFLPA exposure)', note: 'No sanctions. Growing apparel manufacturing base. Monitor supply chain for potential Xinjiang cotton inputs subject to UFLPA.' },
+  'ukraine': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (active conflict zone)', note: 'No sanctions on Ukraine. Avoid east/south conflict zones. Agricultural and steel supply chains disrupted. Screen for Russia-linked entities within supply chain.' },
+  'georgia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor Russia re-export risk)', note: 'No sanctions. Monitor for potential use as Russia sanctions-evasion transshipment point.' },
+  'armenia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor Russia re-export risk)', note: 'No sanctions. Monitor for Russia sanctions evasion risk given geographic proximity and trade ties.' },
+  'kazakhstan': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor Russia re-export risk)', note: 'No sanctions. Key for rare earths, uranium, and oil. Monitor for Russia-linked entity exposure and potential re-export sanctions risk.' },
+  'serbia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None', note: 'No sanctions. EU candidate country. Growing nearshoring destination. Monitor for individual entity screening.' },
+  'uae': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor re: sanctions evasion)', note: 'No sanctions. Major trade hub. Monitor for Russia/Iran sanctions evasion transshipment risk. Enhanced due diligence on ultimate beneficial ownership.' },
+  'hong kong': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None (monitor China entity exposure)', note: 'No independent sanctions. China Entity List and OFAC designations apply. National Security Law (2020) has affected certain business operations. Screen individual entities.' },
+  'israel': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'LOW', program: 'None', note: 'No sanctions. US FTA (zero duty on most goods). Active conflict in Gaza — monitor logistics disruption and security implications for supply chain.' },
+  'saudi arabia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Key oil producer. Vision 2030 driving manufacturing investment. Standard due diligence.' },
+  'malaysia': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Key electronics, palm oil, and chemicals exporter. CPTPP member.' },
+  'philippines': { ofac: 'CLEAR', eu: 'CLEAR', un: 'CLEAR', level: 'CLEAR', program: 'None', note: 'No sanctions. Electronics, semiconductors, services. Growing manufacturing base.' },
 }
 
 // ── High-risk entity keywords (SDN heuristic) ──────────────────────────────
@@ -56,6 +83,16 @@ const SDN_KEYWORDS = [
   { keyword: 'wagner', list: 'OFAC SDN / EU', severity: 'BLOCKED', note: 'Wagner Group (PMC) designated as terrorist organization by US and EU.' },
   { keyword: 'xinjiang', list: 'UFLPA / OFAC Targeted', severity: 'RESTRICTED', note: 'Xinjiang-origin goods subject to UFLPA rebuttable presumption (assumed forced labor). Cotton, polysilicon, tomatoes, and others specifically banned.' },
   { keyword: 'polysilicon', list: 'UFLPA', severity: 'ELEVATED', note: 'Chinese polysilicon (solar) subject to UFLPA forced labor scrutiny. Require full supply chain documentation.' },
+  { keyword: 'al-shabaab', list: 'OFAC SDN / UN', severity: 'BLOCKED', note: 'Al-Shabaab designated as terrorist organization. Somalia-linked. All dealings prohibited.' },
+  { keyword: 'isis', list: 'OFAC SDN / UN / EU', severity: 'BLOCKED', note: 'ISIS/ISIL/Da\'esh — designated terrorist organization globally. All transactions prohibited.' },
+  { keyword: 'isil', list: 'OFAC SDN / UN / EU', severity: 'BLOCKED', note: 'ISIL/ISIS — designated terrorist organization. All transactions prohibited.' },
+  { keyword: 'al-qaeda', list: 'OFAC SDN / UN / EU', severity: 'BLOCKED', note: 'Al-Qaeda and affiliates fully blocked globally. All transactions prohibited.' },
+  { keyword: 'novatek', list: 'OFAC/EU Sectoral', severity: 'RESTRICTED', note: 'NOVATEK (Russian LNG company) under sectoral sanctions. EU has targeted restrictions on LNG projects.' },
+  { keyword: 'rosneft', list: 'EU Sectoral / US SDN adjacent', severity: 'RESTRICTED', note: 'Rosneft under EU sectoral sanctions. US has separate restrictions. Verify before any energy sector engagement.' },
+  { keyword: 'lukoil', list: 'EU Sectoral', severity: 'ELEVATED', note: 'Lukoil under EU sectoral sanctions post-2022. Verify current status before transactions.' },
+  { keyword: 'bank rossiya', list: 'OFAC SDN', severity: 'BLOCKED', note: 'Bank Rossiya on OFAC SDN list. All transactions with US persons prohibited.' },
+  { keyword: 'promsvyazbank', list: 'OFAC SDN', severity: 'BLOCKED', note: 'Promsvyazbank (PSB) on OFAC SDN — Russia\'s primary defense financing bank. Fully blocked.' },
+  { keyword: 'uralvagonzavod', list: 'OFAC SDN', severity: 'BLOCKED', note: 'Uralvagonzavod — Russian defense manufacturer, tank producer. On OFAC SDN. Fully blocked.' },
 ]
 
 const LEVEL_CONFIG = {
@@ -164,6 +201,30 @@ export default function SanctionsChecker({ onClose }) {
         </div>
 
         <div className="p-6 space-y-5">
+          {/* ── Compliance disclaimer ─────────────────────────────── */}
+          <div style={{
+            background: 'rgba(251,191,36,0.08)',
+            border: '1px solid rgba(251,191,36,0.35)',
+            borderRadius: 8,
+            padding: '10px 14px',
+            marginBottom: 16,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'flex-start',
+          }}>
+            <AlertTriangle size={13} style={{ color: '#FBBF24', flexShrink: 0, marginTop: 2 }} />
+            <p style={{ fontSize: 11, color: 'rgba(237,244,255,0.65)', lineHeight: 1.55, margin: 0 }}>
+              <strong style={{ color: '#FBBF24' }}>Reference only — not a compliance tool.</strong>{' '}
+              This screen checks a curated reference list and is <em>not</em> connected to the live OFAC SDN list
+              (13,000+ entries), EU Consolidated List, or UN Security Council list. Do not rely on this for
+              export compliance decisions. Always screen against official government databases and consult a
+              licensed trade compliance officer.{' '}
+              <a href="https://sanctionssearch.ofac.treas.gov/" target="_blank" rel="noopener noreferrer"
+                 style={{ color: '#38BDF8', textDecoration: 'underline' }}>
+                Search OFAC directly →
+              </a>
+            </p>
+          </div>
           {/* Legal disclaimer banner -- shown prominently before any search */}
           <div className="flex items-start gap-3 p-3.5 bg-amber-500/8 border border-amber-500/25 rounded-xl">
             <AlertTriangle size={14} className="text-amber-400 shrink-0 mt-0.5" />

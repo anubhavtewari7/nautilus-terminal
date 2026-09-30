@@ -72,9 +72,12 @@ export async function POST(req) {
 
     // Detect low-confidence matches: query has meaningful tokens but none match known category keywords
     const queryTokens = query.toLowerCase().split(/\s+/).filter(w => w.length > 3)
-    const knownKeywords = CATEGORY_SIGNALS[category] || []
-    const matchCount = queryTokens.filter(t => knownKeywords.some(k => t.includes(k) || k.includes(t))).length
-    const isLowConfidence = queryTokens.length > 1 && matchCount === 0
+    const allSignalKeywords = Object.values(CATEGORY_SIGNALS).flat()
+    const anyTokenMatchesAnyCategory = queryTokens.some(t => allSignalKeywords.some(k => t.includes(k) || k.includes(t)))
+    // Only flag low confidence when the query has multiple meaningful words but
+    // NONE of them appear in any known category's signal keywords.
+    // A non-null category from categorizeQuery is already a strong confidence signal.
+    const isLowConfidence = queryTokens.length > 1 && !anyTokenMatchesAnyCategory
 
     const baseOpportunities = ATLAS_DB[category]
     if (!baseOpportunities?.length) {

@@ -192,6 +192,7 @@ export default function Dashboard() {
   const [intelBrief, setIntelBrief] = useState(null)
   const [intelLoading, setIntelLoading] = useState(false)
   const [hubNav, setHubNav] = useState({ level: 'continent', continent: null, country: null, region: null })
+  const [marketIntelMeta, setMarketIntelMeta] = useState(null) // { ageDays, latestTimestamp }
 
   // ── Surveillance tab state ──
   const [survFires,        setSurvFires]        = useState([])
@@ -264,6 +265,16 @@ export default function Dashboard() {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Fetch market-data staleness metadata on mount
+  useEffect(() => {
+    fetch('/api/market-data')
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
+      .then(d => {
+        if (d.ageDays !== undefined) setMarketIntelMeta({ ageDays: d.ageDays, latestTimestamp: d.latestTimestamp })
+      })
+      .catch(() => {}) // non-critical; silently ignore
   }, [])
 
   // Fetch surveillance data when tab is active
@@ -2606,14 +2617,32 @@ export default function Dashboard() {
                 <Newspaper size={14} className="text-sky-400" /> Market Intelligence
                 <SourceTooltip text="News sourced via NewsAPI from Reuters, Bloomberg, AP, Financial Times. Filtered by geopolitical and trade relevance." />
               </h2>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[8px] font-bold uppercase tracking-wider"
-                style={newsLoading
-                  ? { borderColor: 'rgba(100,116,139,0.3)', color: '#64748b' }
-                  : news.length > 0
-                  ? { borderColor: 'rgba(16,185,129,0.3)', color: '#34d399', backgroundColor: 'rgba(16,185,129,0.05)' }
-                  : { borderColor: 'rgba(100,116,139,0.2)', color: '#475569' }}>
-                <span className={`inline-block w-1.5 h-1.5 rounded-full ${newsLoading ? 'bg-slate-500' : news.length > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}`} />
-                {newsLoading ? 'Loading' : news.length > 0 ? `Live · ${news.length} articles` : 'Unavailable'}
+              <div className="flex items-center gap-2">
+                {/* Staleness badge for market-intelligence.json data */}
+                {marketIntelMeta?.ageDays !== null && marketIntelMeta?.ageDays > 3 && (
+                  <div
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8px] font-bold uppercase tracking-wider"
+                    style={marketIntelMeta.ageDays > 7
+                      ? { borderColor: 'rgba(239,68,68,0.35)', color: '#f87171', backgroundColor: 'rgba(239,68,68,0.08)' }
+                      : { borderColor: 'rgba(251,191,36,0.35)', color: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.08)' }}
+                    title={`Market brief last updated ${marketIntelMeta.ageDays} day${marketIntelMeta.ageDays === 1 ? '' : 's'} ago`}
+                  >
+                    <span
+                      className="inline-block w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: marketIntelMeta.ageDays > 7 ? '#f87171' : '#fbbf24' }}
+                    />
+                    {`Brief · ${marketIntelMeta.ageDays}d old`}
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[8px] font-bold uppercase tracking-wider"
+                  style={newsLoading
+                    ? { borderColor: 'rgba(100,116,139,0.3)', color: '#64748b' }
+                    : news.length > 0
+                    ? { borderColor: 'rgba(16,185,129,0.3)', color: '#34d399', backgroundColor: 'rgba(16,185,129,0.05)' }
+                    : { borderColor: 'rgba(100,116,139,0.2)', color: '#475569' }}>
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${newsLoading ? 'bg-slate-500' : news.length > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}`} />
+                  {newsLoading ? 'Loading' : news.length > 0 ? `Live · ${news.length} articles` : 'Unavailable'}
+                </div>
               </div>
             </div>
             {/* Region filter */}

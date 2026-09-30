@@ -32,15 +32,18 @@ function storeSet(userId, missions) {
 }
 
 async function getUserId(request) {
-  // When Auth.js is active we can pull the session here.
-  // For now return 'anon' so the route works without auth.
+  // Prefer authenticated session email
   try {
     const { auth } = await import('@/auth')
     const session = await auth()
-    return session?.user?.email || 'anon'
-  } catch {
-    return 'anon'
-  }
+    if (session?.user?.email) return session.user.email
+  } catch {}
+  // Fall back to IP-scoped anonymous bucket — prevents cross-user data leakage
+  // on the same Vercel instance. Not cryptographically secure but far better
+  // than a single shared 'anon' bucket for all users.
+  const forwarded = request.headers.get('x-forwarded-for')
+  const ip = forwarded ? forwarded.split(',')[0].trim() : (request.headers.get('x-real-ip') || 'anon')
+  return `anon_${ip.replace(/[^a-zA-Z0-9.:]/g, '_')}`
 }
 
 export async function GET(request) {

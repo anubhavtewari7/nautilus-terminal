@@ -15,7 +15,7 @@ export async function GET() {
       date: data.date,
       rates: {
         CNY: { rate: data.rates.CNY, country: 'China', flag: '🇨🇳', impact: data.rates.CNY > 7.2 ? 'Favorable for US imports' : 'Unfavorable for US imports' },
-        EUR: { rate: data.rates.EUR, country: 'Eurozone', flag: '🇪🇺', impact: data.rates.EUR < 1.0 ? 'EUR weak — EU exports cheaper' : 'EUR strong — US exports competitive' },
+        EUR: { rate: data.rates.EUR, country: 'Eurozone', flag: '🇪🇺', impact: data.rates.EUR > 0.93 ? 'EUR soft — EU components cheaper for US buyers' : data.rates.EUR < 0.87 ? 'EUR firm — monitor EU sourcing costs' : 'EUR near parity — stable for EU trade' },
         MXN: { rate: data.rates.MXN, country: 'Mexico', flag: '🇲🇽', impact: data.rates.MXN > 18 ? 'Favorable for nearshoring' : 'MXN strengthening' },
         BRL: { rate: data.rates.BRL, country: 'Brazil', flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
         JPY: { rate: data.rates.JPY, country: 'Japan', flag: '🇯🇵', impact: data.rates.JPY > 145 ? 'JPY weak — Japanese imports cheaper' : 'JPY stable' },
@@ -32,7 +32,7 @@ export async function GET() {
       base: 'USD', date: 'Rates may be outdated', stale: true,
       rates: {
         CNY: { rate: 6.71, country: 'China', flag: '🇨🇳', impact: 'Favorable for US imports' },
-        EUR: { rate: 0.87, country: 'Eurozone', flag: '🇪🇺', impact: 'EUR weak — EU exports cheaper' },
+        EUR: { rate: 0.87, country: 'Eurozone', flag: '🇪🇺', impact: 'EUR soft — EU components cheaper for US buyers' },
         MXN: { rate: 17.15, country: 'Mexico', flag: '🇲🇽', impact: 'Favorable for nearshoring' },
         BRL: { rate: 5.15, country: 'Brazil', flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
         JPY: { rate: 155.1, country: 'Japan', flag: '🇯🇵', impact: 'JPY weak — Japanese imports cheaper' },
