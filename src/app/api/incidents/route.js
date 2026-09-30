@@ -114,17 +114,17 @@ function buildIncidentRisks(aggregates, updatedAt) {
 // Supply-chain-specific context that pure news volume can't provide.
 // --------------------------------------------------------------------------
 const FALLBACK_INCIDENTS = [
-  { id:'acled_ukraine', title:'Active Combat -- Eastern Ukraine', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:48.5, lng:37.5, desc:'Ongoing large-scale hostilities. Black Sea grain corridor under pressure; Ukrainian steel and agricultural exports severely curtailed.', mitigation:'Reroute Ukrainian wheat/sunflower oil sourcing to Argentina, Brazil, or EU. Monitor Black Sea insurance premiums.', source:'Baseline' },
-  { id:'acled_red_sea', title:'Houthi Maritime Attacks -- Red Sea', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:14.0, lng:43.5, desc:'Houthi forces targeting commercial shipping. Major carriers diverted around Cape of Good Hope, adding 12-14 days and ~$1M per vessel.', mitigation:'Price in Cape diversion on Asia-Europe lanes. Review force majeure clauses with carriers. Verify war-risk insurance.', source:'Baseline' },
-  { id:'acled_taiwan', title:'PLA Military Exercises -- Taiwan Strait', type:'Risk', category:'Geopolitical Tension', severity:'HIGH', lat:24.5, lng:120.5, desc:'Periodic PLA exercises restrict commercial traffic. Semiconductor concentration risk (TSMC, ASE) is extreme.', mitigation:'Accelerate dual-sourcing to Korea/US fabs. Build 90-day safety stock on critical chip families.', source:'Baseline' },
-  { id:'acled_myanmar', title:'Civil War -- Myanmar', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:20.0, lng:96.0, desc:'Multi-front civil conflict disrupts garment and rare earth supply chains. China-Myanmar trade corridors intermittently closed.', mitigation:'Shift garment sourcing to Vietnam or Bangladesh. Audit rare earth suppliers for Myanmar origin.', source:'Baseline' },
-  { id:'acled_drc', title:'Armed Groups -- DRC Kivu Provinces', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:-2.5, lng:28.0, desc:'M23 active in North and South Kivu threatening cobalt and coltan mining. OECD due diligence requirements apply.', mitigation:'Require RMI-RMAP audit for all DRC cobalt. Develop Indonesia NPI cobalt as alternative.', source:'Baseline' },
-  { id:'acled_mexico', title:'Cartel Cargo Extortion -- Mexico', type:'Risk', category:'Organized Crime', severity:'HIGH', lat:24.0, lng:-104.0, desc:'CJNG and Sinaloa factions operating toll extortion on key highway corridors. Cargo theft up YoY.', mitigation:'Use GPS-tracked convoys with escorts on Michoacán routes. Require cargo insurance with theft riders.', source:'Baseline' },
-  { id:'acled_middle_east', title:'Regional Escalation -- Middle East', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:31.5, lng:35.0, desc:'Ongoing conflict with regional spillover risk. Haifa port reduced; Eilat near-closed. Israeli tech exports at risk.', mitigation:'Diversify Israeli-origin specialty chemicals and semiconductors. Monitor Suez insurance premiums.', source:'Baseline' },
-  { id:'acled_nigeria', title:'Pipeline Sabotage -- Niger Delta', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:5.5, lng:6.5, desc:'Ongoing pipeline sabotage reduces oil output and disrupts cocoa/palm oil logistics via Port Harcourt.', mitigation:'Flag Nigeria-origin agricultural commodities for supply continuity review. Verify Bonny terminal status.', source:'Baseline' },
-  { id:'acled_bangladesh', title:'Labor Unrest -- Dhaka Garment Sector', type:'Risk', category:'Protests', severity:'MEDIUM', lat:23.8, lng:90.4, desc:'Recurring wage protests at EPZs. Factory shutdowns average 3-7 days. Political instability elevated.', mitigation:'Build 45-day finished goods buffer for Bangladesh-origin SKUs. Pre-position in Vietnam or Cambodia.', source:'Baseline' },
-  { id:'acled_ethiopia', title:'Conflict Spillover -- Ethiopia Corridor', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:9.0, lng:40.0, desc:'Residual Tigray conflict disrupts Addis Ababa-Djibouti rail corridor. Coffee and sesame exports face delays.', mitigation:'Source Ethiopian coffee through forward contracts with Djibouti buffer warehousing.', source:'Baseline' },
-  { id:'acled_venezuela', title:'FARC / ELN -- Colombia Trade Corridors', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:4.5, lng:-74.0, desc:'Dissident factions active in Cauca and Chocó. Buenaventura port access sporadically affected.', mitigation:'Diversify Colombian coffee sourcing with Ethiopian or Vietnamese origins.', source:'Baseline' },
+  { id:'acled_ukraine', title:'Active Combat -- Eastern Ukraine', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:48.5, lng:37.5, desc:'Ongoing large-scale hostilities. Black Sea grain corridor under pressure; Ukrainian steel and agricultural exports severely curtailed.', mitigation:'Reroute Ukrainian wheat/sunflower oil sourcing to Argentina, Brazil, or EU. Monitor Black Sea insurance premiums.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_red_sea', title:'Houthi Maritime Attacks -- Red Sea', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:14.0, lng:43.5, desc:'Houthi forces targeting commercial shipping. Major carriers diverted around Cape of Good Hope, adding 12-14 days and ~$1M per vessel.', mitigation:'Price in Cape diversion on Asia-Europe lanes. Review force majeure clauses with carriers. Verify war-risk insurance.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_taiwan', title:'PLA Military Exercises -- Taiwan Strait', type:'Risk', category:'Geopolitical Tension', severity:'HIGH', lat:24.5, lng:120.5, desc:'Periodic PLA exercises restrict commercial traffic. Semiconductor concentration risk (TSMC, ASE) is extreme.', mitigation:'Accelerate dual-sourcing to Korea/US fabs. Build 90-day safety stock on critical chip families.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_myanmar', title:'Civil War -- Myanmar', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:20.0, lng:96.0, desc:'Multi-front civil conflict disrupts garment and rare earth supply chains. China-Myanmar trade corridors intermittently closed.', mitigation:'Shift garment sourcing to Vietnam or Bangladesh. Audit rare earth suppliers for Myanmar origin.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_drc', title:'Armed Groups -- DRC Kivu Provinces', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:-2.5, lng:28.0, desc:'M23 active in North and South Kivu threatening cobalt and coltan mining. OECD due diligence requirements apply.', mitigation:'Require RMI-RMAP audit for all DRC cobalt. Develop Indonesia NPI cobalt as alternative.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_mexico', title:'Cartel Cargo Extortion -- Mexico', type:'Risk', category:'Organized Crime', severity:'HIGH', lat:24.0, lng:-104.0, desc:'CJNG and Sinaloa factions operating toll extortion on key highway corridors. Cargo theft up YoY.', mitigation:'Use GPS-tracked convoys with escorts on Michoacán routes. Require cargo insurance with theft riders.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_middle_east', title:'Regional Escalation -- Middle East', type:'Risk', category:'Armed Conflict', severity:'HIGH', lat:31.5, lng:35.0, desc:'Ongoing conflict with regional spillover risk. Haifa port reduced; Eilat near-closed. Israeli tech exports at risk.', mitigation:'Diversify Israeli-origin specialty chemicals and semiconductors. Monitor Suez insurance premiums.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_nigeria', title:'Pipeline Sabotage -- Niger Delta', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:5.5, lng:6.5, desc:'Ongoing pipeline sabotage reduces oil output and disrupts cocoa/palm oil logistics via Port Harcourt.', mitigation:'Flag Nigeria-origin agricultural commodities for supply continuity review. Verify Bonny terminal status.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_bangladesh', title:'Labor Unrest -- Dhaka Garment Sector', type:'Risk', category:'Protests', severity:'MEDIUM', lat:23.8, lng:90.4, desc:'Recurring wage protests at EPZs. Factory shutdowns average 3-7 days. Political instability elevated.', mitigation:'Build 45-day finished goods buffer for Bangladesh-origin SKUs. Pre-position in Vietnam or Cambodia.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_ethiopia', title:'Conflict Spillover -- Ethiopia Corridor', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:9.0, lng:40.0, desc:'Residual Tigray conflict disrupts Addis Ababa-Djibouti rail corridor. Coffee and sesame exports face delays.', mitigation:'Source Ethiopian coffee through forward contracts with Djibouti buffer warehousing.', source:'Baseline', fallback_vintage:'2026-Q3' },
+  { id:'acled_venezuela', title:'FARC / ELN -- Colombia Trade Corridors', type:'Risk', category:'Armed Conflict', severity:'MEDIUM', lat:4.5, lng:-74.0, desc:'Dissident factions active in Cauca and Chocó. Buenaventura port access sporadically affected.', mitigation:'Diversify Colombian coffee sourcing with Ethiopian or Vietnamese origins.', source:'Baseline', fallback_vintage:'2026-Q3' },
 ]
 
 // --------------------------------------------------------------------------
@@ -186,11 +186,16 @@ export async function GET() {
       source    = 'Baseline (GDELT unavailable)'
     }
 
+    const isFallback = incidents === FALLBACK_INCIDENTS
     const payload = {
       incidents,
       total:   incidents.length,
       updated: new Date().toISOString(),
       source,
+      ...(isFallback && {
+        fallback_vintage: '2026-Q3',
+        fallback_note: 'Live GDELT data unavailable. Showing curated reference incidents — verify current status with carrier advisories and government travel alerts.',
+      }),
     }
 
     // Only cache when data is live from GDELT -- don't cache the fallback
@@ -209,6 +214,8 @@ export async function GET() {
       updated:   new Date().toISOString(),
       source:    'Baseline (error fallback)',
       error:     err.message,
+      fallback_vintage: '2026-Q3',
+      fallback_note: 'Live GDELT data unavailable. Showing curated reference incidents — verify current status with carrier advisories and government travel alerts.',
     })
   }
 }

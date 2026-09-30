@@ -35,6 +35,41 @@ const COUNTRY_ISO2 = {
 
 const NEWS_API_KEY = process.env.NEWS_API_KEY || ''
 
+const FALLBACK_ARTICLES = [
+  {
+    title: 'Red Sea Disruption: Shipping Reroutes Around Cape of Good Hope',
+    description: 'Houthi attacks continue to divert container traffic, adding 10–14 days and $1M+ fuel costs per voyage. Monitor vessel tracking for updates.',
+    source: { name: 'Reference — verify with live carrier advisories' },
+    publishedAt: '2026-09-01T00:00:00Z',
+    url: 'https://www.imo.org',
+    isFallback: true,
+  },
+  {
+    title: 'US–China Tariff Landscape: Section 301 Duties Remain in Force',
+    description: 'Tariffs of 7.5–25% on $360B+ of Chinese goods remain active. EV battery tariffs raised to 100%. Review USTR HTS codes before sourcing decisions.',
+    source: { name: 'Reference — verify with USTR' },
+    publishedAt: '2026-09-01T00:00:00Z',
+    url: 'https://ustr.gov',
+    isFallback: true,
+  },
+  {
+    title: 'Semiconductor Supply Chain: Capacity Additions Ease Lead Times',
+    description: 'TSMC Arizona and Samsung Taylor fabs ramping production. Legacy node (28nm+) lead times normalizing to 12–16 weeks from 52-week peaks. Advanced nodes (3nm) remain constrained.',
+    source: { name: 'Reference — verify with distributor lead time reports' },
+    publishedAt: '2026-09-01T00:00:00Z',
+    url: 'https://www.semiconductors.org',
+    isFallback: true,
+  },
+  {
+    title: 'Critical Minerals: Lithium Prices Stabilize After 2023–2024 Collapse',
+    description: 'Lithium carbonate prices stabilized around $10–12/kg after falling 85% from 2022 peak. DRC cobalt supply remains constrained by artisanal mining regulations.',
+    source: { name: 'Reference — verify with Benchmark Mineral Intelligence' },
+    publishedAt: '2026-09-01T00:00:00Z',
+    url: 'https://www.worldbank.org/en/research/commodity-markets',
+    isFallback: true,
+  },
+]
+
 function extractCountries(opportunities) {
   const found = new Set()
   for (const opp of opportunities) {
@@ -151,6 +186,22 @@ export async function POST(req) {
       allArticles = await fetchGDELTNews(countries, query)
       newsSource = 'GDELT News'
     }
+
+    // Static fallback when both live sources are unavailable
+    if (allArticles.length === 0) {
+      const topArticles = FALLBACK_ARTICLES.slice(0, 6)
+      return Response.json({
+        articles: topArticles,
+        countryScores,
+        articleCount: topArticles.length,
+        sourceCount: 1,
+        countries,
+        newsSource: 'Reference fallback — live intelligence unavailable',
+        timestamp: new Date().toISOString(),
+        isFallback: true,
+      })
+    }
+
     const topArticles = allArticles.slice(0, 6)
     const sourceCount = new Set(topArticles.map(a => a.source).filter(Boolean)).size
 

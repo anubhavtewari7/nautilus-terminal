@@ -75,19 +75,47 @@ function extractPortAttr(attr) {
   }
 }
 
+function normalizePortName(name) {
+  return name
+    .toLowerCase()
+    .replace(/^(port of |port |harbour |harbor |terminal |the )/g, '')
+    .replace(/\s+(port|harbour|harbor|terminal|international|container)$/g, '')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 function mergePortWatchData(portWatchFeatures, baselinePorts) {
+  // Build lookup: normalized name → attributes
   const lookup = {}
   for (const f of portWatchFeatures) {
     const attr = f.attributes || f
-    const name = (attr.portname || '').toLowerCase().trim()
-    if (name) lookup[name] = attr
+    const raw = attr.portname || attr.PORTNAME || ''
+    const normalized = normalizePortName(raw)
+    if (normalized) lookup[normalized] = attr
   }
+
   let liveCount = 0
   const ports = baselinePorts.map(bp => {
-    const bpName = bp.name.toLowerCase()
-    // Try exact match first, then partial
-    const match = lookup[bpName]
-      || Object.entries(lookup).find(([k]) => k.includes(bpName) || bpName.includes(k))?.[1]
+    const bpNorm = normalizePortName(bp.name)
+    // 1. Exact normalized match
+    let match = lookup[bpNorm]
+    // 2. One is a substring of the other (normalized)
+    if (!match) {
+      const entry = Object.entries(lookup).find(([k]) =>
+        k.includes(bpNorm) || bpNorm.includes(k)
+      )
+      if (entry) match = entry[1]
+    }
+    // 3. Any word from bpNorm matches any word in a portwatch key
+    if (!match) {
+      const bpWords = bpNorm.split(' ').filter(w => w.length > 3)
+      const entry = Object.entries(lookup).find(([k]) =>
+        bpWords.some(w => k.split(' ').includes(w))
+      )
+      if (entry) match = entry[1]
+    }
+
     if (match) {
       const enriched = extractPortAttr(match)
       if (enriched) {

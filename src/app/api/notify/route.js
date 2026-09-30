@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 
-const GITHUB_RAW = process.env.GITHUB_MARKET_INTEL_URL || 'https://raw.githubusercontent.com/anubhavtewari7/nautilus-terminal/main/public/market-intelligence.json';
+const MARKET_INTEL_URL = process.env.GITHUB_MARKET_INTEL_URL
 // Recipient -- set NOTIFY_TO or ADMIN_NOTIFY_EMAIL in Vercel env vars
 const TO = process.env.NOTIFY_TO || process.env.ADMIN_NOTIFY_EMAIL || '';
 
@@ -52,10 +52,15 @@ export async function GET(request) {
     return NextResponse.json({ ok: true, skipped: true, reason: 'No recipient configured' });
   }
 
+  // Guard MARKET_INTEL_URL before fetching
+  if (!MARKET_INTEL_URL) {
+    return NextResponse.json({ error: 'GITHUB_MARKET_INTEL_URL not configured' }, { status: 503 })
+  }
+
   // Fetch the latest intelligence data straight from GitHub raw
   let data;
   try {
-    const res = await fetch(GITHUB_RAW, { cache: 'no-store' });
+    const res = await fetch(MARKET_INTEL_URL, { cache: 'no-store' });
     if (!res.ok) throw new Error(`GitHub raw fetch failed: ${res.status}`);
     data = await res.json();
   } catch (err) {

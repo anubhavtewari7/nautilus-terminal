@@ -112,7 +112,7 @@ export async function POST(req) {
       const dutyNum = dutyMatch ? parseFloat(dutyMatch[1]) : null
       const dutyPts = (dutyStr.includes('free') || dutyNum === 0) ? 20 : dutyNum !== null && dutyNum <= 2.5 ? 17 : dutyNum !== null && dutyNum <= 5 ? 13 : dutyNum !== null && dutyNum <= 10 ? 9 : dutyNum !== null && dutyNum >= 25 ? 2 : 8
       const companyPts = Math.min(15, (hub.companies?.length ?? 0) * 2)
-      return { ...hub, stability_score: Math.round(Math.min(100, esg + waitPts + dutyPts + companyPts)) }
+      return { ...hub, stability_score: Math.round(Math.min(100, esg + waitPts + dutyPts + companyPts)), stability_score_methodology: 'Composite of ESG compliance rating, port wait days, import duty rate, and active supplier count for this hub cluster. Internal heuristic — not sourced from a third-party index.' }
     })
     const selectedHub = opportunities[0];
 
@@ -162,14 +162,20 @@ export async function POST(req) {
     };
     const categoryLabel = categoryLabels[category] || 'commodity';
 
-    const confidence_score = isLowConfidence
+    // Confidence based on: category match quality + Comtrade enrichment coverage + hub count
+    const categoryMatched = category !== null ? 20 : 0
+    const comtradeHits = opportunities.filter(o => o.comtrade_enriched || o.tradeValue).length
+    const comtradeBonus = Math.min(30, comtradeHits * 10)
+    const hubBonus = Math.min(30, opportunities.length * 6)
+    const match_confidence = isLowConfidence
       ? 45
-      : Math.min(95, 65 + opportunities.length * 6)
+      : Math.min(92, 20 + categoryMatched + comtradeBonus + hubBonus)
 
     const data = {
       category,
       low_confidence: isLowConfidence,
-      confidence_score,
+      match_confidence,
+      match_confidence_note: 'Score reflects: category match (20pts) + Comtrade live trade data coverage (up to 30pts) + sourcing hub breadth (up to 30pts). Not a statistical confidence interval.',
       directive: {
         best_region:  selectedHub.hub,
         best_partner: selectedHub.companies?.[0]?.name || 'Strategic Partner',
@@ -192,28 +198,14 @@ export async function POST(req) {
       opportunities,
 
       market_data: {
-        confidence_score,
+        match_confidence,
         currency: { pair: 'USD/INDEX', rate: 104.2, impact: 'Stable', stale_as_of: '2026-09', note: 'Reference rate — verify with live DXY' },
-        // Category-specific illustrative price index shapes (2024 baseline = 100).
-        // These reflect general commodity cycle patterns -- NOT real market data.
-        // Always source live prices from CME, Fastmarkets, or commodity exchanges.
-        price_history: ({
-          metals:          [{ month: 'Q1', price: 98  }, { month: 'Q2', price: 103 }, { month: 'Q3', price: 109 }, { month: 'Q4', price: 115 }],
-          electronics:     [{ month: 'Q1', price: 104 }, { month: 'Q2', price: 100 }, { month: 'Q3', price: 97  }, { month: 'Q4', price: 102 }],
-          agriculture:     [{ month: 'Q1', price: 92  }, { month: 'Q2', price: 88  }, { month: 'Q3', price: 96  }, { month: 'Q4', price: 101 }],
-          chemicals:       [{ month: 'Q1', price: 100 }, { month: 'Q2', price: 97  }, { month: 'Q3', price: 101 }, { month: 'Q4', price: 105 }],
-          textiles:        [{ month: 'Q1', price: 95  }, { month: 'Q2', price: 93  }, { month: 'Q3', price: 98  }, { month: 'Q4', price: 100 }],
-          automotive:      [{ month: 'Q1', price: 102 }, { month: 'Q2', price: 99  }, { month: 'Q3', price: 104 }, { month: 'Q4', price: 108 }],
-          plastics:        [{ month: 'Q1', price: 97  }, { month: 'Q2', price: 101 }, { month: 'Q3', price: 99  }, { month: 'Q4', price: 103 }],
-          medical:         [{ month: 'Q1', price: 101 }, { month: 'Q2', price: 103 }, { month: 'Q3', price: 105 }, { month: 'Q4', price: 108 }],
-          packaging:       [{ month: 'Q1', price: 96  }, { month: 'Q2', price: 99  }, { month: 'Q3', price: 98  }, { month: 'Q4', price: 102 }],
-          machinery:       [{ month: 'Q1', price: 100 }, { month: 'Q2', price: 102 }, { month: 'Q3', price: 100 }, { month: 'Q4', price: 104 }],
-          industrial:      [{ month: 'Q1', price: 99  }, { month: 'Q2', price: 102 }, { month: 'Q3', price: 105 }, { month: 'Q4', price: 107 }],
-          ev_battery:      [{ month: 'Q1', price: 110 }, { month: 'Q2', price: 98  }, { month: 'Q3', price: 92  }, { month: 'Q4', price: 88  }],
-          semiconductor:   [{ month: 'Q1', price: 96  }, { month: 'Q2', price: 101 }, { month: 'Q3', price: 108 }, { month: 'Q4', price: 115 }],
-          renewable_energy:[{ month: 'Q1', price: 103 }, { month: 'Q2', price: 99  }, { month: 'Q3', price: 96  }, { month: 'Q4', price: 94  }],
-        })[category] || [{ month: 'Q1', price: 100 }, { month: 'Q2', price: 98 }, { month: 'Q3', price: 101 }, { month: 'Q4', price: 104 }],
-        price_history_note: 'Illustrative category price index (2024 baseline = 100). Not real market data -- source live prices from CME, Fastmarkets, or Reuters.',
+        price_history: null,
+        price_history_note: 'Historical price chart unavailable — real-time price indices require a paid data subscription (Bloomberg, Refinitiv, or OPIS). Use the Commodities panel for current spot prices.',
+        price_history_source_links: [
+          { label: 'World Bank Commodity Prices', url: 'https://www.worldbank.org/en/research/commodity-markets' },
+          { label: 'IMF Primary Commodity Prices', url: 'https://www.imf.org/en/Research/commodity-prices' },
+        ],
         rfq_template:
           `Dear Procurement Team,\n\nWe are ${selectedHub.companies[0]?.name ? `requesting a quote from ${selectedHub.companies[0].name} and your team` : 'initiating a sourcing inquiry'} for the following requirement:\n\nMaterial / Component: ${query}\nApplication: [Describe your end-use application]\nEstimated Annual Volume: [Units / MT / pieces]\nRequired Delivery: [Target date]\nIncoterm Preference: [DDP / FOB / CIF]\n\nPlease provide:\n1. Unit pricing (at 3 volume tiers)\n2. Lead time (standard and expedited)\n3. Freight and insurance terms\n4. ESG / sustainability certification status\n5. Country of origin and HTS classification\n\nWe look forward to your response within 5 business days.\n\nBest regards,\n[Your Name]\n[Company] Procurement Team`
       }

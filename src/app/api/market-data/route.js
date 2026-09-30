@@ -12,6 +12,53 @@ const NEWSAPI_URL =
   '?q=supply+chain+OR+logistics+OR+freight+OR+port+congestion+OR+trade+sanctions' +
   '&language=en&sortBy=publishedAt&pageSize=20';
 
+/** Detect a region from article text. */
+function detectRegion(text) {
+  const t = (text || '').toLowerCase()
+  if (/china|beijing|shanghai|shenzhen|guangdong|yangtze|hong kong/.test(t)) return 'ASIA-PACIFIC'
+  if (/india|mumbai|chennai|delhi|bangalore/.test(t)) return 'SOUTH ASIA'
+  if (/europe|germany|france|rotterdam|antwerp|hamburg|brussels|eu |european union/.test(t)) return 'EUROPE'
+  if (/red sea|suez|houthi|aden|horn of africa|somalia/.test(t)) return 'MIDDLE EAST'
+  if (/taiwan|strait|tsmc|hsinchu/.test(t)) return 'ASIA-PACIFIC'
+  if (/mexico|nearshore|monterrey|guadalajara|tijuana/.test(t)) return 'LATIN AMERICA'
+  if (/brazil|sao paulo|santos|rio/.test(t)) return 'LATIN AMERICA'
+  if (/africa|nigeria|kenya|ethiopia|durban|cape town/.test(t)) return 'AFRICA'
+  if (/russia|moscow|sanctions|ukraine|black sea/.test(t)) return 'EASTERN EUROPE'
+  if (/us |usa|america|washington|new york|los angeles|long beach|houston/.test(t)) return 'NORTH AMERICA'
+  if (/singapore|malaysia|indonesia|vietnam|thailand|philippines/.test(t)) return 'SOUTHEAST ASIA'
+  if (/japan|korea|busan|tokyo|osaka/.test(t)) return 'NORTHEAST ASIA'
+  if (/middle east|saudi|uae|dubai|qatar|kuwait|iran/.test(t)) return 'MIDDLE EAST'
+  return 'GLOBAL'
+}
+
+const COMMODITY_KEYWORDS = {
+  'Oil': ['oil', 'brent', 'crude', 'opec', 'petroleum', 'refinery'],
+  'Semiconductors': ['chip', 'semiconductor', 'tsmc', 'wafer', 'foundry', 'memory', 'nand', 'dram'],
+  'Lithium': ['lithium', 'battery', 'ev battery', 'cathode', 'anode'],
+  'Steel': ['steel', 'hrc', 'iron ore', 'blast furnace', 'coking coal'],
+  'Shipping': ['freight', 'container', 'shipping', 'vessel', 'charter', 'bdi', 'dry bulk'],
+  'Rare Earths': ['rare earth', 'neodymium', 'cobalt', 'critical minerals', 'graphite'],
+}
+
+function buildCommodityNotes(articles) {
+  const notes = []
+  for (const [commodity, keywords] of Object.entries(COMMODITY_KEYWORDS)) {
+    const relevant = articles.filter(a =>
+      keywords.some(k => (a.title + ' ' + (a.description || '')).toLowerCase().includes(k))
+    )
+    if (relevant.length > 0) {
+      notes.push({
+        commodity,
+        signal: relevant[0].title,
+        source: relevant[0].source?.name || 'NewsAPI',
+        url: relevant[0].url,
+        timestamp: relevant[0].publishedAt,
+      })
+    }
+  }
+  return notes
+}
+
 /** Derive severity from article content heuristics. */
 function inferSeverity(title = '', description = '') {
   const text = `${title} ${description}`.toLowerCase();
@@ -39,7 +86,7 @@ function mapArticleToAlert(article, index) {
     summary: description || title,
     severity: inferSeverity(title, description),
     type: inferType(title, description),
-    region: 'GLOBAL',
+    region: detectRegion(title + ' ' + description),
     source: article.url || '',
     timestamp: article.publishedAt || new Date().toISOString(),
   };
@@ -79,8 +126,8 @@ async function fetchFromNewsAPI() {
   const json = await res.json();
   if (json.status !== 'ok') throw new Error(`NewsAPI error: ${json.message || json.status}`);
 
-  const articles = json.articles || [];
-  const alerts = articles
+  const rawArticles = json.articles || [];
+  const alerts = rawArticles
     .filter(a => a.title && a.title !== '[Removed]')
     .map(mapArticleToAlert);
 
@@ -91,7 +138,7 @@ async function fetchFromNewsAPI() {
     agentStatus: 'live',
     source: 'newsapi',
     alerts,
-    commodityNotes: [],
+    commodityNotes: buildCommodityNotes(rawArticles),
     disruptionZones: [],
   };
 

@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 const SYMBOLS = [
   { yf: 'BZ=F',  stooq: 'brent.f', name: 'Brent Crude', unit: '/bbl',   mult: 1,    dp: 2 },
   { yf: 'HG=F',  stooq: 'hg.f',    name: 'Copper',      unit: '/lb',    mult: 1,    dp: 2 }, // YF/Stooq return USD/lb directly (not cents)
-  { yf: 'HR=F',  stooq: null,       name: 'HRC Steel',   unit: '/st',    mult: 1,    dp: 0 },
+  { yf: 'HR=F',  stooq: 'hr.f',     name: 'HRC Steel',   unit: '/st',    mult: 1,    dp: 0 },
   { yf: 'CT=F',  stooq: 'ct.f',    name: 'Cotton',      unit: '/lb',    mult: 0.01, dp: 2 }, // ICE quotes in cents/lb
   { yf: 'ZS=F',  stooq: 'zs.f',    name: 'Soybeans',    unit: '/bu',    mult: 0.01, dp: 2 }, // CBOT quotes in cents/bu
   { yf: 'GC=F',  stooq: 'gc.f',    name: 'Gold',        unit: '/oz',    mult: 1,    dp: 0, metalKey: 'gold' },
@@ -197,7 +197,7 @@ async function fetchTicker(cfg) {
           unit: cfg.unit,
           price: fmt(result.price * cfg.mult, cfg.dp),
           change: '--',
-          up: true,
+          up: null,
           live: true,
           src: 'metals.live',
         }
@@ -205,12 +205,21 @@ async function fetchTicker(cfg) {
         // fall through to null
       }
     }
-    return null;
+    // Both live sources failed — return a degraded row so the UI can still render the commodity
+    return {
+      name: cfg.name,
+      unit: cfg.unit,
+      price: null,
+      change: '--',
+      up: null,
+      live: false,
+      src: 'unavailable',
+    };
   }
 }
 
 export async function GET() {
-  // Fetch all tickers concurrently; failures return null and we filter them out
+  // Fetch all tickers concurrently; unavailable tickers return a degraded row (never dropped)
   const results = await Promise.all(SYMBOLS.map(cfg => fetchTicker(cfg)));
   const live = results.filter(Boolean);
 
@@ -233,13 +242,13 @@ export async function GET() {
     // Both fetchers failed -- return static fallback with explicit reference labeling
     return NextResponse.json({
       prices: [
-        { name: 'Brent Crude', unit: '/bbl',   price: '$92.40',  change: '+1.8%', up: true,  live: false, src: 'static' },
-        { name: 'Copper',      unit: '/lb',    price: '$6.45',   change: '+2.4%', up: true,  live: false, src: 'static' },
-        { name: 'HRC Steel',   unit: '/st',    price: '$720',    change: '-0.4%', up: false, live: false, src: 'static' },
-        { name: 'Cotton',      unit: '/lb',    price: '$0.72',   change: '+0.2%', up: true,  live: false, src: 'static' },
-        { name: 'Soybeans',    unit: '/bu',    price: '$10.20',  change: '-1.5%', up: false, live: false, src: 'static' },
-        { name: 'Gold',        unit: '/oz',    price: '$2,950',  change: '+0.3%', up: true,  live: false, src: 'static' },
-        { name: 'Nat Gas',     unit: '/MMBtu', price: '$3.15',   change: '-2.1%', up: false, live: false, src: 'static' },
+        { name: 'Brent Crude', unit: '/bbl',   price: '$92.40',  change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'Copper',      unit: '/lb',    price: '$6.45',   change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'HRC Steel',   unit: '/st',    price: '$720',    change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'Cotton',      unit: '/lb',    price: '$0.72',   change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'Soybeans',    unit: '/bu',    price: '$10.20',  change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'Gold',        unit: '/oz',    price: '$2,950',  change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
+        { name: 'Nat Gas',     unit: '/MMBtu', price: '$3.15',   change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09' },
         ...ref,
       ],
       timestamp: new Date().toISOString(),

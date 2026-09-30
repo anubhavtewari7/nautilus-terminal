@@ -29,16 +29,21 @@ export async function GET() {
     console.error("FX error:", err);
     // Fallback static data if API is down
     return NextResponse.json({
-      base: 'USD', date: 'Rates may be outdated', stale: true,
+      base: 'USD', date: 'Rates may be outdated', stale: true, stale_as_of: '2026-09',
       rates: {
-        CNY: { rate: 6.71, country: 'China', flag: '🇨🇳', impact: 'Favorable for US imports' },
-        EUR: { rate: 0.87, country: 'Eurozone', flag: '🇪🇺', impact: 'EUR soft — EU components cheaper for US buyers' },
-        MXN: { rate: 17.15, country: 'Mexico', flag: '🇲🇽', impact: 'Favorable for nearshoring' },
-        BRL: { rate: 5.15, country: 'Brazil', flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
-        JPY: { rate: 155.1, country: 'Japan', flag: '🇯🇵', impact: 'JPY weak — Japanese imports cheaper' },
-        KRW: { rate: 1368, country: 'South Korea', flag: '🇰🇷', impact: 'Key for semiconductor supply chain' },
-        INR: { rate: 95.96, country: 'India', flag: '🇮🇳', impact: 'India+1 strategy cost indicator' },
-        SGD: { rate: 1.27, country: 'Singapore', flag: '🇸🇬', impact: 'APAC logistics hub benchmark' },
+        CNY: { rate: 7.25,    country: 'China',        flag: '🇨🇳', impact: 'Favorable for US imports' },
+        EUR: { rate: 0.91,    country: 'Eurozone',     flag: '🇪🇺', impact: 'EUR soft — EU components cheaper for US buyers' },
+        MXN: { rate: 17.8,    country: 'Mexico',       flag: '🇲🇽', impact: 'Favorable for nearshoring' },
+        BRL: { rate: 5.15,    country: 'Brazil',       flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
+        JPY: { rate: 149.5,   country: 'Japan',        flag: '🇯🇵', impact: 'JPY weak — Japanese imports cheaper' },
+        KRW: { rate: 1340.0,  country: 'South Korea',  flag: '🇰🇷', impact: 'Key for semiconductor supply chain' },
+        INR: { rate: 83.8,    country: 'India',        flag: '🇮🇳', impact: 'India+1 strategy cost indicator' },
+        SGD: { rate: 1.34,    country: 'Singapore',    flag: '🇸🇬', impact: 'APAC logistics hub benchmark' },
+        GBP: { rate: 0.79,    country: 'United Kingdom', flag: '🇬🇧', impact: 'Monitor for UK sourcing costs' },
+        CAD: { rate: 1.36,    country: 'Canada',       flag: '🇨🇦', impact: 'North American supply chain benchmark' },
+        AUD: { rate: 1.52,    country: 'Australia',    flag: '🇦🇺', impact: 'Monitor for raw materials pricing' },
+        THB: { rate: 35.5,    country: 'Thailand',     flag: '🇹🇭', impact: 'Southeast Asia manufacturing indicator' },
+        VND: { rate: 25200,   country: 'Vietnam',      flag: '🇻🇳', impact: 'Vietnam+1 strategy cost indicator' },
       }
     });
   }
