@@ -294,7 +294,7 @@ function CityLabels() {
 
   useFrame(() => {
     const dist = camera.position.length()
-    setZoom(dist < 4.5)
+    setZoom(dist < 5.5)
   })
 
   return (
