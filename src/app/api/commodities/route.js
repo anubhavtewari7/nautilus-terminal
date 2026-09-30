@@ -6,7 +6,6 @@ import { NextResponse } from 'next/server';
 const SYMBOLS = [
   { yf: 'BZ=F',  stooq: 'brent.f', name: 'Brent Crude', unit: '/bbl',   mult: 1,    dp: 2 },
   { yf: 'HG=F',  stooq: 'hg.f',    name: 'Copper',      unit: '/lb',    mult: 1,    dp: 2 }, // YF/Stooq return USD/lb directly (not cents)
-  { yf: 'HR=F',  stooq: 'hr.f',     name: 'HRC Steel',   unit: '/st',    mult: 1,    dp: 0 },
   { yf: 'CT=F',  stooq: 'ct.f',    name: 'Cotton',      unit: '/lb',    mult: 0.01, dp: 2 }, // ICE quotes in cents/lb
   { yf: 'ZS=F',  stooq: 'zs.f',    name: 'Soybeans',    unit: '/bu',    mult: 0.01, dp: 2 }, // CBOT quotes in cents/bu
   { yf: 'GC=F',  stooq: 'gc.f',    name: 'Gold',        unit: '/oz',    mult: 1,    dp: 0, metalKey: 'gold' },
@@ -15,6 +14,7 @@ const SYMBOLS = [
 
 // No liquid free futures feed for these -- static reference baseline (updated Sep 2026)
 const STATIC_REF = [
+  { label: 'HRC Steel', unit: '/ton', price: 680, change: '--', up: null, live: false, src: 'static', static_as_of: '2026-09', quality: 'reference', note: 'US Midwest HRC Steel — no free live feed available. Reference: ~$680/ton (Sep 2026). Verify with Steel Market Update or Platts.' },
   { name: 'Aluminum',     unit: '/mt',  price: 2450,  change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
   { name: 'Nickel',       unit: '/mt',  price: 15800, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
   { name: 'Lithium Carb', unit: '/mt',  price: 10500, change: '--', up: null, last_updated: '2026-09', static_as_of: '2026-09' },
@@ -224,7 +224,7 @@ export async function GET() {
   const live = results.filter(Boolean);
 
   const ref = STATIC_REF.map(r => ({
-    name: r.name,
+    name: r.label || r.name,
     unit: r.unit,
     price: fmt(r.price, 0),
     change: r.change,
@@ -232,6 +232,8 @@ export async function GET() {
     live: false,
     src: 'static',
     static_as_of: r.static_as_of,
+    ...(r.note ? { note: r.note } : {}),
+    ...(r.quality ? { quality: r.quality } : {}),
   }));
 
   // Determine data quality: 'live' = real-time YF, 'delayed' = daily Stooq, 'reference' = static only

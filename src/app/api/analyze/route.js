@@ -70,14 +70,11 @@ export async function POST(req) {
       return NextResponse.json({ code: 'UNCLASSIFIED_QUERY', error: 'No sourcing category matched. Add the material, product type, or application and try again.' }, { status: 422 });
     }
 
-    // Detect low-confidence matches: query has meaningful tokens but none match known category keywords
-    const queryTokens = query.toLowerCase().split(/\s+/).filter(w => w.length > 3)
-    const allSignalKeywords = Object.values(CATEGORY_SIGNALS).flat()
-    const anyTokenMatchesAnyCategory = queryTokens.some(t => allSignalKeywords.some(k => t.includes(k) || k.includes(t)))
-    // Only flag low confidence when the query has multiple meaningful words but
-    // NONE of them appear in any known category's signal keywords.
-    // A non-null category from categorizeQuery is already a strong confidence signal.
-    const isLowConfidence = queryTokens.length > 1 && !anyTokenMatchesAnyCategory
+    // category is guaranteed non-null here (route 422s above if null).
+    // categorizeQuery returning a match is the only trustworthy confidence signal;
+    // the CATEGORY_SIGNALS keyword check below was redundant and caused false positives
+    // for valid queries whose surface tokens didn't exactly match signal keywords.
+    const isLowConfidence = false
 
     const baseOpportunities = ATLAS_DB[category]
     if (!baseOpportunities?.length) {

@@ -97,7 +97,7 @@ export async function GET(request) {
     return `<tr>
       <td style="padding:6px 8px;color:#cbd5e1;font-size:12px">${esc(c.commodity)}</td>
       <td style="padding:6px 8px;font-weight:bold;font-size:13px;color:${color}">${arrow}</td>
-      <td style="padding:6px 8px;color:#94a3b8;font-size:11px">${esc(c.driver || '')}</td>
+      <td style="padding:6px 8px;color:#94a3b8;font-size:11px">${esc(c.signal || '')}</td>
     </tr>`;
   }).join('');
 

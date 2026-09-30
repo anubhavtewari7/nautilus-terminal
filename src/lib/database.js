@@ -927,10 +927,10 @@ export const ATLAS_DB = {
       id: 'h_wp_1', lat: 61.5, lng: 25.7,
       hub: 'HELSINKI/TAMPERE, FINLAND', title: 'Nordic Pulp & Paper Excellence Hub',
       companies: [
-        { name: 'UPM-Kymmene', role: 'Global pulp, paper, and plywood producer', tier: 'Tier-1' },
-        { name: 'Stora Enso', role: 'Sustainable packaging, paperboard, and wood products', tier: 'Tier-1' },
-        { name: 'Metsä Group', role: 'Pulp, tissue, and fresh forest fiber products', tier: 'Tier-1' },
-        { name: 'Sappi Finland', role: 'Coated fine paper and dissolving pulp', tier: 'Tier-2' }
+        { name: 'UPM-Kymmene', role: 'Global pulp, paper, and plywood producer', tier: 'Tier-1', website: 'https://www.upm.com/', turnover: '>$1B' },
+        { name: 'Stora Enso', role: 'Sustainable packaging, paperboard, and wood products', tier: 'Tier-1', website: 'https://www.storaenso.com/', turnover: '>$1B' },
+        { name: 'Metsä Group', role: 'Pulp, tissue, and fresh forest fiber products', tier: 'Tier-1', website: 'https://www.metsagroup.com/', turnover: '>$1B' },
+        { name: 'Sappi Finland', role: 'Coated fine paper and dissolving pulp', tier: 'Tier-2', website: 'https://www.sappi.com/', turnover: '$500M-$1B' }
       ],
       desc: 'Finland and Sweden dominate global sustainable pulp and paper supply. PEFC/FSC certified supply chains, world-leading environmental standards, and advanced biomass utilization. Key grades: bleached kraft pulp (NBSK, BHKP), coated/uncoated paper, containerboard.',
       customs: { hts_code: '4702.00.00', duty_rate: '0% (MFN — kraft pulp, chemical)', compliance_note: 'EU EUDR timber traceability requirements from 2025. PEFC/FSC chain of custody mandatory for major retailers. No export licenses required for standard grades.' },
@@ -942,10 +942,10 @@ export const ATLAS_DB = {
       id: 'h_wp_2', lat: 45.4, lng: -75.7,
       hub: 'ONTARIO/QUEBEC, CANADA', title: 'North America Softwood Lumber Hub',
       companies: [
-        { name: 'West Fraser Timber', role: 'Largest North American softwood lumber producer', tier: 'Tier-1' },
-        { name: 'Resolute Forest Products', role: 'Newsprint, pulp, and specialty papers', tier: 'Tier-1' },
-        { name: 'Canfor', role: 'SPF lumber and NBSK pulp', tier: 'Tier-1' },
-        { name: 'Domtar', role: 'Uncoated freesheet paper and pulp', tier: 'Tier-2' }
+        { name: 'West Fraser Timber', role: 'Largest North American softwood lumber producer', tier: 'Tier-1', website: 'https://www.westfraser.com/', turnover: '>$1B' },
+        { name: 'Resolute Forest Products', role: 'Newsprint, pulp, and specialty papers', tier: 'Tier-1', website: 'https://www.resolutefp.com/', turnover: '$500M-$1B' },
+        { name: 'Canfor', role: 'SPF lumber and NBSK pulp', tier: 'Tier-1', website: 'https://www.canfor.com/', turnover: '>$1B' },
+        { name: 'Domtar', role: 'Uncoated freesheet paper and pulp', tier: 'Tier-2', website: 'https://www.domtar.com/', turnover: '$500M-$1B' }
       ],
       desc: 'Canada is the world\'s largest softwood lumber exporter. SPF (spruce-pine-fir) and Douglas fir grades serve US construction and industrial markets. Province of BC and Ontario are key production centers. Subject to ongoing US softwood lumber duty disputes.',
       customs: { hts_code: '4407.11.00', duty_rate: '8.05–17.9% CVD/AD (softwood lumber, US imports)', compliance_note: 'US Section 201 lumber duties and countervailing duties apply to most Canadian softwood. Hardwood grades (maple, oak) import at 0% MFN. USMCA applies for non-softwood grades. Lacey Act compliance for all wood imports.' },
@@ -957,9 +957,9 @@ export const ATLAS_DB = {
       id: 'h_wp_3', lat: -15.8, lng: -47.9,
       hub: 'SÃO PAULO/MINAS GERAIS, BRAZIL', title: 'Latin America Eucalyptus Pulp Hub',
       companies: [
-        { name: 'Suzano', role: 'World\'s largest eucalyptus pulp producer', tier: 'Tier-1' },
-        { name: 'Eldorado Brasil', role: 'BEKP and tissue production', tier: 'Tier-1' },
-        { name: 'Klabin', role: 'Packaging paper and pulp', tier: 'Tier-2' }
+        { name: 'Suzano', role: 'World\'s largest eucalyptus pulp producer', tier: 'Tier-1', website: 'https://www.suzano.com.br/en/', turnover: '>$1B' },
+        { name: 'Eldorado Brasil', role: 'BEKP and tissue production', tier: 'Tier-1', website: 'https://www.eldoradobrasil.com.br/', turnover: '$500M-$1B' },
+        { name: 'Klabin', role: 'Packaging paper and pulp', tier: 'Tier-2', website: 'https://www.klabin.com.br/en/', turnover: '>$1B' }
       ],
       desc: 'Brazil\'s eucalyptus plantations yield the lowest-cost hardwood pulp (BEKP) globally with 7-year harvest cycles vs 25-40 years in Nordic countries. Suzano controls ~25% of global market pulp capacity. Key advantage: year-round harvesting and proximity to Atlantic shipping lanes.',
       customs: { hts_code: '4703.21.00', duty_rate: '0% (MFN — bleached hardwood kraft pulp)', compliance_note: 'EUDR deforestation compliance required for EU-bound shipments from 2025 (GPS coordinates to plantation level). CERFLOR/FSC certification standard. Brazil\'s IBAMA export permits for native species.' },
@@ -975,10 +975,10 @@ export const ATLAS_DB = {
       id: 'h_con_1', lat: 30.9, lng: 112.2,
       hub: 'WUHAN/HUBEI, CHINA', title: 'Asia Pacific Flat Glass & Building Materials Hub',
       companies: [
-        { name: 'CSG Holdings', role: 'Flat glass, coated glass, photovoltaic glass', tier: 'Tier-1' },
-        { name: 'Fuyao Glass', role: 'Architectural and automotive flat glass', tier: 'Tier-1' },
-        { name: 'CNBM (China National Building Material)', role: 'Cement, glass fiber, gypsum board', tier: 'Tier-1' },
-        { name: 'China Jushi', role: 'World\'s largest fiberglass manufacturer', tier: 'Tier-1' }
+        { name: 'CSG Holdings', role: 'Flat glass, coated glass, photovoltaic glass', tier: 'Tier-1', website: 'https://www.csg.cn/en/', turnover: '>$1B' },
+        { name: 'Fuyao Glass', role: 'Architectural and automotive flat glass', tier: 'Tier-1', website: 'https://www.fuyaogroup.com/', turnover: '>$1B' },
+        { name: 'CNBM (China National Building Material)', role: 'Cement, glass fiber, gypsum board', tier: 'Tier-1', website: 'https://www.cnbm.com.cn/en/', turnover: '>$1B' },
+        { name: 'China Jushi', role: 'World\'s largest fiberglass manufacturer', tier: 'Tier-1', website: 'https://www.jushi.com/', turnover: '>$1B' }
       ],
       desc: 'China produces ~60% of global flat glass and dominates glass fiber manufacturing. Hubei and Guangdong are the core flat glass production centers. Critical note: US/EU tariffs apply on most Chinese glass imports. Chinese glass fiber faces 25% Section 301 tariffs in the US.',
       customs: { hts_code: '7005.10.00', duty_rate: '25% Section 301 (flat glass, US imports from China)', compliance_note: 'Section 301 List 3 tariffs apply to most flat glass and glass fiber. REACH compliance required for EU. UK Global Tariff at 5.4% for flat glass. Consider Vietnam or India re-sourcing for tariff mitigation.' },
@@ -990,10 +990,10 @@ export const ATLAS_DB = {
       id: 'h_con_2', lat: 51.5, lng: 10.4,
       hub: 'GERMANY / BENELUX', title: 'European Glass & Advanced Building Materials Hub',
       companies: [
-        { name: 'Saint-Gobain', role: 'Flat glass, insulation, high-performance materials', tier: 'Tier-1' },
-        { name: 'Guardian Industries', role: 'Float glass and coated glass', tier: 'Tier-1' },
-        { name: 'AGC Glass Europe', role: 'Flat glass and specialty glass coatings', tier: 'Tier-1' },
-        { name: 'Knauf', role: 'Gypsum board, insulation, and construction systems', tier: 'Tier-2' }
+        { name: 'Saint-Gobain', role: 'Flat glass, insulation, high-performance materials', tier: 'Tier-1', website: 'https://www.saint-gobain.com/', turnover: '>$1B' },
+        { name: 'Guardian Industries', role: 'Float glass and coated glass', tier: 'Tier-1', website: 'https://www.guardianglass.com/', turnover: '>$1B' },
+        { name: 'AGC Glass Europe', role: 'Flat glass and specialty glass coatings', tier: 'Tier-1', website: 'https://www.agc-glass.eu/', turnover: '>$1B' },
+        { name: 'Knauf', role: 'Gypsum board, insulation, and construction systems', tier: 'Tier-2', website: 'https://www.knauf.com/', turnover: '>$1B' }
       ],
       desc: 'Western Europe leads in high-performance architectural glass (low-e coatings, triple glazing, fire-resistant glass), gypsum board systems, and mineral wool insulation. Germany and Belgium are key production hubs for Saint-Gobain, AGC, and Guardian flat glass lines.',
       customs: { hts_code: '7005.10.00', duty_rate: '3.7% MFN (flat glass to US)', compliance_note: 'EU CE marking required for construction products. EN 572 standard for flat glass. REACH compliance for chemical coatings. US imports from EU at MFN rates (3.7% for most flat glass). No anti-dumping duties.' },
@@ -1005,10 +1005,10 @@ export const ATLAS_DB = {
       id: 'h_con_3', lat: 22.5, lng: 88.4,
       hub: 'KOLKATA / INDIA', title: 'South Asia Cement & Construction Materials Hub',
       companies: [
-        { name: 'UltraTech Cement', role: 'Largest cement producer in Asia ex-China', tier: 'Tier-1' },
-        { name: 'Ambuja Cements (Adani)', role: 'Blended cement and ready-mix concrete', tier: 'Tier-1' },
-        { name: 'ACC Limited', role: 'Ordinary Portland cement and specialty grades', tier: 'Tier-2' },
-        { name: 'Kajaria Ceramics', role: 'Leading ceramic and vitrified tile manufacturer', tier: 'Tier-2' }
+        { name: 'UltraTech Cement', role: 'Largest cement producer in Asia ex-China', tier: 'Tier-1', website: 'https://www.ultratechcement.com/', turnover: '>$1B' },
+        { name: 'Ambuja Cements (Adani)', role: 'Blended cement and ready-mix concrete', tier: 'Tier-1', website: 'https://www.ambujacement.com/', turnover: '>$1B' },
+        { name: 'ACC Limited', role: 'Ordinary Portland cement and specialty grades', tier: 'Tier-2', website: 'https://www.acclimited.com/', turnover: '$500M-$1B' },
+        { name: 'Kajaria Ceramics', role: 'Leading ceramic and vitrified tile manufacturer', tier: 'Tier-2', website: 'https://www.kajariaceramics.com/', turnover: '$100M-$500M' }
       ],
       desc: 'India is the world\'s second-largest cement producer and a major ceramic tile exporter. Indian cement (OPC, PPC, PSC) and ceramic/porcelain tiles are competitively priced alternatives to Chinese sources with improving quality and logistics infrastructure.',
       customs: { hts_code: '2523.21.00', duty_rate: '0% MFN (Portland cement)', compliance_note: 'US import duty on cement: free under most circumstances. BIS (Bureau of Indian Standards) certification required for most construction products. ISI marks on cement. Ceramic tiles from India: 0-3.4% US MFN duty vs China tiles with AD/CVD.' },
@@ -1024,10 +1024,10 @@ export const ATLAS_DB = {
       id: 'h_cg_1', lat: 22.3, lng: 114.2,
       hub: 'GUANGDONG, CHINA', title: 'Asia Pacific Consumer & Personal Care Hub',
       companies: [
-        { name: 'Henkel (China Operations)', role: 'Laundry, hair care, and adhesive brands', tier: 'Tier-1' },
-        { name: 'Reckitt (China plants)', role: 'Hygiene, health, and home products', tier: 'Tier-1' },
-        { name: 'Nice Group', role: 'Detergent and personal care OEM/private label', tier: 'Tier-2' },
-        { name: 'Guangdong Marubi', role: 'Cosmetics and skin care contract manufacturing', tier: 'Tier-2' }
+        { name: 'Henkel (China Operations)', role: 'Laundry, hair care, and adhesive brands', tier: 'Tier-1', website: 'https://www.henkel.com/', turnover: '>$1B' },
+        { name: 'Reckitt (China plants)', role: 'Hygiene, health, and home products', tier: 'Tier-1', website: 'https://www.reckitt.com/', turnover: '>$1B' },
+        { name: 'Nice Group', role: 'Detergent and personal care OEM/private label', tier: 'Tier-2', website: 'https://www.nice-group.com/', turnover: '$100M-$500M' },
+        { name: 'Guangdong Marubi', role: 'Cosmetics and skin care contract manufacturing', tier: 'Tier-2', website: 'https://www.marubi.com.cn/', turnover: '$100M-$500M' }
       ],
       desc: 'Guangdong is the world\'s largest hub for consumer goods and personal care contract manufacturing. Thousands of OEM/ODM factories produce detergents, shampoos, cosmetics, and household cleaners for global brands. Key advantage: scale, cost, and speed-to-market for private label.',
       customs: { hts_code: '3305.10.00', duty_rate: '25% Section 301 (most personal care from China)', compliance_note: 'Section 301 tariffs on most personal care and household products. FDA OTC drug requirements for sunscreen, anti-dandruff products. CPSC labeling rules. EU Cosmetics Regulation (EC 1223/2009) for EU-bound goods. Consider Vietnam or India OEM to avoid tariffs.' },
@@ -1039,10 +1039,10 @@ export const ATLAS_DB = {
       id: 'h_cg_2', lat: 48.9, lng: 2.3,
       hub: 'PARIS/ILE-DE-FRANCE, FRANCE', title: 'European Luxury Beauty & Fragrance Hub',
       companies: [
-        { name: 'L\'Oréal', role: 'World\'s largest beauty company, HQ and R&D', tier: 'Tier-1' },
-        { name: 'LVMH Parfums', role: 'Prestige fragrance and luxury cosmetics', tier: 'Tier-1' },
-        { name: 'Givaudan', role: 'Global flavor and fragrance ingredient leader', tier: 'Tier-1' },
-        { name: 'Firmenich (now DSM-Firmenich)', role: 'Fragrance ingredients and finished compounds', tier: 'Tier-2' }
+        { name: 'L\'Oréal', role: 'World\'s largest beauty company, HQ and R&D', tier: 'Tier-1', website: 'https://www.loreal.com/', turnover: '>$1B' },
+        { name: 'LVMH Parfums', role: 'Prestige fragrance and luxury cosmetics', tier: 'Tier-1', website: 'https://www.lvmh.com/', turnover: '>$1B' },
+        { name: 'Givaudan', role: 'Global flavor and fragrance ingredient leader', tier: 'Tier-1', website: 'https://www.givaudan.com/', turnover: '>$1B' },
+        { name: 'Firmenich (now DSM-Firmenich)', role: 'Fragrance ingredients and finished compounds', tier: 'Tier-2', website: 'https://www.dsm-firmenich.com/', turnover: '>$1B' }
       ],
       desc: 'France is the global capital of luxury beauty, fragrance, and high-performance cosmetics. Paris and the Grasse region (Côte d\'Azur) produce premium fragrance ingredients and finished perfumes. L\'Oréal\'s R&D campus develops breakthrough formulations for mass and prestige segments.',
       customs: { hts_code: '3303.00.20', duty_rate: '0% MFN (perfume/toilet water to US)', compliance_note: 'EU Cosmetics Regulation 1223/2009 compliance mandatory for EU production. US FDA cosmetics registration under MoCRA (2023). IFRA compliance for fragrance allergens. Country of Origin "Made in France" designation requires substantial transformation in France.' },
@@ -1054,10 +1054,10 @@ export const ATLAS_DB = {
       id: 'h_cg_3', lat: 28.6, lng: 77.2,
       hub: 'DELHI/UTTAR PRADESH, INDIA', title: 'South Asia Personal Care & Detergent Hub',
       companies: [
-        { name: 'Hindustan Unilever', role: 'Personal care, home care OEM and brands', tier: 'Tier-1' },
-        { name: 'Procter & Gamble India', role: 'Detergent, hair care, and oral care manufacturing', tier: 'Tier-1' },
-        { name: 'Godrej Consumer Products', role: 'Hair color, soaps, and insecticides', tier: 'Tier-2' },
-        { name: 'Jyothy Labs', role: 'Fabric care and personal hygiene products', tier: 'Tier-2' }
+        { name: 'Hindustan Unilever', role: 'Personal care, home care OEM and brands', tier: 'Tier-1', website: 'https://www.hul.co.in/', turnover: '>$1B' },
+        { name: 'Procter & Gamble India', role: 'Detergent, hair care, and oral care manufacturing', tier: 'Tier-1', website: 'https://www.pg.com/', turnover: '>$1B' },
+        { name: 'Godrej Consumer Products', role: 'Hair color, soaps, and insecticides', tier: 'Tier-2', website: 'https://www.godrejcp.com/', turnover: '$500M-$1B' },
+        { name: 'Jyothy Labs', role: 'Fabric care and personal hygiene products', tier: 'Tier-2', website: 'https://www.jyothylabs.com/', turnover: '$100M-$500M' }
       ],
       desc: 'India\'s consumer goods sector is the world\'s fastest-growing, driven by a 1.4B population and rising middle class. HUL, P&G, and homegrown brands operate large-scale manufacturing in Uttar Pradesh and Himachal Pradesh. India is an emerging export hub for halal-certified and Ayurvedic personal care products.',
       customs: { hts_code: '3401.11.50', duty_rate: '0% MFN (soap and detergent bars to US)', compliance_note: 'US FDA cosmetics MoCRA registration for new importers. FSSAI (Food Safety) for ingested personal care items. BIS certification for some household products. EU REACH and Cosmetics Regulation for EU market access.' },
@@ -2701,6 +2701,7 @@ export function categorizeQuery(query) {
   //      (before machinery catches 'chiller' / 'hvac unit' / 'boiler')
   if (match([
     'hvac', 'air conditioner', 'air conditioning', 'heat pump', 'mini split',
+    'split unit', 'chiller', 'fan coil',
     'vrf system', 'rooftop unit', 'air handling unit', 'fan coil unit',
     'commercial chiller', 'industrial chiller', 'chiller plant', 'water chiller',
     'ventilation fan', 'axial fan hvac', 'centrifugal fan hvac',
@@ -2905,7 +2906,7 @@ export function categorizeQuery(query) {
     'sintered', 'powder metallurgy',
     'screw', 'machine screw', 'wood screw', 'self-tapping screw', 'hex screw',
     'bolt', 'hex bolt', 'carriage bolt', 'anchor bolt', 'stud bolt', 'eye bolt',
-    'nut', 'hex nut', 'lock nut', 'wing nut', 'coupling nut', 'flange nut',
+    'hex nut', 'lock nut', 'wing nut', 'coupling nut', 'flange nut',
     'washer', 'flat washer', 'lock washer', 'spring washer', 'tab washer',
     'rivet', 'blind rivet', 'pop rivet', 'solid rivet', 'tubular rivet',
     'hinge', 'door hinge', 'piano hinge', 'butt hinge', 'concealed hinge',
@@ -3190,6 +3191,7 @@ export function categorizeQuery(query) {
     'aquafeed', 'fish feed', 'shrimp feed', 'salmon feed', 'tilapia feed',
     'poultry feed', 'layer feed', 'broiler feed', 'swine feed', 'cattle feed',
     'pesticide agri', 'herbicide agri', 'fungicide agri', 'insecticide agri',
+    'pesticide', 'herbicide', 'fungicide',
     'crop protection', 'plant protection', 'agrochemical'
   ])) return 'agriculture'
 
@@ -3197,6 +3199,7 @@ export function categorizeQuery(query) {
   // Before metals so "epoxy coating for metal" → chemicals, not metals
   if (match([
     'adhesive', 'glue', 'sealant', 'bonding agent', 'epoxy adhesive',
+    'masking tape', 'duct tape', 'double sided tape', 'foam tape', 'adhesive tape',
     'coating', 'paint', 'primer', 'varnish', 'lacquer', 'powder coat',
     'lubricant', 'grease', 'cutting fluid', 'hydraulic fluid', 'coolant fluid',
     'solvent', 'thinner', 'acetone', 'mek', 'ipa ', 'isopropanol',
@@ -3283,6 +3286,7 @@ export function categorizeQuery(query) {
     'iv bag', 'syringe', 'catheter', 'stent', 'implant',
     'diagnostic kit', 'reagent', 'assay kit', 'lateral flow',
     'ppe kit', 'ppe equipment', 'ppe supply', 'ppe protective', 'personal protective equipment',
+    'ppe', 'safety gloves', 'hard hat', 'safety vest', 'safety boots', 'work gloves', 'safety helmet',
     'nitrile glove', 'latex glove', 'nitrile', 'surgical glove', 'surgical mask', 'n95',
     'glove', 'bandage', 'gauze', 'wound dressing', 'medical tape', 'plaster bandage',
     'drug', 'vitamin', 'antibiotic', 'vaccine', 'capsule', 'tablet capsule',
@@ -3452,6 +3456,7 @@ export function categorizeQuery(query) {
     'transistor', 'mosfet', 'bjt transistor', 'igbt transistor',
     'inductor', 'coil inductor', 'power inductor', 'ferrite core',
     'wire', 'copper wire', 'aluminum wire', 'electrical wire', 'magnet wire',
+    'power cable', 'armored cable', 'switchgear', 'junction box', 'flexible conduit',
     'switch', 'toggle switch', 'push switch', 'rocker switch', 'dip switch',
     'relay', 'electromagnetic relay', 'solid state relay', 'relay module',
     'antenna', 'pcb antenna', 'wifi antenna', 'lte antenna', 'gps antenna',

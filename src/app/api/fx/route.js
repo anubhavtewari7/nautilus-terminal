@@ -10,23 +10,39 @@ export async function GET() {
     const data = await res.json();
 
     // Enrich with trade context
+    // Use ?? null on every rate access so a missing currency from Frankfurter
+    // yields null rather than undefined, preventing ternary comparisons against
+    // undefined from silently producing the wrong impact label.
+    const cny = data.rates.CNY ?? null;
+    const eur = data.rates.EUR ?? null;
+    const mxn = data.rates.MXN ?? null;
+    const brl = data.rates.BRL ?? null;
+    const jpy = data.rates.JPY ?? null;
+    const krw = data.rates.KRW ?? null;
+    const inr = data.rates.INR ?? null;
+    const sgd = data.rates.SGD ?? null;
+    const gbp = data.rates.GBP ?? null;
+    const cad = data.rates.CAD ?? null;
+    const aud = data.rates.AUD ?? null;
+    const thb = data.rates.THB ?? null;
+    const vnd = data.rates.VND ?? null;
     const enriched = {
       base: 'USD',
       date: data.date,
       rates: {
-        CNY: { rate: data.rates.CNY, country: 'China', flag: '🇨🇳', impact: data.rates.CNY > 7.2 ? 'Favorable for US imports' : 'Unfavorable for US imports' },
-        EUR: { rate: data.rates.EUR, country: 'Eurozone', flag: '🇪🇺', impact: data.rates.EUR > 0.93 ? 'EUR soft — EU components cheaper for US buyers' : data.rates.EUR < 0.87 ? 'EUR firm — monitor EU sourcing costs' : 'EUR near parity — stable for EU trade' },
-        MXN: { rate: data.rates.MXN, country: 'Mexico', flag: '🇲🇽', impact: data.rates.MXN > 18 ? 'Favorable for nearshoring' : 'MXN strengthening' },
-        BRL: { rate: data.rates.BRL, country: 'Brazil', flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
-        JPY: { rate: data.rates.JPY, country: 'Japan', flag: '🇯🇵', impact: data.rates.JPY > 145 ? 'JPY weak — Japanese imports cheaper' : 'JPY stable' },
-        KRW: { rate: data.rates.KRW, country: 'South Korea', flag: '🇰🇷', impact: 'Key for semiconductor supply chain' },
-        INR: { rate: data.rates.INR, country: 'India', flag: '🇮🇳', impact: 'India+1 strategy cost indicator' },
-        SGD: { rate: data.rates.SGD, country: 'Singapore', flag: '🇸🇬', impact: 'APAC logistics hub benchmark' },
-        GBP: { rate: data.rates.GBP, country: 'United Kingdom', flag: '🇬🇧', impact: data.rates.GBP < 0.79 ? 'GBP soft — UK sourcing costs lower for US buyers' : 'GBP firm — monitor UK procurement costs' },
-        CAD: { rate: data.rates.CAD, country: 'Canada', flag: '🇨🇦', impact: data.rates.CAD > 1.38 ? 'CAD weak — Canadian inputs cheaper' : 'CAD near parity — stable for USMCA trade' },
-        AUD: { rate: data.rates.AUD, country: 'Australia', flag: '🇦🇺', impact: data.rates.AUD > 1.55 ? 'AUD soft — Australian commodities cheaper' : 'AUD firm — monitor mining input costs' },
-        THB: { rate: data.rates.THB, country: 'Thailand', flag: '🇹🇭', impact: 'THB — monitor for automotive/electronics sourcing' },
-        VND: { rate: data.rates.VND, country: 'Vietnam', flag: '🇻🇳', impact: data.rates.VND > 25000 ? 'VND weak — Vietnamese manufacturing costs favorable' : 'VND stable — monitor for nearshoring opportunities' },
+        CNY: { rate: cny, country: 'China', flag: '🇨🇳', impact: cny != null ? (cny > 7.2 ? 'Favorable for US imports' : 'Unfavorable for US imports') : 'Rate data unavailable' },
+        EUR: { rate: eur, country: 'Eurozone', flag: '🇪🇺', impact: eur != null ? (eur > 0.93 ? 'EUR soft — EU components cheaper for US buyers' : eur < 0.87 ? 'EUR firm — monitor EU sourcing costs' : 'EUR near parity — stable for EU trade') : 'Rate data unavailable' },
+        MXN: { rate: mxn, country: 'Mexico', flag: '🇲🇽', impact: mxn != null ? (mxn > 18 ? 'Favorable for nearshoring' : 'MXN strengthening') : 'Rate data unavailable' },
+        BRL: { rate: brl, country: 'Brazil', flag: '🇧🇷', impact: 'Monitor for commodity pricing' },
+        JPY: { rate: jpy, country: 'Japan', flag: '🇯🇵', impact: jpy != null ? (jpy > 145 ? 'JPY weak — Japanese imports cheaper' : 'JPY stable') : 'Rate data unavailable' },
+        KRW: { rate: krw, country: 'South Korea', flag: '🇰🇷', impact: 'Key for semiconductor supply chain' },
+        INR: { rate: inr, country: 'India', flag: '🇮🇳', impact: 'India+1 strategy cost indicator' },
+        SGD: { rate: sgd, country: 'Singapore', flag: '🇸🇬', impact: 'APAC logistics hub benchmark' },
+        GBP: { rate: gbp, country: 'United Kingdom', flag: '🇬🇧', impact: gbp != null ? (gbp < 0.79 ? 'GBP soft — UK sourcing costs lower for US buyers' : 'GBP firm — monitor UK procurement costs') : 'Rate data unavailable' },
+        CAD: { rate: cad, country: 'Canada', flag: '🇨🇦', impact: cad != null ? (cad > 1.38 ? 'CAD weak — Canadian inputs cheaper' : 'CAD near parity — stable for USMCA trade') : 'Rate data unavailable' },
+        AUD: { rate: aud, country: 'Australia', flag: '🇦🇺', impact: aud != null ? (aud > 1.55 ? 'AUD soft — Australian commodities cheaper' : 'AUD firm — monitor mining input costs') : 'Rate data unavailable' },
+        THB: { rate: thb, country: 'Thailand', flag: '🇹🇭', impact: 'THB — monitor for automotive/electronics sourcing' },
+        VND: { rate: vnd, country: 'Vietnam', flag: '🇻🇳', impact: vnd != null ? (vnd > 25000 ? 'VND weak — Vietnamese manufacturing costs favorable' : 'VND stable — monitor for nearshoring opportunities') : 'Rate data unavailable' },
       }
     };
     return NextResponse.json(enriched);
