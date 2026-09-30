@@ -3,40 +3,76 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 30
 
-// OFAC SDN condensed list -- plain text, no API key required
-// Try current OFAC URL first, fall back to legacy
-const OFAC_URLS = [
+// OFAC SDN list -- multiple source URLs tried in order.
+// treasury.gov and ofac.treasury.gov block many cloud provider IPs.
+// sanctionslistservice.ofac.treas.gov is a separate CDN endpoint that
+// typically works from serverless runtimes.
+// CSV format is ~2MB vs ~10MB for the full text -- much faster to fetch.
+const OFAC_SOURCES = [
+  // 1. OFAC Sanctions List Service CDN (separate hostname, less blocked)
+  'https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.CSV',
+  // 2. Direct OFAC CSV (smaller, more parseable than .txt)
+  'https://ofac.treasury.gov/downloads/sdn.csv',
+  // 3. Legacy OFAC text list
   'https://ofac.treasury.gov/downloads/sdn.txt',
+  // 4. Old Treasury path
   'https://www.treasury.gov/ofac/downloads/sdnlist.txt',
 ]
+
 const CACHE_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 // Module-level in-memory cache (resets on cold start)
 let _cache = null // { names: string[], fetchedAt: string }
 
 /**
+ * Parse OFAC SDN CSV format.
+ * CSV columns: Ent_num, SDN_Name, SDN_Type, Program, Title, Call_Sign,
+ *              Vess_type, Tonnage, GRT, Vess_flag, Vess_owner, Remarks
+ * Name is column 1 (0-indexed), may be quoted.
+ */
+function parseSdnCsv(text) {
+  const names = []
+  const lines = text.split('\n')
+  for (const line of lines) {
+    if (!line.trim() || line.startsWith('Ent_num') || line.startsWith('"Ent_num')) continue
+    // Handle quoted CSV: first field is ent_num, second is SDN_Name
+    const cols = line.split(',')
+    if (cols.length < 2) continue
+    // Name may be quoted
+    let name = cols[1].trim().replace(/^"|"$/g, '').trim()
+    if (name.length > 1 && !/^\d+$/.test(name)) names.push(name)
+  }
+  return names
+}
+
+/**
  * Parse the OFAC SDN plain-text list.
  * Entries look like:
  *   " 1. ABADIA MEDINA, Alirio de Jesus; DOB 26 Sep 1956; ..."
- *   " 2. ABAD ALVAREZ, Anselmo; ..."
- * We extract the name part (before the first semicolon), stripped of the
- * leading number + period, then trim whitespace.
  */
 function parseSdnText(text) {
   const names = []
   const lines = text.split('\n')
   for (const line of lines) {
-    // Match lines that start with optional whitespace, a number, a period and a space
     const match = line.match(/^\s*\d+\.\s+(.+)/)
     if (!match) continue
     const rest = match[1]
-    // Name is everything before the first semicolon
     const semicolonIdx = rest.indexOf(';')
     const rawName = semicolonIdx !== -1 ? rest.slice(0, semicolonIdx) : rest
     const name = rawName.trim()
     if (name.length > 1) names.push(name)
   }
   return names
+}
+
+function parseResponse(url, text) {
+  if (!text || text.length < 100) return []
+  if (url.endsWith('.csv') || url.includes('.CSV')) {
+    const names = parseSdnCsv(text)
+    // If CSV parse yielded nothing (e.g. we got the text format), try text parser
+    return names.length > 50 ? names : parseSdnText(text)
+  }
+  return parseSdnText(text)
 }
 
 /**
@@ -50,24 +86,18 @@ function scoreName(sdnName, query) {
   const q = query.toLowerCase().trim()
   if (!q) return 0
 
-  // Exact match (case-insensitive)
   if (name === q) return 100
-
-  // Query string appears inside the SDN name
   if (name.includes(q)) return 80
 
-  // Word-level check: every query word appears in the SDN name
   const queryWords = q.split(/\s+/).filter(Boolean)
   const nameWords = name.split(/[\s,;./-]+/).filter(Boolean)
 
   const allQueryWordsInName = queryWords.every(qw => nameWords.some(nw => nw === qw))
   if (allQueryWordsInName && queryWords.length > 0) return 80
 
-  // Any query word contains a name word (partial match, e.g. acronym expansion)
   const anyNameWordInQuery = nameWords.some(nw => nw.length > 2 && q.includes(nw))
   if (anyNameWordInQuery) return 60
 
-  // Any query word is a substring of a name word (prefix match)
   const anyQueryWordSubstringOfName = queryWords.some(
     qw => qw.length > 2 && nameWords.some(nw => nw.startsWith(qw))
   )
@@ -77,26 +107,38 @@ function scoreName(sdnName, query) {
 }
 
 async function fetchSdnList() {
-  for (const url of OFAC_URLS) {
+  for (const url of OFAC_SOURCES) {
     try {
       const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 10000)
+      const timeout = setTimeout(() => controller.abort(), 15000) // 15s per URL
       const res = await fetch(url, {
         signal: controller.signal,
-        headers: { 'User-Agent': 'NAUTILUS-Terminal/1.0 (sanctions-screening)' },
+        headers: {
+          'User-Agent': 'NAUTILUS-Terminal/1.0 (sanctions-screening; contact: support@nautilus-terminal.com)',
+          'Accept': 'text/csv, text/plain, */*',
+        },
+        next: { revalidate: 86400 }, // cache at edge for 24h
       })
       clearTimeout(timeout)
-      if (!res.ok) continue
+      if (!res.ok) {
+        console.info(`[/api/sanctions] ${url} → HTTP ${res.status}`)
+        continue
+      }
       const text = await res.text()
-      const names = parseSdnText(text)
-      if (names.length > 100) return names // valid parse
-    } catch {}
+      const names = parseResponse(url, text)
+      if (names.length > 100) {
+        console.info(`[/api/sanctions] Loaded ${names.length} SDN entries from ${url}`)
+        return names
+      }
+      console.info(`[/api/sanctions] ${url} returned only ${names.length} names — skipping`)
+    } catch (err) {
+      console.info(`[/api/sanctions] ${url} failed: ${err.message}`)
+    }
   }
-  return null // both URLs failed
+  return null // all URLs failed
 }
 
 async function loadSdnList() {
-  // Return from cache if still fresh
   if (_cache && Date.now() - new Date(_cache.fetchedAt).getTime() < CACHE_MS) {
     return { names: _cache.names, cached: true, fetchedAt: _cache.fetchedAt }
   }
@@ -129,13 +171,12 @@ export async function GET(request) {
     if (!names || names.length < 100) {
       return NextResponse.json({
         matches: [],
-        error: 'OFAC SDN list could not be loaded — both primary and fallback URLs failed or returned insufficient data',
+        error: 'OFAC SDN list could not be loaded — all source URLs failed or returned insufficient data. Local risk-signal check still active.',
         fallbackMode: true,
         totalLoaded: 0,
       })
     }
 
-    // Score and filter
     const scored = names
       .map(name => ({ name, score: scoreName(name, query) }))
       .filter(({ score }) => score >= SCORE_THRESHOLD)

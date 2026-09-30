@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server'
 const BASELINE_PORTS = [
   { name: 'Port of Shanghai',          country: 'China 🇨🇳',        rank:  1, congestion: 52, waitDays: 3.5, trend: 'up',     volume: '47.3M TEU', alert: null },
   { name: 'Port of Singapore',         country: 'Singapore 🇸🇬',    rank:  2, congestion: 28, waitDays: 1.0, trend: 'stable', volume: '37.3M TEU', alert: null },
-  { name: 'Port of Ningbo-Zhoushan',   country: 'China 🇨🇳',        rank:  3, congestion: 61, waitDays: 4.5, trend: 'up',     volume: '33.4M TEU', alert: '⚠️ Elevated congestion -- add 2-day buffer' },
+  { name: 'Port of Ningbo-Zhoushan',   country: 'China 🇨🇳',        rank:  3, congestion: 72, waitDays: 3.6, trend: 'up',     volume: '33.4M TEU', alert: '⚠️ Typhoon SAUDEL aftermath -- 3.6-day vessel wait, add 3-day buffer' },
   { name: 'Port of Shenzhen',          country: 'China 🇨🇳',        rank:  4, congestion: 45, waitDays: 3.0, trend: 'stable', volume: '30.0M TEU', alert: null },
   { name: 'Port of Guangzhou',         country: 'China 🇨🇳',        rank:  5, congestion: 38, waitDays: 2.5, trend: 'down',   volume: '23.0M TEU', alert: null },
   { name: 'Port of Qingdao',           country: 'China 🇨🇳',        rank:  6, congestion: 35, waitDays: 2.0, trend: 'stable', volume: '22.0M TEU', alert: null },
@@ -20,7 +20,7 @@ const BASELINE_PORTS = [
   { name: 'Port of Long Beach',        country: 'USA 🇺🇸',          rank: 13, congestion: 38, waitDays: 2.5, trend: 'stable', volume: '9.6M TEU',  alert: null },
   { name: 'Port of Hamburg',           country: 'Germany 🇩🇪',      rank: 14, congestion: 20, waitDays: 1.0, trend: 'stable', volume: '8.3M TEU',  alert: null },
   { name: 'Port of Dubai (Jebel Ali)', country: 'UAE 🇦🇪',          rank: 15, congestion: 18, waitDays: 1.0, trend: 'stable', volume: '14.4M TEU', alert: null },
-  { name: 'Port of Klang',             country: 'Malaysia 🇲🇾',     rank: 16, congestion: 30, waitDays: 2.0, trend: 'stable', volume: '13.2M TEU', alert: null },
+  { name: 'Port of Klang',             country: 'Malaysia 🇲🇾',     rank: 16, congestion: 62, waitDays: 1.2, trend: 'up',     volume: '13.2M TEU', alert: '⚠️ Emergency dredging Sep 7-27 — 90-95% yard utilization' },
   { name: 'Port of Colombo',           country: 'Sri Lanka 🇱🇰',    rank: 17, congestion: 35, waitDays: 2.5, trend: 'up',     volume: '7.2M TEU',  alert: null },
   { name: 'Port of Tanjung Pelepas',   country: 'Malaysia 🇲🇾',     rank: 18, congestion: 22, waitDays: 1.5, trend: 'stable', volume: '11.0M TEU', alert: null },
   { name: 'Port of Santos',            country: 'Brazil 🇧🇷',       rank: 19, congestion: 55, waitDays: 4.0, trend: 'up',     volume: '4.8M TEU',  alert: '⚠️ High congestion -- South America trade impact' },
@@ -37,9 +37,11 @@ const BASELINE_PORTS = [
 // IMF PortWatch ArcGIS REST endpoint (free, no API key)
 // Daily_Ports_Data — actual available fields: portid, portname, iso3, date,
 // portcalls, portcalls_cargo, portcalls_tanker, import, export
+// NOTE: orderByFields must use %20 (not +) for the space before DESC.
+//       date must be in outFields for the sort to be accepted by ArcGIS.
 // --------------------------------------------------------------------------
 const PORTWATCH_URL =
-  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,portcalls,portcalls_cargo,import,export&orderByFields=date+DESC&resultRecordCount=500&f=json'
+  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,date,portcalls,portcalls_cargo,import,export&orderByFields=date%20DESC&resultRecordCount=500&f=json'
 
 const CACHE_MS  = 30 * 60 * 1000
 let _cache     = null
@@ -140,21 +142,45 @@ function mergePortWatchData(portWatchFeatures, baselinePorts) {
   }
 }
 
+// Fallback URL without orderByFields in case the ArcGIS sort is rejected
+const PORTWATCH_URL_NOSORT =
+  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,portcalls,portcalls_cargo,import,export&resultRecordCount=500&f=json'
+
 // --------------------------------------------------------------------------
 async function fetchPortWatch() {
-  const res = await fetch(PORTWATCH_URL, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; NAUTILUS-Terminal/1.0)',
-      'Accept': 'application/json, */*',
-    },
-    signal: AbortSignal.timeout(10000),
-    next: { revalidate: 1800 },
-  })
-  if (!res.ok) throw new Error(`PortWatch HTTP ${res.status}`)
-  const json = await res.json()
-  if (json.error) throw new Error(`PortWatch error: ${json.error.message || JSON.stringify(json.error)}`)
-  if (!json.features?.length) throw new Error('No PortWatch features')
-  return json.features
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (compatible; NAUTILUS-Terminal/1.0)',
+    'Accept': 'application/json, */*',
+  }
+
+  // Try sorted URL first (most recent data), fall back to unsorted
+  for (const url of [PORTWATCH_URL, PORTWATCH_URL_NOSORT]) {
+    try {
+      const res = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(15000), // 15s — ArcGIS can be slow
+        next: { revalidate: 1800 },
+      })
+      if (!res.ok) {
+        console.info(`[/api/ports] PortWatch ${url} → HTTP ${res.status}`)
+        continue
+      }
+      const json = await res.json()
+      if (json.error) {
+        console.info(`[/api/ports] PortWatch error: ${json.error.message || JSON.stringify(json.error)}`)
+        continue
+      }
+      if (!json.features?.length) {
+        console.info(`[/api/ports] PortWatch returned 0 features from ${url}`)
+        continue
+      }
+      console.info(`[/api/ports] PortWatch returned ${json.features.length} features`)
+      return json.features
+    } catch (err) {
+      console.info(`[/api/ports] PortWatch fetch failed (${url}): ${err.message}`)
+    }
+  }
+  throw new Error('Both PortWatch URLs failed')
 }
 
 export async function GET() {
