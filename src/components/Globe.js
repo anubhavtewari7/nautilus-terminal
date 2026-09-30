@@ -295,7 +295,6 @@ function CityLabel({ city }) {
   const { camera } = useThree()
   const htmlRef  = useRef()
   const meshRef  = useRef()
-  const dotRef   = useRef()
 
   const R = 2.04
   const phi   = (90 - city.lat) * (Math.PI / 180)
@@ -319,39 +318,31 @@ function CityLabel({ city }) {
       ? (dist < 4.5 ? 0.9 : dist > 7.0 ? 0 : (7.0 - dist) / 2.5 * 0.9)
       : 0
     if (htmlRef.current) htmlRef.current.style.opacity = String(opacity)
-    if (dotRef.current)  dotRef.current.style.opacity  = onFront ? '1' : '0'
   })
 
   return (
     <mesh ref={meshRef} position={pos}>
-      {/* Tiny dot — visibility controlled via dotRef */}
       <sphereGeometry args={[0.012, 5, 5]} />
       <meshBasicMaterial color="#38bdf8" />
-      <Html distanceFactor={6} zIndexRange={[50, 0]}>
-        <div style={{ pointerEvents: 'none', userSelect: 'none' }}>
-          <div
-            ref={dotRef}
-            style={{ width: 4, height: 4, borderRadius: '50%', background: '#38bdf8', marginBottom: 2 }}
-          />
-          <div
-            ref={htmlRef}
-            className="pointer-events-none select-none"
-            style={{
-              color: '#38bdf8',
-              fontSize: '8px',
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              whiteSpace: 'nowrap',
-              textShadow: '0 0 6px rgba(0,0,0,1)',
-              opacity: 0,
-              transform: 'translateX(5px)',
-              transition: 'opacity 0.15s',
-            }}
-          >
-            {city.name}
-          </div>
+      <Html zIndexRange={[50, 0]} style={{ pointerEvents: 'none' }}>
+        <div
+          ref={htmlRef}
+          style={{
+            color: '#38bdf8',
+            fontSize: '8px',
+            fontFamily: 'monospace',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            textShadow: '0 0 8px rgba(0,0,0,0.9)',
+            opacity: 0,
+            paddingLeft: '6px',
+            transition: 'opacity 0.15s',
+            userSelect: 'none',
+          }}
+        >
+          {city.name}
         </div>
       </Html>
     </mesh>
