@@ -170,10 +170,40 @@ function SurvDot({ lat, lng, color }) {
   )
 }
 
+// ── Atmospheric glow — Fresnel-effect blue limb visible from orbit ──
+function Atmosphere() {
+  const atmoVert = `
+    varying vec3 vNormal;
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+  const atmoFrag = `
+    varying vec3 vNormal;
+    void main() {
+      float intensity = pow(0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 5.0);
+      gl_FragColor = vec4(0.15, 0.5, 1.0, intensity);
+    }
+  `
+  return (
+    <mesh>
+      <sphereGeometry args={[2.18, 64, 64]} />
+      <shaderMaterial
+        vertexShader={atmoVert}
+        fragmentShader={atmoFrag}
+        side={THREE.BackSide}
+        transparent
+        depthWrite={false}
+      />
+    </mesh>
+  )
+}
+
 function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints, showDayNight, showThreats, onNodeClick, survFires, showSurvFires, survSeismic, showSurvSeismic }) {
   const meshRef    = useRef()
   const earthRotY  = useRef(0)           // shared with NightOverlay via ref
-  const texture    = useLoader(THREE.TextureLoader, '/earth.jpg')
+  const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, ['/earth.jpg', '/earth-bump.png'])
 
   useFrame((state, delta) => {
     if (autoRotate && meshRef.current) {
@@ -184,13 +214,23 @@ function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints,
 
   return (
     <group>
+      {/* Atmospheric glow — always visible, sits outside the Earth sphere */}
+      <Atmosphere />
+
       {/* Night-side overlay -- sibling to the Earth mesh; sun direction is
           corrected each frame by -earthRotY so it stays geographically accurate */}
       {showDayNight && <NightOverlay earthRotRef={earthRotY} />}
 
       <mesh ref={meshRef} rotation={[-0.25, 0, 0]}>
-        <sphereGeometry args={[2, 64, 64]} />
-        <meshPhongMaterial map={texture} shininess={5} emissive="#ffffff" emissiveIntensity={0.18} />
+        <sphereGeometry args={[2, 96, 96]} />
+        <meshPhongMaterial
+          map={colorMap}
+          bumpMap={bumpMap}
+          bumpScale={0.06}
+          shininess={18}
+          emissive="#ffffff"
+          emissiveIntensity={0.12}
+        />
         
         <mesh>
           <sphereGeometry args={[2.005, 32, 32]} />
@@ -291,10 +331,10 @@ export default function Globe({ risks = [], opportunities = [], chokepoints = []
     <div className="w-full h-full">
       <Canvas shadows gl={{ antialias: true }}>
         <PerspectiveCamera makeDefault position={[0, 1.8, 5.8]} />
-        <ambientLight intensity={3.5} />
-        <pointLight position={[10, 10, 10]} intensity={5} color="#ffffff" />
-        <pointLight position={[-10, 10, 5]} intensity={2.5} color="#38bdf8" />
-        <pointLight position={[0, -10, 5]} intensity={1.5} color="#ffffff" />
+        <ambientLight intensity={2.2} />
+        <pointLight position={[10, 10, 10]} intensity={4.5} color="#ffffff" />
+        <pointLight position={[-8, 6, 4]} intensity={1.8} color="#60a5fa" />
+        <pointLight position={[0, -8, 4]} intensity={1.2} color="#ffffff" />
 
         <React.Suspense fallback={<Html center><div className="text-sky-400 font-mono text-[10px] animate-pulse">SYNCING_MAP...</div></Html>}>
           <Earth
