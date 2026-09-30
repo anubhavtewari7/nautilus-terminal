@@ -43,8 +43,9 @@ const BASELINE_PORTS = [
 // NOTE: orderByFields must use %20 (not +) for the space before DESC.
 //       date must be in outFields for the sort to be accepted by ArcGIS.
 // --------------------------------------------------------------------------
+// Cloudflare Worker proxy -- bypasses Vercel/AWS Lambda IP blocks on ArcGIS
 const PORTWATCH_URL =
-  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,date,portcalls,portcalls_cargo,import,export&orderByFields=date%20DESC&resultRecordCount=500&f=json'
+  'https://nautilus-portwatch-proxy.anubhavtewari7.workers.dev'
 
 const CACHE_MS  = 30 * 60 * 1000
 let _cache     = null
@@ -145,9 +146,9 @@ function mergePortWatchData(portWatchFeatures, baselinePorts) {
   }
 }
 
-// Fallback URL without orderByFields in case the ArcGIS sort is rejected
+// Fallback -- same CF Worker (already has sorted data; this path hit only on primary timeout)
 const PORTWATCH_URL_NOSORT =
-  'https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query?where=1%3D1&outFields=portid,portname,iso3,portcalls,portcalls_cargo,import,export&resultRecordCount=500&f=json'
+  'https://nautilus-portwatch-proxy.anubhavtewari7.workers.dev'
 
 // --------------------------------------------------------------------------
 async function fetchPortWatch() {
