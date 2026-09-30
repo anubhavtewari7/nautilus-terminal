@@ -191,7 +191,7 @@ nav.scrolled {
   font-weight: 400;
   cursor: default;
 }
-.btn-download {
+.btn-download-unused {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -871,20 +871,8 @@ export default function Home() {
           A professional-grade intelligence platform that translates live global data into supply chain decisions your team can act on immediately.
         </p>
         <div className="hero-actions">
-          <a
-            className="btn-primary"
-            href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-Terminal-win32-x64.zip"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.623h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
-            Download for Windows
-          </a>
-          <a
-            className="btn-download"
-            href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-1.0.0.dmg"
-            title="Download for macOS"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-            macOS
+          <a className="btn-primary" href="#cta" onClick={scrollToCta}>
+            Request Early Access →
           </a>
         </div>
         <div className="hero-stats">
@@ -1205,23 +1193,25 @@ export default function Home() {
       <div className="cta-wrap" id="cta">
         <div className="cta-inner r">
           <h2 className="cta-h">Built for the people who make sourcing decisions.</h2>
-          <p className="cta-p">Not a dashboard. Not a report. A terminal -- designed for speed, depth, and immediate action. Download and run it in seconds.</p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 32 }}>
-            <a
-              className="btn-primary"
-              href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-Terminal-win32-x64.zip"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.623h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
-              Download for Windows
-            </a>
-            <a
-              className="btn-download"
-              href="https://github.com/anubhavtewari7/nautilus-terminal/releases/latest/download/NAUTILUS-1.0.0.dmg"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-              macOS
-            </a>
-          </div>
+          <p className="cta-p">Not a dashboard. Not a report. A terminal — designed for speed, depth, and immediate action. Request early access and we&apos;ll be in touch.</p>
+          {status === 'done' ? (
+            <p style={{ color: 'var(--green)', fontFamily: 'var(--mono)', fontSize: 14 }}>✓ You&apos;re on the list. We&apos;ll be in touch.</p>
+          ) : (
+            <form className="email-form" onSubmit={handleSubmit}>
+              <input
+                className="email-input"
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                disabled={status === 'loading'}
+              />
+              <button className="btn-primary" type="submit" disabled={status === 'loading'}>
+                {status === 'loading' ? 'Sending…' : status === 'error' ? 'Try again' : 'Request Access →'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
