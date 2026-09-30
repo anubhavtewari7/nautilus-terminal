@@ -1011,9 +1011,9 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* ── Primary Tab Navigation — single scrollable row ── */}
+          {/* ── Primary Tab Navigation — 4+4 wrap grid, all tabs visible ── */}
           <div className="bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shrink-0" data-tour="tabs">
-            <div className="flex overflow-x-auto no-scrollbar" data-tour="surv-tab">
+            <div className="flex flex-wrap" data-tour="surv-tab">
               {[
                 { id: 'command',      label: 'Command',  color: 'sky'     },
                 { id: 'sourcing',     label: 'Sourcing', color: 'emerald' },
@@ -1023,17 +1023,19 @@ export default function Dashboard() {
                 { id: 'intelligence', label: 'Intel',    color: 'sky'     },
                 { id: 'reports',      label: 'Reports',  color: 'purple'  },
                 { id: 'surveillance', label: 'Surv',     color: 'cyan'    },
-              ].map(t => (
+              ].map((t, idx) => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
-                  className={`flex-shrink-0 px-3 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
+                  className={`basis-1/4 py-2.5 text-[9px] font-bold uppercase tracking-widest transition-all border-b-2 ${
+                    idx < 4 ? 'border-t-0' : 'border-t border-t-white/5'
+                  } ${
                     activeTab === t.id
-                      ? t.color === 'emerald' ? 'text-emerald-400 border-emerald-400 bg-emerald-500/5'
-                      : t.color === 'rose'    ? 'text-rose-400 border-rose-400 bg-rose-500/5'
-                      : t.color === 'amber'   ? 'text-amber-400 border-amber-400 bg-amber-500/5'
-                      : t.color === 'purple'  ? 'text-purple-400 border-purple-400 bg-purple-500/5'
-                      : t.color === 'cyan'    ? 'text-cyan-400 border-cyan-400 bg-cyan-500/5'
-                      : 'text-sky-400 border-sky-400 bg-sky-500/5'
-                      : 'border-transparent text-slate-300 hover:text-slate-300'
+                      ? t.color === 'emerald' ? 'text-emerald-400 border-b-emerald-400 bg-emerald-500/5'
+                      : t.color === 'rose'    ? 'text-rose-400 border-b-rose-400 bg-rose-500/5'
+                      : t.color === 'amber'   ? 'text-amber-400 border-b-amber-400 bg-amber-500/5'
+                      : t.color === 'purple'  ? 'text-purple-400 border-b-purple-400 bg-purple-500/5'
+                      : t.color === 'cyan'    ? 'text-cyan-400 border-b-cyan-400 bg-cyan-500/5'
+                      : 'text-sky-400 border-b-sky-400 bg-sky-500/5'
+                      : 'border-b-transparent text-slate-300 hover:text-slate-300'
                   }`}>
                   {t.label}
                 </button>
