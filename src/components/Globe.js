@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useRef, useMemo, useState } from 'react'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import React, { useRef, useMemo, useState, useEffect } from 'react'
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { motion } from 'framer-motion'
@@ -200,10 +200,159 @@ function Atmosphere() {
   )
 }
 
+// ── Country border lines — single LineSegments draw call for all countries ──
+function CountryBorders() {
+  const [lineGeo, setLineGeo] = useState(null)
+
+  useEffect(() => {
+    fetch('/countries.json')
+      .then(r => r.json())
+      .then(data => {
+        const positions = []
+        const R = 2.003 // just above Earth surface (radius 2)
+
+        const addRing = (ring) => {
+          for (let i = 0; i < ring.length - 1; i++) {
+            const [lng0, lat0] = ring[i]
+            const [lng1, lat1] = ring[i + 1]
+            const push = (lng, lat) => {
+              const phi   = (90 - lat) * (Math.PI / 180)
+              const theta = (lng + 180) * (Math.PI / 180)
+              positions.push(
+                -R * Math.sin(phi) * Math.cos(theta),
+                 R * Math.cos(phi),
+                 R * Math.sin(phi) * Math.sin(theta)
+              )
+            }
+            push(lng0, lat0)
+            push(lng1, lat1)
+          }
+        }
+
+        for (const feature of data.features) {
+          const { type, coordinates } = feature.geometry
+          if (type === 'Polygon') {
+            for (const ring of coordinates) addRing(ring)
+          } else if (type === 'MultiPolygon') {
+            for (const poly of coordinates)
+              for (const ring of poly) addRing(ring)
+          }
+        }
+
+        const geo = new THREE.BufferGeometry()
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+        setLineGeo(geo)
+      })
+      .catch(() => {}) // silent fail — borders are decorative
+  }, [])
+
+  if (!lineGeo) return null
+  return (
+    <lineSegments geometry={lineGeo}>
+      <lineBasicMaterial color="#38bdf8" transparent opacity={0.22} />
+    </lineSegments>
+  )
+}
+
+// ── Major port / trade city labels — visible only when zoomed in ──
+const CITIES = [
+  { name: 'Shanghai',     lat:  31.23,  lng: 121.47 },
+  { name: 'Singapore',    lat:   1.35,  lng: 103.82 },
+  { name: 'Rotterdam',    lat:  51.90,  lng:   4.48 },
+  { name: 'Dubai',        lat:  25.20,  lng:  55.27 },
+  { name: 'Hong Kong',    lat:  22.32,  lng: 114.17 },
+  { name: 'Los Angeles',  lat:  33.73,  lng: -118.26 },
+  { name: 'New York',     lat:  40.65,  lng:  -74.07 },
+  { name: 'Busan',        lat:  35.10,  lng: 129.04 },
+  { name: 'Antwerp',      lat:  51.25,  lng:   4.42 },
+  { name: 'Qingdao',      lat:  36.07,  lng: 120.38 },
+  { name: 'Ningbo',       lat:  29.87,  lng: 121.56 },
+  { name: 'Guangzhou',    lat:  23.10,  lng: 113.26 },
+  { name: 'Tianjin',      lat:  39.00,  lng: 117.72 },
+  { name: 'Klang',        lat:   3.00,  lng: 101.39 },
+  { name: 'Hamburg',      lat:  53.53,  lng:   9.99 },
+  { name: 'Kaohsiung',    lat:  22.62,  lng: 120.28 },
+  { name: 'Tokyo',        lat:  35.65,  lng: 139.76 },
+  { name: 'Mumbai',       lat:  18.95,  lng:  72.84 },
+  { name: 'Jeddah',       lat:  21.48,  lng:  39.17 },
+  { name: 'Tanjung Pelepas', lat: 1.36, lng: 103.55 },
+  { name: 'Colombo',      lat:   6.93,  lng:  79.84 },
+  { name: 'Jakarta',      lat:  -6.10,  lng: 106.83 },
+  { name: 'Laem Chabang', lat:  13.07,  lng: 100.88 },
+  { name: 'Long Beach',   lat:  33.76,  lng: -118.21 },
+  { name: 'Savannah',     lat:  32.08,  lng:  -81.09 },
+  { name: 'Felixstowe',   lat:  51.96,  lng:   1.35 },
+  { name: 'Algeciras',    lat:  36.13,  lng:  -5.45 },
+  { name: 'Valencia',     lat:  39.44,  lng:  -0.32 },
+  { name: 'Santos',       lat: -23.95,  lng:  -46.33 },
+  { name: 'Durban',       lat: -29.87,  lng:  31.04 },
+]
+
+function CityLabels() {
+  const { camera } = useThree()
+  const [zoom, setZoom] = useState(false)
+
+  useFrame(() => {
+    const dist = camera.position.length()
+    setZoom(dist < 4.5)
+  })
+
+  return (
+    <>
+      {CITIES.map(city => {
+        const R = 2.04
+        const phi   = (90 - city.lat) * (Math.PI / 180)
+        const theta = (city.lng + 180) * (Math.PI / 180)
+        const pos = [
+          -R * Math.sin(phi) * Math.cos(theta),
+           R * Math.cos(phi),
+           R * Math.sin(phi) * Math.sin(theta),
+        ]
+        return (
+          <mesh key={city.name} position={pos}>
+            {/* Always-visible micro dot */}
+            <sphereGeometry args={[0.009, 5, 5]} />
+            <meshBasicMaterial color="#38bdf8" />
+            {/* Label — only shown when zoomed in */}
+            {zoom && (
+              <Html distanceFactor={6} zIndexRange={[50, 0]}>
+                <div className="pointer-events-none select-none" style={{
+                  color: '#38bdf8',
+                  fontSize: '7px',
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  textShadow: '0 0 4px rgba(0,0,0,0.9)',
+                  opacity: 0.85,
+                  transform: 'translateX(4px)',
+                }}>
+                  {city.name}
+                </div>
+              </Html>
+            )}
+          </mesh>
+        )
+      })}
+    </>
+  )
+}
+
 function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints, showDayNight, showThreats, onNodeClick, survFires, showSurvFires, survSeismic, showSurvSeismic }) {
   const meshRef    = useRef()
   const earthRotY  = useRef(0)           // shared with NightOverlay via ref
   const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, ['/earth.jpg', '/earth-bump.png'])
+  const { gl } = useThree()
+
+  // Max anisotropy = sharper texture at oblique angles
+  useEffect(() => {
+    const max = gl.capabilities.getMaxAnisotropy()
+    colorMap.anisotropy = max
+    bumpMap.anisotropy  = max
+    colorMap.needsUpdate = true
+    bumpMap.needsUpdate  = true
+  }, [colorMap, bumpMap, gl])
 
   useFrame((state, delta) => {
     if (autoRotate && meshRef.current) {
@@ -216,6 +365,12 @@ function Earth({ risks, opportunities, chokepoints, autoRotate, showChokepoints,
     <group>
       {/* Atmospheric glow — always visible, sits outside the Earth sphere */}
       <Atmosphere />
+
+      {/* Country border lines (zoom-independent, always rendered) */}
+      <CountryBorders />
+
+      {/* City labels — micro-dots always visible, text labels appear when zoomed in */}
+      <CityLabels />
 
       {/* Night-side overlay -- sibling to the Earth mesh; sun direction is
           corrected each frame by -earthRotY so it stays geographically accurate */}
