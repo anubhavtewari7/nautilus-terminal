@@ -29,6 +29,70 @@ body {
   border-radius: 12px;
 }
 
+/* ── Fence Cards (PecoFence-inspired glass panels) ─────────────────────── */
+.fence-card {
+  background: rgba(8, 11, 20, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.fence-card-rose {
+  border-color: rgba(239, 68, 68, 0.14);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(239, 68, 68, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.fence-card-emerald {
+  border-color: rgba(16, 185, 129, 0.14);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(16, 185, 129, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.fence-card-amber {
+  border-color: rgba(245, 158, 11, 0.14);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(245, 158, 11, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.fence-card-sky {
+  border-color: rgba(56, 189, 248, 0.14);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(56, 189, 248, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+/* Category label inside a fence card */
+.fence-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+/* Row item inside a fence section */
+.fence-item {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.fence-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
 .industrial-label {
   font-size: 0.7rem;
   font-weight: 700;

@@ -216,6 +216,23 @@ export default function Dashboard() {
     return null
   }
 
+  // Map hub name → continent using HUB_COUNTRIES lookup
+  function getHubContinent(hubName) {
+    if (!hubName) return 'Other'
+    const lower = hubName.toLowerCase()
+    for (const [continent, countries] of Object.entries(HUB_COUNTRIES)) {
+      for (const country of countries) {
+        if (lower.includes(country.toLowerCase())) return continent
+      }
+    }
+    return 'Other'
+  }
+
+  const CONTINENT_EMOJI = {
+    'Asia': '🌏', 'North America': '🌎', 'South America': '🌎',
+    'Europe': '🌍', 'Africa': '🌍', 'Oceania': '🌏', 'Other': '🌐',
+  }
+
   // Fire-and-forget intel fetch after a scan completes.
   // AbortController cancels any previous in-flight request so stale results
   // from a prior scan can never overwrite results from the current one.
@@ -1236,7 +1253,7 @@ export default function Dashboard() {
             )}
 
             {/* Global Threats — RISK tab only (sourcing tab renders it below hubs) */}
-            {activeTab === 'risk' && <div className="bg-[#0a0a0a] border border-white/10 p-4 flex flex-col rounded-xl" data-tour="risks">
+            {activeTab === 'risk' && <div className="fence-card fence-card-rose p-4 flex flex-col" data-tour="risks">
               <h2 className="text-[11px] font-bold text-rose-500 tracking-[0.2em] uppercase mb-3 flex items-center gap-2 shrink-0 cursor-pointer select-none" onClick={() => setThreatsCollapsed(!threatsCollapsed)}>
                 <ShieldAlert size={14} /> Global Threats
                 <SourceTooltip text="Risk signals aggregated from USGS (earthquakes), NASA FIRMS (wildfires), ACLED (incidents), and live port data." />
@@ -1250,31 +1267,49 @@ export default function Dashboard() {
                 <span className="ml-auto text-slate-300">{threatsCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}</span>
               </h2>
               {!threatsCollapsed && (
-                <div className="space-y-2">
-                  {risks.length === 0 ? (
-                    <p className="text-[11px] text-slate-300 italic">Run a sourcing scan to surface relevant risk factors.</p>
-                  ) : risks.map((r, i) => (
-                    <div key={r.id || i}
-                      onClick={() => setSelectedNode(selectedNode?.id === (r.id || i) ? null : r)}
-                      className={`p-3 border transition-all cursor-pointer rounded-lg ${
-                        selectedNode?.id === (r.id || i)
-                          ? 'bg-rose-500/10 border-rose-500/40'
-                          : 'bg-[#111] border-white/5 hover:border-rose-500/20'
-                      }`}>
-                      <div className="flex items-start gap-2">
-                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${severityStyle(r.severity)}`}>
-                          {r.severity || 'RISK'}
-                        </span>
-                        <div className="text-[12px] font-bold uppercase leading-snug">{r.title || r.risk}</div>
-                      </div>
+                risks.length === 0 ? (
+                  <p className="text-[11px] text-slate-300 italic">Run a sourcing scan to surface relevant risk factors.</p>
+                ) : (() => {
+                  const riskGroups = [
+                    { key: 'geo',     label: 'Geopolitical',   icon: '🌍', items: risks.filter(r => r.id?.startsWith('acled_')) },
+                    { key: 'seismic', label: 'Seismic',         icon: '⚡', items: risks.filter(r => r.id?.startsWith('eq_')) },
+                    { key: 'fire',    label: 'Wildfires',       icon: '🔥', items: risks.filter(r => r.id?.startsWith('fire_')) },
+                    { key: 'supply',  label: 'Supply Chain',    icon: '🚢', items: risks.filter(r => !r.id?.startsWith('acled_') && !r.id?.startsWith('eq_') && !r.id?.startsWith('fire_')) },
+                  ].filter(g => g.items.length > 0)
+                  return (
+                    <div className="space-y-4">
+                      {riskGroups.map(group => (
+                        <div key={group.key}>
+                          <div className="fence-label mb-2">
+                            <span>{group.icon}</span> {group.label}
+                            <span className="text-slate-600 ml-1">· {group.items.length}</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {group.items.map((r, i) => (
+                              <div key={r.id || i}
+                                onClick={() => setSelectedNode(selectedNode?.id === (r.id || i) ? null : r)}
+                                className={`fence-item p-3 cursor-pointer ${
+                                  selectedNode?.id === (r.id || i) ? '!bg-rose-500/10 !border-rose-500/35' : ''
+                                }`}>
+                                <div className="flex items-start gap-2">
+                                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${severityStyle(r.severity)}`}>
+                                    {r.severity || 'RISK'}
+                                  </span>
+                                  <div className="text-[12px] font-bold uppercase leading-snug">{r.title || r.risk}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )
+                })()
               )}
             </div>}
 
             {/* Sourcing Hubs — SOURCING tab */}
-            {activeTab === 'sourcing' && <div className="bg-[#0a0a0a] border border-white/10 p-4 flex flex-col rounded-xl" data-tour="hubs">
+            {activeTab === 'sourcing' && <div className="fence-card fence-card-emerald p-4 flex flex-col" data-tour="hubs">
               <h2 className="text-[11px] font-bold text-emerald-500 tracking-[0.2em] uppercase mb-3 flex items-center gap-2 shrink-0 cursor-pointer select-none" onClick={() => setHubsCollapsed(!hubsCollapsed)}>
                 <Factory size={14} /> Sourcing Hubs
                 <SourceTooltip text="Hub scoring based on geopolitical stability (ACLED), port access (MarineTraffic), sanctions exposure (OFAC/UN/EU), and trade agreement coverage." />
@@ -1282,62 +1317,81 @@ export default function Dashboard() {
                 <span className="ml-auto text-slate-300">{hubsCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}</span>
               </h2>
               {!hubsCollapsed && (
-                <div className="space-y-2">
-                  {opportunities.length === 0 ? (
-                    <div className="space-y-1.5 pt-1">
-                      <p className="text-[10px] text-slate-300 uppercase tracking-widest mb-2">Try an example:</p>
-                      {[
-                        'IATF-certified brake pads for passenger vehicles',
-                        'Neodymium magnets for EV motor assembly',
-                        'Food-grade soy for QSR supply chain',
-                        'Semiconductor wafers for automotive ECU',
-                      ].map((q) => (
-                        <button key={q} onClick={() => handleSearch(null, q)}
-                          className="w-full text-left text-[11px] text-slate-300 hover:text-emerald-400 border border-white/5 hover:border-emerald-500/30 bg-[#111] hover:bg-emerald-500/5 p-2.5 rounded-lg transition-all">
-                          → {q}
-                        </button>
-                      ))}
-                    </div>
-                  ) : opportunities.map((o, i) => (
-                    <div key={o.id || i}
-                      onClick={() => setSelectedNode(selectedNode?.id === o.id ? null : o)}
-                      className={`p-3 border transition-all cursor-pointer rounded-lg ${
-                        selectedNode?.id === o.id
-                          ? 'bg-emerald-500/10 border-emerald-500/40'
-                          : 'bg-[#111] border-white/5 hover:border-emerald-500/20'
-                      }`}>
-                      <div className="text-[10px] text-slate-300 font-bold mb-1 uppercase tracking-widest flex items-center gap-2">
-                        {o.hub}
-                        {(() => {
-                          const ds = hubDayStatus(o.hub, o.lng)
-                          if (!ds) return null
-                          return (
-                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border ${ds.open ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-slate-300 border-white/10 bg-white/5'}`} title={`Local time: ${ds.localTime}`}>
-                              {ds.icon} {ds.open ? 'OPEN' : 'CLOSED'}
-                            </span>
-                          )
-                        })()}
-                        {(() => {
-                          const iso2 = getHubISO2(o.hub)
-                          const score = iso2 && intelBrief?.countryScores?.[iso2]
-                          if (!score) return null
-                          const c = scoreClasses(score.stability).text
-                          return <span className={`ml-auto font-mono text-[8px] ${c}`} title="World Bank Political Stability Score">◆ {score.stability}</span>
-                        })()}
-                      </div>
-                      <div className="text-[12px] font-bold uppercase leading-tight">{o.title}</div>
-                      {o.real_export_value_usd && (
-                        <div className="mt-1.5 flex items-center gap-1 text-[10px] text-sky-400 font-mono" title={`Official UN Comtrade export statistics, ${o.real_trade_data_year}`}>
-                          <CheckCircle size={9} />
-                          ${(o.real_export_value_usd / 1e6).toFixed(0)}M exported ({o.real_trade_data_year}, UN Comtrade)
+                opportunities.length === 0 ? (
+                  <div className="space-y-1.5 pt-1">
+                    <p className="text-[10px] text-slate-300 uppercase tracking-widest mb-2">Try an example:</p>
+                    {[
+                      'IATF-certified brake pads for passenger vehicles',
+                      'Neodymium magnets for EV motor assembly',
+                      'Food-grade soy for QSR supply chain',
+                      'Semiconductor wafers for automotive ECU',
+                    ].map((q) => (
+                      <button key={q} onClick={() => handleSearch(null, q)}
+                        className="w-full text-left text-[11px] text-slate-300 hover:text-emerald-400 border border-white/5 hover:border-emerald-500/30 bg-white/2 hover:bg-emerald-500/5 p-2.5 rounded-lg transition-all">
+                        → {q}
+                      </button>
+                    ))}
+                  </div>
+                ) : (() => {
+                  // Group hubs by continent
+                  const grouped = {}
+                  opportunities.forEach(o => {
+                    const continent = getHubContinent(o.hub)
+                    if (!grouped[continent]) grouped[continent] = []
+                    grouped[continent].push(o)
+                  })
+                  const continentOrder = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Oceania', 'Other']
+                  const sortedContinents = continentOrder.filter(c => grouped[c])
+                  return (
+                    <div className="space-y-4">
+                      {sortedContinents.map(continent => (
+                        <div key={continent}>
+                          <div className="fence-label mb-2">
+                            <span>{CONTINENT_EMOJI[continent]}</span> {continent}
+                            <span className="text-slate-600 ml-1">· {grouped[continent].length}</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {grouped[continent].map((o, i) => (
+                              <div key={o.id || i}
+                                onClick={() => setSelectedNode(selectedNode?.id === o.id ? null : o)}
+                                className={`fence-item p-3 cursor-pointer ${
+                                  selectedNode?.id === o.id ? '!bg-emerald-500/10 !border-emerald-500/35' : ''
+                                }`}>
+                                <div className="text-[10px] text-slate-300 font-bold mb-1 uppercase tracking-widest flex items-center gap-2">
+                                  {o.hub}
+                                  {(() => {
+                                    const ds = hubDayStatus(o.hub, o.lng)
+                                    if (!ds) return null
+                                    return (
+                                      <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border ${ds.open ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-slate-300 border-white/10 bg-white/5'}`} title={`Local time: ${ds.localTime}`}>
+                                        {ds.icon} {ds.open ? 'OPEN' : 'CLOSED'}
+                                      </span>
+                                    )
+                                  })()}
+                                  {(() => {
+                                    const iso2 = getHubISO2(o.hub)
+                                    const score = iso2 && intelBrief?.countryScores?.[iso2]
+                                    if (!score) return null
+                                    const c = scoreClasses(score.stability).text
+                                    return <span className={`ml-auto font-mono text-[8px] ${c}`} title="World Bank Political Stability Score">◆ {score.stability}</span>
+                                  })()}
+                                </div>
+                                <div className="text-[12px] font-bold uppercase leading-tight">{o.title}</div>
+                                {o.real_export_value_usd && (
+                                  <div className="mt-1.5 flex items-center gap-1 text-[10px] text-sky-400 font-mono" title={`Official UN Comtrade export statistics, ${o.real_trade_data_year}`}>
+                                    <CheckCircle size={9} />
+                                    ${(o.real_export_value_usd / 1e6).toFixed(0)}M exported ({o.real_trade_data_year}, UN Comtrade)
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      )}
+                      ))}
+                      <p className="text-[10px] text-slate-600 mt-1">FX note: verify landed cost impact if sourcing from this region</p>
                     </div>
-                  ))}
-                  {opportunities.length > 0 && (
-                    <p className="text-[10px] text-slate-300 mt-1">FX note: verify landed cost impact if sourcing from this region</p>
-                  )}
-                </div>
+                  )
+                })()
               )}
             </div>}
 
@@ -2593,7 +2647,7 @@ export default function Dashboard() {
         <aside className="hidden lg:flex w-96 flex-col gap-4 shrink-0 z-10 overflow-y-auto custom-scrollbar pr-1">
 
           {/* Strategic Directive */}
-          <div className="bg-[#0a0a0a] border border-emerald-500/30 p-5 flex flex-col gap-4 shadow-[0_0_25px_rgba(16,185,129,0.08)] rounded-xl relative shrink-0">
+          <div className="fence-card fence-card-emerald p-5 flex flex-col gap-4 relative shrink-0">
             <div className="absolute top-0 right-0 p-3 overflow-hidden rounded-tr-xl"><Zap size={20} className="text-emerald-500/10" /></div>
             <h2 className="text-[11px] font-bold text-emerald-400 tracking-[0.3em] uppercase flex items-center gap-2">
               <Target size={14} /> Strategic Directive
@@ -2642,7 +2696,7 @@ export default function Dashboard() {
             if (relevant.length === 0) return null
             const critCount = relevant.filter(c => c.status === 'CRITICAL' || c.status === 'ELEVATED').length
             return (
-              <div className="bg-[#0a0a0a] border border-amber-500/25 p-4 flex flex-col gap-3 rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.06)] shrink-0">
+              <div className="fence-card fence-card-amber p-4 flex flex-col gap-3 shrink-0">
                 <h2 className="text-[11px] font-bold text-amber-400 tracking-[0.25em] uppercase flex items-center gap-2 shrink-0">
                   <Ship size={13} /> Freight Route Risk
                   {critCount > 0 && (
@@ -2680,7 +2734,7 @@ export default function Dashboard() {
           })()}
 
           {/* Market Intelligence / News */}
-          <div className="bg-[#0a0a0a] border border-white/10 flex-1 min-h-[320px] p-4 flex flex-col gap-3 rounded-xl shadow-xl">
+          <div className="fence-card fence-card-sky flex-1 min-h-[320px] p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between shrink-0">
               <h2 className="text-[11px] font-bold text-slate-300 tracking-[0.2em] uppercase flex items-center gap-2">
                 <Newspaper size={14} className="text-sky-400" /> Market Intelligence
@@ -2760,7 +2814,7 @@ export default function Dashboard() {
           </div>
 
           {/* Metals & Materials */}
-          <div className="bg-[#0a0a0a] border border-white/10 p-4 rounded-xl shadow-xl shrink-0" data-tour="market">
+          <div className="fence-card p-4 shrink-0" data-tour="market">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-[11px] font-bold text-sky-400 tracking-[0.2em] uppercase flex items-center gap-2">
                 <BarChart3 size={14} /> Metals &amp; Materials
@@ -2839,7 +2893,7 @@ export default function Dashboard() {
 
           {/* Live FX Rates */}
           {fxData && (
-            <div className="bg-[#0a0a0a] border border-white/10 p-4 rounded-xl shadow-xl shrink-0" data-tour="fx">
+            <div className="fence-card fence-card-amber p-4 shrink-0" data-tour="fx">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-[11px] font-bold text-amber-400 tracking-[0.2em] uppercase flex items-center gap-2">
                   <TrendingUp size={14} /> Live FX Rates
