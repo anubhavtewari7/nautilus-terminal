@@ -1010,7 +1010,7 @@ export default function Dashboard() {
         <aside className="hidden lg:flex w-96 flex-col gap-4 shrink-0 z-10 overflow-y-auto custom-scrollbar pr-1">
 
           {/* Brand + Mission (compact header) */}
-          <div className="bg-[#0a0a0a] border border-white/10 px-4 py-3 rounded-xl shadow-2xl shrink-0 flex items-center gap-3">
+          <div className="fence-card px-4 py-3 shrink-0 flex items-center gap-3">
             <div className="w-8 h-8 bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 rounded-lg shrink-0">
               <NautilusLogo size={16} />
             </div>
@@ -1029,7 +1029,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Primary Tab Navigation — 4+4 wrap grid, all tabs visible ── */}
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shrink-0" data-tour="tabs">
+          <div className="fence-card overflow-hidden shrink-0" data-tour="tabs">
             <div className="flex flex-wrap" data-tour="surv-tab">
               {[
                 { id: 'command',      label: 'Command',  color: 'sky'     },
@@ -1070,7 +1070,7 @@ export default function Dashboard() {
             const textColor = sc.text
             const stabilityLabel = s >= 60 ? 'Stable' : s >= 35 ? 'Moderate' : 'High Risk'
             return (
-              <div className="bg-[#0a0a0a] border border-white/10 p-4 rounded-xl" data-tour="stability">
+              <div className="fence-card fence-card-sky p-4" data-tour="stability">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-[11px] font-bold text-sky-400 tracking-[0.2em] uppercase flex items-center gap-2">
@@ -2113,7 +2113,7 @@ export default function Dashboard() {
           </button>
 
           {/* Tool buttons — grouped by category */}
-          <div className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden flex flex-col min-h-0" data-tour="new-tools">
+          <div className="flex-1 fence-card overflow-hidden flex flex-col min-h-0" data-tour="new-tools">
             <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar justify-between">
 
               {/* ── CALCULATORS ── */}
