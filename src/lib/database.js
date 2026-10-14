@@ -2423,6 +2423,8 @@ export function categorizeQuery(query) {
   // Pre-A: Automotive compound parts (before plastics P1 catches injection mold
   //        or metals P7 catches iron/alloy/casting/forging)
   if (match([
+    'brake pad', 'brake pads', 'brake lining', 'friction material', 'friction pad',
+    'backing plate automotive', 'steel backing plate', 'iatf 16949', 'iatf16949',
     'brake caliper', 'brake disc', 'brake rotor', 'brake drum',
     'exhaust manifold', 'exhaust pipe', 'exhaust system',
     'wheel rim', 'wheel hub', 'alloy wheel', 'mag wheel',
@@ -2813,7 +2815,7 @@ export function categorizeQuery(query) {
     'ride-on toy', 'toy vehicle', 'educational toy', 'learning toy',
     'plastic toy', 'wooden toy', 'electronic toy', 'baby toy', 'infant toy',
     'toy factory', 'toy product', 'toy industry', 'kids toy', 'children toy',
-    'astm f963', 'en 71', 'cpsia', 'icti', 'toy safety', 'toy manufactur',
+    'astm f963', 'en 71', 'cpsia', 'icti audit', 'icti etsp', 'icti certification', 'toy safety', 'toy manufactur',
     'playset', 'collectible figure', 'trading card game', 'video game console accessory'
   ])) return 'toys_games'
 
