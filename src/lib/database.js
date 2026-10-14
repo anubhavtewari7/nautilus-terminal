@@ -2862,6 +2862,9 @@ export function categorizeQuery(query) {
     'tpe', 'thermoplastic elastomer', 'thermoplastic', 'thermoset',
     'polymer', 'polymers', 'resin compound', 'plastic resin',
     'abs plastic', 'abs compound', 'polypropylene', 'polyethylene',
+    // Glass-fiber filled grade codes: PPGF = PP+GF, PAGF = PA+GF, PCGF, PETGF, etc.
+    'ppgf', 'pagf', 'pcgf', 'petgf', 'pbsgf', 'pa6gf', 'pa66gf',
+    'gf20', 'gf30', 'gf40', 'gf50',  // bare fiber content shorthand
     'hdpe', 'ldpe', 'lldpe', 'pvc pipe', 'pvc compound',
     'nylon compound', 'nylon part', 'nylon 6 ', 'nylon 66', 'nylon 12',
     'pa66', 'pa6 ', 'pa12', 'pa11',
@@ -2930,7 +2933,18 @@ export function categorizeQuery(query) {
     'titanium sponge', 'tungsten', 'molybdenum', 'platinum',
     'palladium', 'nickel ore', 'iron ore', 'copper ore',
     'steel coil', 'steel sheet', 'aluminum ingot', 'aluminum billet',
-    'copper cathode', 'zinc ingot', 'tin ingot'
+    'copper cathode', 'zinc ingot', 'tin ingot',
+    // Aluminum extrusion profiles & structural sections
+    't-slot', 't slot', 'v-slot', 'v slot', 't-track', 't track',
+    'aluminum extrusion', 'aluminium extrusion', 'extruded aluminum', 'extruded aluminium',
+    'aluminum profile', 'aluminium profile', 'extruded profile',
+    'aluminum t-rail', 'aluminum t rail', 'aluminum rail extrusion',
+    '6061', '6063', '7075', '2024 aluminum', // common alloy grades
+    'structural aluminum', 'structural steel section', 'steel angle', 'steel channel',
+    'steel beam', 'i-beam', 'h-beam', 'square hollow section', 'rectangular hollow section',
+    'aluminum sheet', 'aluminum plate', 'aluminum bar', 'aluminum rod',
+    'stainless steel sheet', 'stainless sheet', 'stainless plate', 'stainless bar',
+    'steel tube', 'aluminum tube', 'copper tube', 'brass tube', 'copper pipe'
   ])) return 'metals'
 
   // Priority 3: Automotive applications/platforms
