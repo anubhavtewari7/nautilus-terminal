@@ -783,7 +783,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mr-8 shrink-0">
           <Activity size={12} className="text-emerald-400 animate-pulse" />
           <span className="text-slate-300">Commodity Prices</span>
-          <SourceTooltip text="Live prices via Yahoo Finance. 15-minute delay. For reference only — not financial advice." />
+          <SourceTooltip text="Spot prices via Yahoo Finance (CME/LME futures). ~15-minute delay. For research reference only — not financial or investment advice. Commodity history (24-month monthly series) via /api/world-bank uses the same source." />
           <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border hidden sm:inline-block ${
             commodities?.quality === 'live' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
             commodities?.quality === 'delayed' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' :
@@ -826,6 +826,16 @@ export default function Dashboard() {
             })()}
           </div>
         </div>
+      </div>
+
+      {/* ── REGULATORY NOTICE BAR ── */}
+      <div className="shrink-0 flex items-center justify-center gap-2 px-4 py-1.5 bg-amber-500/5 border-b border-amber-500/15 text-[9px] text-amber-300/70 font-mono">
+        <ShieldAlert size={9} className="text-amber-400/60 shrink-0" />
+        <span>
+          <span className="font-bold text-amber-300/90">Research tool — not official classification.</span>
+          {' '}HTS codes are indicative only (keyword-matched, 6-digit reference level). Per CBP ruling HQ H350722, always verify with a licensed customs broker before import filings.
+          {' '}<a href="https://hts.usitc.gov" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-200 transition-colors">Verify on USITC →</a>
+        </span>
       </div>
 
       {/* ── MOBILE HEADER BAR (hidden on desktop) ── */}
@@ -1266,7 +1276,7 @@ export default function Dashboard() {
             {activeTab === 'risk' && <div className="fence-card fence-card-rose p-4 flex flex-col" data-tour="risks">
               <h2 className="text-[11px] font-bold text-rose-500 tracking-[0.2em] uppercase mb-3 flex items-center gap-2 shrink-0 cursor-pointer select-none" onClick={() => setThreatsCollapsed(!threatsCollapsed)}>
                 <ShieldAlert size={14} /> Global Threats
-                <SourceTooltip text="Risk signals aggregated from USGS (earthquakes), NASA FIRMS (wildfires), ACLED (incidents), and live port data." />
+                <SourceTooltip text="Risk signals aggregated from USGS (earthquakes — real-time), NASA FIRMS (wildfires — 24h delay), ACLED (conflict incidents — ~1 week delay), and live port data. Conflict data is historical; freshness varies by region." />
                 {risks.length > 0
                   ? <span className="flex items-center gap-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-rose-500/25 bg-rose-500/8 text-rose-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse inline-block" />
@@ -2836,7 +2846,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between shrink-0">
               <h2 className="text-[11px] font-bold text-slate-300 tracking-[0.2em] uppercase flex items-center gap-2">
                 <Newspaper size={14} className="text-sky-400" /> Market Intelligence
-                <SourceTooltip text="News sourced via NewsAPI from Reuters, Bloomberg, AP, Financial Times. Filtered by geopolitical and trade relevance." />
+                <SourceTooltip text="News sourced via NewsAPI (third-party) from Reuters, Bloomberg, AP, Financial Times. Search keywords are sent to NewsAPI — do not include confidential sourcing terms. Filtered by geopolitical and trade relevance. Article timestamps reflect publisher date." />
               </h2>
               <div className="flex items-center gap-2">
                 {/* Staleness badge for market-intelligence.json data */}

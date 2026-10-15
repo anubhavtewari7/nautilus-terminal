@@ -62,6 +62,17 @@ export default function TariffLookup({ onClose }) {
           <button onClick={onClose} className="p-2 text-slate-500 hover:text-white active:text-white transition-all"><X size={20} /></button>
         </div>
 
+        {/* Regulatory disclaimer */}
+        <div className="mx-6 mt-4 mb-0 flex items-start gap-2.5 p-3 bg-amber-500/8 border border-amber-500/25 rounded-xl">
+          <ShieldAlert size={14} className="text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-[10px] text-amber-200/80 leading-relaxed">
+            <span className="font-bold text-amber-300">Reference guidance only.</span>{' '}
+            Results use keyword matching and are not official customs classifications. Per CBP ruling HQ H350722 (Jan 2026), providing 8- or 10-digit HTS codes for import filings constitutes licensed customs business. Always verify with a licensed customs broker or{' '}
+            <a href="https://hts.usitc.gov" target="_blank" rel="noopener noreferrer" className="underline text-amber-300 hover:text-amber-200">USITC HTS database</a>{' '}
+            before any filing. Results at the 6-digit level and below are provided for research purposes only.
+          </p>
+        </div>
+
         {/* Search */}
         <form onSubmit={handleSearch} className="p-6 border-b border-white/5">
           <div className="flex gap-3">
@@ -116,15 +127,24 @@ export default function TariffLookup({ onClose }) {
               )}
               {/* Code Header */}
               <div className="flex items-start justify-between p-5 bg-sky-500/5 border border-sky-500/20 rounded-xl">
-                <div>
+                <div className="flex-1 min-w-0 mr-4">
                   <div className="text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-widest">{result.chapter}</div>
                   <div className="text-[28px] font-mono font-bold text-white tracking-wider">{result.hts_code || 'Unclassified'}</div>
-                  <div className="text-[10px] text-amber-300 mt-1">{result.matched ? 'Indicative keyword match' : result.confidence === 'unknown' ? 'Manual classification needed' : 'Category reference only'}</div>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    {result.source === 'usitc_live' ? (
+                      <span className="px-2 py-0.5 bg-emerald-500/15 border border-emerald-500/30 rounded text-[9px] font-bold text-emerald-400 uppercase tracking-widest">High confidence · USITC live</span>
+                    ) : result.matched ? (
+                      <span className="px-2 py-0.5 bg-amber-500/15 border border-amber-500/30 rounded text-[9px] font-bold text-amber-400 uppercase tracking-widest">Medium · keyword match</span>
+                    ) : (
+                      <span className="px-2 py-0.5 bg-slate-500/15 border border-slate-500/30 rounded text-[9px] font-bold text-slate-400 uppercase tracking-widest">Low · manual review needed</span>
+                    )}
+                    <span className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded text-[9px] font-bold text-rose-400 uppercase tracking-widest">Reference only — not for filing</span>
+                  </div>
                   {result.source === 'usitc_live' && (
-                    <div className="text-[12px] text-slate-400 mt-1">{result.description}</div>
+                    <div className="text-[12px] text-slate-400 mt-2">{result.description}</div>
                   )}
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <div className="text-[10px] text-slate-600 uppercase mb-1">Unit</div>
                   <div className="text-[12px] font-mono text-slate-300">{result.unit}</div>
                 </div>
@@ -169,15 +189,34 @@ export default function TariffLookup({ onClose }) {
                 </div>
               )}
 
-              {/* USITC Link */}
-              <a
-                href={`https://hts.usitc.gov/search?query=${encodeURIComponent(result.hts_code)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 bg-[#111] border border-white/5 rounded-xl hover:border-sky-500/30 active:border-sky-500/30 transition-all group"
-              >
-                <span className="text-[11px] text-slate-500 font-mono">Verify on USITC Official Database →</span>
-                <ExternalLink size={12} className="text-sky-400 opacity-50 group-hover:opacity-100 transition-all" />
-              </a>
+              {/* Verification links */}
+              <div className="flex gap-2 flex-wrap">
+                <a
+                  href={`https://hts.usitc.gov/search?query=${encodeURIComponent(result.hts_code)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-between p-3 bg-sky-500/5 border border-sky-500/20 rounded-xl hover:border-sky-500/40 active:border-sky-500/40 transition-all group"
+                >
+                  <div>
+                    <div className="text-[9px] text-sky-400 font-bold uppercase tracking-widest mb-0.5">Verify on USITC</div>
+                    <div className="text-[11px] text-slate-400 font-mono">Official HTS Database →</div>
+                  </div>
+                  <ExternalLink size={12} className="text-sky-400 shrink-0" />
+                </a>
+                <a
+                  href={`https://www.cbp.gov/trade/rulings`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-between p-3 bg-[#111] border border-white/5 rounded-xl hover:border-slate-500/30 transition-all group"
+                >
+                  <div>
+                    <div className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">CBP Rulings</div>
+                    <div className="text-[11px] text-slate-500 font-mono">Binding Rulings DB →</div>
+                  </div>
+                  <ExternalLink size={12} className="text-slate-500 shrink-0" />
+                </a>
+              </div>
+              <p className="text-[9px] text-slate-600 text-center leading-relaxed">
+                Classification is the legal responsibility of the importer. Results are starting-point research only. Consult a licensed customs broker for binding classification.
+              </p>
             </div>
           )}
         </div>

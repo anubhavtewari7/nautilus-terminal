@@ -10,7 +10,7 @@ const STEPS = [
     position: 'center',
     emoji: '🌍',
     title: 'Welcome to Nautilus Terminal',
-    content: 'Your AI-powered supply chain intelligence platform. Type any material or component and Nautilus maps the best global sourcing hubs in 10 seconds — with duty rates, freight costs, ESG scores, risk flags, and live market data.',
+    content: 'Your rule-based supply chain intelligence platform. Type any material or component and Nautilus maps the best global sourcing hubs — with duty rates, freight costs, ESG scores, risk flags, and live market data. Classification uses structured keyword matching; AI is used only for narrative summaries.',
   },
   {
     id: 'mission',
