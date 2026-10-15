@@ -21,6 +21,8 @@ import TariffCalculator from '@/components/TariffCalculator'
 import CurrencyImpactCalc from '@/components/CurrencyImpactCalc'
 import DualUseChecker from '@/components/DualUseChecker'
 import SourcingRecommendation from '@/components/SourcingRecommendation'
+import dynamic from 'next/dynamic'
+const HubResultsTable = dynamic(() => import('@/components/HubResultsTable'), { ssr: false })
 import Link from 'next/link'
 import NautilusLogo from '@/components/NautilusLogo'
 import GuidedTour from '@/components/GuidedTour'
@@ -187,7 +189,8 @@ export default function Dashboard() {
   const [showTour, setShowTour] = useState(false)
   const [activeMobileTab, setActiveMobileTab] = useState('intel')
   const [threatsCollapsed, setThreatsCollapsed] = useState(false)
-  const [hubsCollapsed, setHubsCollapsed] = useState(false)
+  const [hubsCollapsed,  setHubsCollapsed]  = useState(false)
+  const [hubViewMode,    setHubViewMode]    = useState('list') // 'list' | 'table'
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [intelBrief, setIntelBrief] = useState(null)
   const [intelLoading, setIntelLoading] = useState(false)
@@ -199,6 +202,9 @@ export default function Dashboard() {
   const [survSeismic,      setSurvSeismic]      = useState([])
   const [showSurvFires,    setShowSurvFires]    = useState(true)
   const [showSurvSeismic,  setShowSurvSeismic]  = useState(true)
+  const [survVessels,      setSurvVessels]      = useState(null)  // { chokepoints, vessels, totalVessels, isLive }
+  const [showSurvVessels,  setShowSurvVessels]  = useState(true)
+  const [vesselChokepoint, setVesselChokepoint] = useState(null)  // selected chokepoint filter
 
   // Map hub name string → ISO2 for stability badge lookup
   function getHubISO2(hubName) {
@@ -299,22 +305,26 @@ export default function Dashboard() {
     if (activeTab !== 'surveillance') return
     let cancelled = false
 
-    async function fetchFiresAndSeismic() {
+    async function fetchSurveillanceData() {
       try {
-        const [fireRes, eqRes] = await Promise.all([
+        const [fireRes, eqRes, vesselRes] = await Promise.all([
           fetch('/api/wildfires'),
           fetch('/api/earthquakes'),
+          fetch('/api/vessels?summary=true'),
         ])
-        const [fireData, eqData] = await Promise.all([fireRes.json(), eqRes.json()])
+        const [fireData, eqData, vesselData] = await Promise.all([
+          fireRes.json(), eqRes.json(), vesselRes.json(),
+        ])
         if (!cancelled) {
           setSurvFires((fireData.risks || []).filter(r => r.lat && r.lng))
           setSurvSeismic((eqData.risks || []).filter(r => r.lat && r.lng))
+          if (!vesselData.error) setSurvVessels(vesselData)
         }
       } catch {}
     }
 
-    fetchFiresAndSeismic()
-    const envInterval = setInterval(fetchFiresAndSeismic, 300000) // fires/seismic every 5 min
+    fetchSurveillanceData()
+    const envInterval = setInterval(fetchSurveillanceData, 300000) // refresh every 5 min
     return () => { cancelled = true; clearInterval(envInterval) }
   }, [activeTab])
 
@@ -1314,9 +1324,27 @@ export default function Dashboard() {
                 <Factory size={14} /> Sourcing Hubs
                 <SourceTooltip text="Hub scoring based on geopolitical stability (ACLED), port access (MarineTraffic), sanctions exposure (OFAC/UN/EU), and trade agreement coverage." />
                 {opportunities.length > 0 && <span className="text-[10px] text-slate-300">{opportunities.length} identified</span>}
-                <span className="ml-auto text-slate-300">{hubsCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}</span>
+                {opportunities.length > 0 && (
+                  <div className="ml-auto flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                    <button
+                      onClick={() => setHubViewMode('list')}
+                      className={`text-[8px] font-bold px-1.5 py-0.5 rounded border transition-all ${hubViewMode === 'list' ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10' : 'border-white/10 text-slate-300 hover:border-white/20'}`}
+                    >LIST</button>
+                    <button
+                      onClick={() => setHubViewMode('table')}
+                      className={`text-[8px] font-bold px-1.5 py-0.5 rounded border transition-all ${hubViewMode === 'table' ? 'border-cyan-500/40 text-cyan-400 bg-cyan-500/10' : 'border-white/10 text-slate-300 hover:border-white/20'}`}
+                    >TABLE</button>
+                  </div>
+                )}
+                {opportunities.length === 0 && <span className="ml-auto text-slate-300">{hubsCollapsed ? <ChevronDown size={12} /> : <ChevronUp size={12} />}</span>}
               </h2>
-              {!hubsCollapsed && (
+              {!hubsCollapsed && hubViewMode === 'table' && opportunities.length > 0 && (
+                <HubResultsTable
+                  hubs={opportunities}
+                  onHubClick={(hub) => setSelectedNode(selectedNode?.id === hub.id ? null : hub)}
+                />
+              )}
+              {!hubsCollapsed && hubViewMode === 'list' && (
                 opportunities.length === 0 ? (
                   <div className="space-y-1.5 pt-1">
                     <p className="text-[10px] text-slate-300 uppercase tracking-widest mb-2">Try an example:</p>
@@ -1679,6 +1707,14 @@ export default function Dashboard() {
                         color: 'amber',
                         count: survSeismic.length > 0 ? `${survSeismic.length} events` : null,
                       },
+                      {
+                        label: 'Vessel Traffic',
+                        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 3H6l-4 9h20L18 3z"/><path d="M2 12l2 9h16l2-9"/><line x1="12" y1="3" x2="12" y2="12"/></svg>,
+                        active: showSurvVessels,
+                        toggle: () => setShowSurvVessels(v => !v),
+                        color: 'cyan',
+                        count: survVessels ? `${survVessels.totalVessels} vessels` : null,
+                      },
                     ].map((layer, i) => (
                       <button key={i} onClick={layer.toggle}
                         className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg border transition-all text-left ${
@@ -1749,10 +1785,72 @@ export default function Dashboard() {
                   </div>
                 )}
 
+                {/* Maritime Chokepoints (Vessel Tracking) */}
+                {survVessels && (
+                  <div className="bg-[#0a0a0a] border border-white/10 p-3 rounded-xl">
+                    <div className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-2.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400"><path d="M18 3H6l-4 9h20L18 3z"/><path d="M2 12l2 9h16l2-9"/><line x1="12" y1="3" x2="12" y2="12"/></svg>
+                        Maritime Chokepoints
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {survVessels.isLive
+                          ? <span className="text-[8px] text-emerald-400 font-bold flex items-center gap-1"><div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"/>LIVE AIS</span>
+                          : <span className="text-[8px] text-amber-400 font-bold">SIM</span>
+                        }
+                        <span className="text-[9px] text-cyan-400">{survVessels.totalVessels} vessels</span>
+                      </div>
+                    </div>
+                    <div className="space-y-1 max-h-56 overflow-y-auto pr-0.5">
+                      {Object.entries(survVessels.chokepoints || {}).map(([key, cp]) => (
+                        <button
+                          key={key}
+                          onClick={() => setVesselChokepoint(vesselChokepoint === key ? null : key)}
+                          className={`w-full text-left px-2.5 py-2 rounded-lg border transition-all ${
+                            vesselChokepoint === key
+                              ? 'border-cyan-500/40 bg-cyan-500/8'
+                              : 'border-white/5 hover:border-white/10 bg-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                cp.congestionLabel === 'HIGH'     ? 'bg-rose-400' :
+                                cp.congestionLabel === 'MODERATE' ? 'bg-amber-400' : 'bg-emerald-400'
+                              }`}/>
+                              <span className="text-[10px] text-white truncate font-medium">{cp.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 ml-2">
+                              <span className={`text-[8px] font-bold px-1 py-0.5 rounded ${
+                                cp.congestionLabel === 'HIGH'     ? 'text-rose-400 bg-rose-500/10' :
+                                cp.congestionLabel === 'MODERATE' ? 'text-amber-400 bg-amber-500/10' :
+                                'text-emerald-400 bg-emerald-500/10'
+                              }`}>{cp.congestionLabel}</span>
+                              <span className="text-[9px] text-slate-400">{cp.vesselCount}v</span>
+                            </div>
+                          </div>
+                          {vesselChokepoint === key && cp.riskFactors?.length > 0 && (
+                            <div className="mt-1.5 pl-3.5 space-y-0.5">
+                              <div className="text-[8px] text-slate-400 leading-relaxed">{cp.significance}</div>
+                              {cp.riskFactors.map((rf, ri) => (
+                                <div key={ri} className="text-[8px] text-rose-300/80 flex items-start gap-1">
+                                  <span className="shrink-0 mt-0.5">·</span>
+                                  <span>{rf}</span>
+                                </div>
+                              ))}
+                              <div className="text-[8px] text-slate-500 mt-0.5">~{cp.dailyTransits} transits/day</div>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Data sources note */}
                 <div className="bg-[#0a0a0a] border border-white/5 p-3 rounded-xl">
                   <div className="text-[9px] text-slate-400 leading-relaxed">
-                    <span className="text-slate-300 font-bold">Sources:</span> NASA FIRMS (active fires) · USGS (seismic events). Refreshes every 5 min.
+                    <span className="text-slate-300 font-bold">Sources:</span> NASA FIRMS (active fires) · USGS (seismic events) · AIS vessel tracking. Refreshes every 5 min.
                   </div>
                 </div>
 
