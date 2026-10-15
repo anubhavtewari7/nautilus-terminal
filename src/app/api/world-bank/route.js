@@ -16,29 +16,28 @@ const WB_INDICATORS = {
   nickel:     { id: 'PNICK',    label: 'Nickel',           unit: 'USD/mt' },
   gold:       { id: 'PGOLD',    label: 'Gold',             unit: 'USD/troy oz' },
   coal:       { id: 'PCOAL',    label: 'Coal (Australia)', unit: 'USD/mt' },
-  crude_oil:  { id: 'POILWTI',  label: 'Crude Oil (WTI)',  unit: 'USD/bbl' },
+  crude_oil:  { id: 'POILAPSP', label: 'Crude Oil (avg)',  unit: 'USD/bbl' },
   brent:      { id: 'POILBRE',  label: 'Crude Oil (Brent)',unit: 'USD/bbl' },
   natural_gas:{ id: 'PNGASEU', label: 'Natural Gas (EU)', unit: 'USD/mmbtu' },
   wheat:      { id: 'PWHEAMT',  label: 'Wheat',            unit: 'USD/mt' },
   zinc:       { id: 'PZINC',    label: 'Zinc',             unit: 'USD/mt' },
   iron_ore:   { id: 'PIORECR',  label: 'Iron Ore',         unit: 'USD/mt' },
-  steel:      { id: 'PSTEELHR', label: 'Steel (HR Coil)',  unit: 'USD/mt' },
-  lithium:    { id: 'PLITHM',   label: 'Lithium (Carbonate)', unit: 'USD/mt' },
-  cobalt:     { id: 'PCOBALT',  label: 'Cobalt',           unit: 'USD/mt' },
   lead:       { id: 'PLEAD',    label: 'Lead',             unit: 'USD/mt' },
   tin:        { id: 'PTIN',     label: 'Tin',              unit: 'USD/mt' },
 }
 
-const WB_BASE = 'https://api.worldbank.org/v2/en/indicator'
+// World Bank API: to get time series data, must use country/all path
+const WB_BASE = 'https://api.worldbank.org/v2/country/all/indicator'
 const CACHE_MS = 6 * 60 * 60 * 1000 // 6 hours — Pink Sheet updates monthly
 
 let _wbCache = null // { data: {}, fetchedAt }
 
 async function fetchIndicator(indicatorId) {
-  const url = `${WB_BASE}/${indicatorId}?format=json&mrv=24&frequency=M`
+  // World Bank Pink Sheet: use source=89 (GEM Commodities) and WLD aggregate
+  const url = `${WB_BASE}/${indicatorId}?format=json&mrv=24&frequency=M&source=89`
   try {
     const res = await fetch(url, {
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(10000),
       headers: { 'User-Agent': 'NAUTILUS-Terminal/1.0' },
     })
     if (!res.ok) return null
@@ -48,10 +47,14 @@ async function fetchIndicator(indicatorId) {
     const entries = json[1]
     if (!Array.isArray(entries) || entries.length === 0) return null
 
-    // Filter out nulls and sort by date ascending
-    const valid = entries
-      .filter(e => e.value !== null && e.date)
-      .sort((a, b) => a.date.localeCompare(b.date))
+    // Pink Sheet uses 'WLD' country code for the world/global commodity price
+    // Filter to WLD entries first, fall back to any valid entry
+    let filtered = entries.filter(e => e.value !== null && e.date && e.country?.id === 'WLD')
+    if (filtered.length === 0) {
+      // Some indicators use 'EUU' or other aggregates — take all non-null
+      filtered = entries.filter(e => e.value !== null && e.date)
+    }
+    const valid = filtered.sort((a, b) => a.date.localeCompare(b.date))
 
     if (valid.length === 0) return null
 
