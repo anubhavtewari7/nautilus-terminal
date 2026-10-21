@@ -430,21 +430,24 @@ export default function Dashboard() {
 
     // ── Pattern 1: "making/building X and (for that) I need/require Y"
     //    → material=Y, product=X
+    //    Handles both bare verb ("make") and present progressive ("making")
     const p1 = q.match(
-      /(?:(?:i\s+(?:am\s+)?|we\s+(?:are\s+)?)?(?:trying\s+to\s+)?(?:make|build|produce|manufacture|develop|design|create|assemble|fabricate))\s+(.+?)\s+(?:and\s+)?(?:for\s+(?:that\s+)?(?:i|we)\s+)?(?:(?:i|we)\s+)?(?:need|require|want|am\s+looking\s+for|are\s+looking\s+for|am\s+sourcing|are\s+sourcing)\s+(.+)/i
+      /(?:(?:i\s+(?:am\s+)?|we\s+(?:are\s+)?)?(?:trying\s+to\s+)?(?:mak(?:e|ing)|build(?:ing)?|produc(?:e|ing)|manufactur(?:e|ing)|develop(?:ing)?|design(?:ing)?|creat(?:e|ing)|assembl(?:e|ing)|fabricat(?:e|ing)))\s+(.+?)\s+(?:and\s+)?(?:for\s+(?:that\s+)?(?:i|we)\s+)?(?:(?:i|we)\s+)?(?:need|require|want|am\s+looking\s+for|are\s+looking\s+for|am\s+sourcing|are\s+sourcing)\s+(.+)/i
     )
     if (p1) return { material: clean(p1[2]), product: p1[1].trim(), isNL: true }
 
     // ── Pattern 2: "I need Y for making/building/use in X" or "to use in X"
     //    → material=Y, product=X
+    //    Note: "for our" removed — too broad, causes false matches on "for our irrigation system" etc.
     const p2 = q.match(
-      /(?:(?:i|we)\s+)?(?:need|want|require|am\s+looking\s+for|are\s+looking\s+for|am\s+trying\s+to\s+(?:find|source|procure|buy)|are\s+trying\s+to\s+(?:find|source|procure|buy))\s+(.+?)\s+(?:to\s+use\s+in|for\s+(?:making|building|producing|manufacturing|assembling|fabricating|use\s+in|our))\s+(.+)/i
+      /(?:(?:i|we)\s+)?(?:need|want|require|am\s+looking\s+for|are\s+looking\s+for|am\s+trying\s+to\s+(?:find|source|procure|buy)|are\s+trying\s+to\s+(?:find|source|procure|buy))\s+(.+?)\s+(?:to\s+use\s+in|for\s+(?:mak(?:e|ing)|build(?:ing)?|produc(?:e|ing)|manufactur(?:e|ing)|assembl(?:e|ing)|fabricat(?:e|ing)|use\s+in))\s+(.+)/i
     )
     if (p2) return { material: clean(p2[1]), product: p2[2].replace(/[.?!]+$/, '').trim(), isNL: true }
 
     // ── Pattern 3: "I need/want/require Y" with optional "for X" at end
+    // Also handles "I want to source/buy/find Y" by stripping the "to <verb>" bridge
     const p3 = q.match(
-      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:need|want|require|am\s+seeking|are\s+seeking|am\s+looking\s+for|are\s+looking\s+for|looking\s+to\s+(?:source|buy|procure|find|get))\s+(.+?)(?:\s+for\s+(.+))?$/i
+      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:need|want|require|am\s+seeking|are\s+seeking|am\s+looking\s+for|are\s+looking\s+for|looking\s+to\s+(?:source|buy|procure|find|get))(?:\s+to\s+(?:source|buy|find|procure|get|order|import|purchase|obtain|acquire))?\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
     if (p3) return { material: clean(p3[1]), product: p3[2] ? clean(p3[2]) : null, isNL: true }
 
@@ -500,7 +503,7 @@ export default function Dashboard() {
 
     // ── Pattern 10: "I am trying to make X" (no explicit material → product is the focus)
     const p10 = q.match(
-      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:trying\s+to\s+|planning\s+to\s+|going\s+to\s+)?(?:make|build|produce|manufacture|develop|create|design)\s+(.+)$/i
+      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:trying\s+to\s+|planning\s+to\s+|going\s+to\s+)?(?:mak(?:e|ing)|build(?:ing)?|produc(?:e|ing)|manufactur(?:e|ing)|develop(?:ing)?|creat(?:e|ing)|design(?:ing)?)\s+(.+)$/i
     )
     if (p10) return { material: clean(p10[1]), product: null, isNL: true }
 
@@ -532,6 +535,9 @@ export default function Dashboard() {
       let cleaned = q
       for (const rx of preamble) cleaned = cleaned.replace(rx, '')
       cleaned = clean(cleaned)
+      // Also split "Y for X" so the material doesn't carry trailing context
+      const forSplit = cleaned.match(/^(.+?)\s+for\s+(.+)$/)
+      if (forSplit) return { material: forSplit[1], product: forSplit[2], isNL: true }
       return { material: cleaned, product: null, isNL: true }
     }
 
