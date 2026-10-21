@@ -452,7 +452,14 @@ export default function Dashboard() {
     const p4 = q.match(
       /^(?:(?:i|we)\s+(?:want\s+to\s+|need\s+to\s+|am\s+trying\s+to\s+|are\s+trying\s+to\s+)?)?(?:source|find|procure|buy|purchase|get|order|import|supply)\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p4) return { material: clean(p4[1]), product: p4[2] ? clean(p4[2]) : null, isNL: true }
+    if (p4) {
+      const mat4 = clean(p4[1])
+      const prod4 = p4[2] ? clean(p4[2]) : null
+      // "find me a supplier for cotton yarn" → mat4="me a supplier", prod4="cotton yarn" → use prod4 as material
+      const agentNoun4 = /^(?:me\s+)?(?:a\s+|an\s+)?(?:supplier|vendor|manufacturer|distributor|producer|wholesaler|source\s+of)/i
+      if (agentNoun4.test(mat4) && prod4) return { material: prod4, product: null, isNL: true }
+      return { material: mat4, product: prod4, isNL: true }
+    }
 
     // ── Pattern 5: "Y for manufacturing/making/use in X" (material first)
     const p5 = q.match(
@@ -470,7 +477,14 @@ export default function Dashboard() {
     const p7 = q.match(
       /^(?:can\s+you\s+)?help\s+(?:me|us)\s+(?:find|source|procure|identify|locate)\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p7) return { material: clean(p7[1]), product: p7[2] ? clean(p7[2]) : null, isNL: true }
+    if (p7) {
+      const mat7 = clean(p7[1])
+      const prod7 = p7[2] ? clean(p7[2]) : null
+      // "help me find a supplier for food grade soy" → mat7="a supplier", prod7="food grade soy" → use prod7 as material
+      const agentNoun7 = /^(?:a\s+|an\s+)?(?:supplier|vendor|manufacturer|distributor|producer|wholesaler|source\s+of)/i
+      if (agentNoun7.test(mat7) && prod7) return { material: prod7, product: null, isNL: true }
+      return { material: mat7, product: prod7, isNL: true }
+    }
 
     // ── Pattern 8: "where can I find/buy/source Y"
     const p8 = q.match(

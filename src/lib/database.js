@@ -3550,6 +3550,18 @@ export function categorizeQuery(query) {
       'threaded rod', 'structural steel', 'hot rolled', 'cold rolled',
       'galvanized steel', 'galvanised steel', 'coated steel']],
 
+    // Textiles & apparel — checked BEFORE plastics so 'nylon fabric' beats bare 'nylon'
+    ['textiles', ['fabric', 'textile', 'yarn', 'thread', 'fiber',
+      'cotton fabric', 'polyester fabric', 'nylon fabric', 'wool fabric',
+      'woven fabric', 'knit fabric', 'nonwoven fabric', 'felt fabric',
+      'denim', 'canvas', 'linen', 'silk', 'velvet', 'fleece',
+      'spandex', 'lycra', 'elastane',
+      'webbing', 'strap textile', 'ribbon', 'tape textile',
+      'zipper', 'velcro', 'hook and loop', 'button',
+      'garment', 'apparel', 'clothing', 'uniform', 'workwear',
+      'sportswear', 'activewear', 'outerwear', 'innerwear',
+      'embroidery', 'printing fabric', 'dyeing']],
+
     // Plastics — high traffic
     ['plastics', ['plastic', 'polymer', 'polypropylene', 'polyethylene',
       'polycarbonate', 'polystyrene', 'polyurethane', 'polyamide',
@@ -3597,18 +3609,6 @@ export function categorizeQuery(query) {
       'pallet', 'pallet wrap', 'strapping', 'packaging tape',
       'cap', 'closure', 'lid', 'seal packaging', 'spout',
       'box', 'carton', 'pouch', 'bag', 'packaging']],
-
-    // Textiles & apparel
-    ['textiles', ['fabric', 'textile', 'yarn', 'thread', 'fiber',
-      'cotton fabric', 'polyester fabric', 'nylon fabric', 'wool fabric',
-      'woven fabric', 'knit fabric', 'nonwoven fabric', 'felt fabric',
-      'denim', 'canvas', 'linen', 'silk', 'velvet', 'fleece',
-      'spandex', 'lycra', 'elastane',
-      'webbing', 'strap textile', 'ribbon', 'tape textile',
-      'zipper', 'velcro', 'hook and loop', 'button',
-      'garment', 'apparel', 'clothing', 'uniform', 'workwear',
-      'sportswear', 'activewear', 'outerwear', 'innerwear',
-      'embroidery', 'printing fabric', 'dyeing']],
 
     // Chemicals
     ['chemicals', ['chemical', 'solvent', 'acetone', 'methanol', 'ethanol',
