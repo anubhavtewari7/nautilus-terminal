@@ -426,19 +426,31 @@ export default function Dashboard() {
     const p1 = q.match(
       /(?:to make|to build|to produce|making|building|producing|manufacture)\s+(.+?)\s+(?:and\s+)?(?:for\s+that\s+)?(?:i\s+)?(?:need|require|want|am looking for|looking for)\s+(.+)/i
     )
-    if (p1) return { material: p1[2].replace(/[.?!]+$/, '').trim(), product: p1[1].trim(), isNL: true }
+    if (p1) {
+      const raw = p1[2].replace(/[.?!]+$/, '').trim()
+      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
+      return { material, product: p1[1].trim(), isNL: true }
+    }
 
     // Pattern 2: "I need/want/require X for Y" or "I need X"
     const p2 = q.match(
       /^(?:i\s+(?:am\s+)?)?(?:need|want|require|am looking for|looking for|trying to find|trying to source|want to source|want to buy|want to purchase)\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p2) return { material: p2[1].replace(/[.?!]+$/, '').trim(), product: p2[2]?.trim() || null, isNL: true }
+    if (p2) {
+      const raw = p2[1].replace(/[.?!]+$/, '').trim()
+      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
+      return { material, product: p2[2]?.trim() || null, isNL: true }
+    }
 
     // Pattern 3: "source/find/procure X for Y"
     const p3 = q.match(
       /^(?:source|find|procure|buy|purchase|get)\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p3) return { material: p3[1].replace(/[.?!]+$/, '').trim(), product: p3[2]?.trim() || null, isNL: true }
+    if (p3) {
+      const raw = p3[1].replace(/[.?!]+$/, '').trim()
+      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
+      return { material, product: p3[2]?.trim() || null, isNL: true }
+    }
 
     // Pattern 4: "X for manufacturing/making Y"
     const p4 = q.match(
