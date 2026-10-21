@@ -162,6 +162,9 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [scanError, setScanError] = useState(null)
+  const [isListening, setIsListening] = useState(false)
+  const [nlInterpretation, setNlInterpretation] = useState(null)
+  const speechRecogRef = useRef(null)
   const intelAbortRef = useRef(null)
   // (terminalLogs state removed -- logs were never rendered, causing unnecessary re-renders on every scan step)
   const [directive, setDirective] = useState(null)
@@ -411,15 +414,100 @@ export default function Dashboard() {
     })
   })()
 
+  // ── NLP intent parser ─────────────────────────────────────────────────────
+  // Extracts the core commodity/material from natural-language procurement queries
+  // e.g. "I'm looking to make EV batteries and for that I need lithium hydroxide"
+  //   → { material: "lithium hydroxide", product: "EV batteries", isNL: true }
+  function parseNaturalLanguage(rawQuery) {
+    const q = rawQuery.trim()
+    if (!q) return { material: q, product: null, isNL: false }
+
+    // Pattern 1: "to make/build X and (for that) I need Y" → Y=material, X=product
+    const p1 = q.match(
+      /(?:to make|to build|to produce|making|building|producing|manufacture)\s+(.+?)\s+(?:and\s+)?(?:for\s+that\s+)?(?:i\s+)?(?:need|require|want|am looking for|looking for)\s+(.+)/i
+    )
+    if (p1) return { material: p1[2].replace(/[.?!]+$/, '').trim(), product: p1[1].trim(), isNL: true }
+
+    // Pattern 2: "I need/want/require X for Y" or "I need X"
+    const p2 = q.match(
+      /^(?:i\s+(?:am\s+)?)?(?:need|want|require|am looking for|looking for|trying to find|trying to source|want to source|want to buy|want to purchase)\s+(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p2) return { material: p2[1].replace(/[.?!]+$/, '').trim(), product: p2[2]?.trim() || null, isNL: true }
+
+    // Pattern 3: "source/find/procure X for Y"
+    const p3 = q.match(
+      /^(?:source|find|procure|buy|purchase|get)\s+(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p3) return { material: p3[1].replace(/[.?!]+$/, '').trim(), product: p3[2]?.trim() || null, isNL: true }
+
+    // Pattern 4: "X for manufacturing/making Y"
+    const p4 = q.match(
+      /^(.+?)\s+for\s+(?:manufacturing|making|producing|building|use in)\s+(.+)$/i
+    )
+    if (p4) return { material: p4[1].trim(), product: p4[2].trim(), isNL: true }
+
+    // Heuristic: looks like natural language (first-person or long sentence with procurement verb)
+    const ql = q.toLowerCase()
+    const nlStarters = ["i am", "i'm", "i need", "i want", "we need", "we want", "we are", "our company", "looking for", "help me", "can you find"]
+    const looksNatural =
+      nlStarters.some(s => ql.startsWith(s)) ||
+      (q.split(' ').length > 7 && /\b(need|want|require|looking|source|find|procure)\b/i.test(q))
+
+    if (looksNatural) {
+      const cleaned = q
+        .replace(/^(?:i\s+(?:am\s+)?(?:looking\s+for|looking\s+to\s+(?:find|buy|source|procure)|need|want|require))\s+/i, '')
+        .replace(/^(?:we\s+(?:need|want|are\s+looking\s+for))\s+/i, '')
+        .replace(/^(?:help\s+me\s+(?:find|source|procure))\s+/i, '')
+        .replace(/[.?!]+$/, '')
+        .trim()
+      return { material: cleaned, product: null, isNL: true }
+    }
+
+    return { material: q, product: null, isNL: false }
+  }
+
+  // ── Voice input (Web Speech API) ──────────────────────────────────────────
+  function startVoiceInput() {
+    if (typeof window === 'undefined') return
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SR) {
+      setScanError('Voice input is not supported in this browser — try Chrome or Edge.')
+      return
+    }
+    if (isListening) {
+      speechRecogRef.current?.stop()
+      return
+    }
+    const recog = new SR()
+    speechRecogRef.current = recog
+    recog.continuous = false
+    recog.interimResults = false
+    recog.lang = 'en-US'
+    recog.onstart = () => setIsListening(true)
+    recog.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setSearchQuery(prev => prev ? prev.trim() + ' ' + transcript : transcript)
+      setIsListening(false)
+    }
+    recog.onerror = () => setIsListening(false)
+    recog.onend = () => setIsListening(false)
+    recog.start()
+  }
+
   async function handleSearch(e, overrideQuery) {
     if (e) e.preventDefault()
-    const activeQuery = overrideQuery ?? searchQuery
-    if (!activeQuery.trim()) return
+    const rawQuery = overrideQuery ?? searchQuery
+    if (!rawQuery.trim()) return
+
+    // Parse natural language → extract clean commodity term for the API
+    const parsed = parseNaturalLanguage(rawQuery)
+    const activeQuery = parsed.material
 
     setIsAnalyzing(true)
     setScanError(null)
     setSelectedNode(null)
-    setSearchQuery(activeQuery)
+    setSearchQuery(rawQuery) // keep user's original text in the textarea
+    setNlInterpretation(parsed.isNL ? parsed : null)
     addLog(`[SCAN] Initiating: "${activeQuery}"`)
     addLog('[AI] Mapping global industrial hubs...')
     // Push query to URL so scan is shareable
@@ -849,10 +937,27 @@ export default function Dashboard() {
         <div className="flex-1 mx-3 text-[11px] text-sky-400 truncate text-center">
           {opportunities.length > 0 ? `${opportunities.length} hubs · ${profile.material}` : 'Supply Chain Intelligence'}
         </div>
-        <button onClick={() => setShowSearch(true)}
-          className="text-[11px] font-bold bg-emerald-500 text-black px-3 py-1.5 rounded-lg shrink-0 active:bg-emerald-400 transition-colors">
-          SCAN
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button onClick={() => setShowSearch(true)}
+            className="text-[11px] font-bold bg-emerald-500 text-black px-3 py-1.5 rounded-lg active:bg-emerald-400 transition-colors">
+            SCAN
+          </button>
+          <button
+            onClick={() => { setShowSearch(true); setTimeout(startVoiceInput, 300) }}
+            title="Voice scan"
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-all ${
+              isListening
+                ? 'bg-red-500/20 border-red-500/50 text-red-400 animate-pulse'
+                : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-emerald-500/50 hover:bg-emerald-500/10'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* ── MAIN CONTENT ── */}
@@ -1012,7 +1117,37 @@ export default function Dashboard() {
                       )
                     })()}
                   </div>
+                  {/* Voice input button */}
+                  <button
+                    type="button"
+                    onClick={startVoiceInput}
+                    className={`w-full flex items-center justify-center gap-2.5 h-11 rounded-xl border text-[12px] font-bold tracking-widest transition-all ${
+                      isListening
+                        ? 'bg-red-500/15 border-red-500/40 text-red-400 animate-pulse'
+                        : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-sky-500/40 hover:bg-sky-500/10'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                      <line x1="12" y1="19" x2="12" y2="22"/>
+                    </svg>
+                    {isListening ? 'LISTENING… CLICK TO STOP' : 'SPEAK YOUR REQUIREMENT'}
+                  </button>
                   {scanError && <p role="alert" className="text-sm text-amber-300">{scanError}</p>}
+                  {/* NL interpretation banner */}
+                  {nlInterpretation && (
+                    <div className="flex items-start gap-2 px-4 py-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-xs text-sky-300 font-mono">
+                      <span className="text-sky-400 mt-0.5 shrink-0">🧠</span>
+                      <span>
+                        <span className="text-sky-400 font-bold">Understood: </span>
+                        Sourcing <span className="text-white font-bold">{nlInterpretation.material}</span>
+                        {nlInterpretation.product && (
+                          <> for <span className="text-emerald-400 font-bold">{nlInterpretation.product}</span> manufacturing</>
+                        )}
+                      </span>
+                    </div>
+                  )}
                   <button type="submit" disabled={isAnalyzing || !searchQuery.trim()}
                     className="w-full h-16 bg-emerald-500 text-black font-bold flex items-center justify-center gap-3 hover:bg-emerald-400 active:bg-emerald-400 transition-all disabled:opacity-50 text-[14px] uppercase tracking-widest rounded-xl">
                     {isAnalyzing ? 'SCANNING GLOBAL DATABASE...' : 'EXECUTE INTELLIGENCE SCAN'}
