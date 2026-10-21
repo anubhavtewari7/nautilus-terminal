@@ -415,63 +415,109 @@ export default function Dashboard() {
   })()
 
   // ── NLP intent parser ─────────────────────────────────────────────────────
-  // Extracts the core commodity/material from natural-language procurement queries
-  // e.g. "I'm looking to make EV batteries and for that I need lithium hydroxide"
-  //   → { material: "lithium hydroxide", product: "EV batteries", isNL: true }
+  // Extracts the core commodity/material from natural-language procurement queries.
+  // Returns { material, product, isNL } where material is what gets sent to the API.
   function parseNaturalLanguage(rawQuery) {
     const q = rawQuery.trim()
     if (!q) return { material: q, product: null, isNL: false }
 
-    // Pattern 1: "to make/build X and (for that) I need Y" → Y=material, X=product
+    // Helper: strip trailing filler from an extracted material string
+    const clean = (s) => s
+      .replace(/[.?!,]+$/, '')
+      .replace(/\s+for\s+(?:it|them|this|that|those|these|my\s+\w+|our\s+\w+)\s*$/i, '')
+      .replace(/\s+(?:please|thanks|thank\s+you|asap|urgently?)\s*$/i, '')
+      .trim()
+
+    // ── Pattern 1: "making/building X and (for that) I need/require Y"
+    //    → material=Y, product=X
     const p1 = q.match(
-      /(?:to make|to build|to produce|making|building|producing|manufacture)\s+(.+?)\s+(?:and\s+)?(?:for\s+that\s+)?(?:i\s+)?(?:need|require|want|am looking for|looking for)\s+(.+)/i
+      /(?:(?:i\s+(?:am\s+)?|we\s+(?:are\s+)?)?(?:trying\s+to\s+)?(?:make|build|produce|manufacture|develop|design|create|assemble|fabricate))\s+(.+?)\s+(?:and\s+)?(?:for\s+(?:that\s+)?(?:i|we)\s+)?(?:(?:i|we)\s+)?(?:need|require|want|am\s+looking\s+for|are\s+looking\s+for|am\s+sourcing|are\s+sourcing)\s+(.+)/i
     )
-    if (p1) {
-      const raw = p1[2].replace(/[.?!]+$/, '').trim()
-      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
-      return { material, product: p1[1].trim(), isNL: true }
-    }
+    if (p1) return { material: clean(p1[2]), product: p1[1].trim(), isNL: true }
 
-    // Pattern 2: "I need/want/require X for Y" or "I need X"
+    // ── Pattern 2: "I need Y for making/building/use in X" or "to use in X"
+    //    → material=Y, product=X
     const p2 = q.match(
-      /^(?:i\s+(?:am\s+)?)?(?:need|want|require|am looking for|looking for|trying to find|trying to source|want to source|want to buy|want to purchase)\s+(.+?)(?:\s+for\s+(.+))?$/i
+      /(?:(?:i|we)\s+)?(?:need|want|require|am\s+looking\s+for|are\s+looking\s+for|am\s+trying\s+to\s+(?:find|source|procure|buy)|are\s+trying\s+to\s+(?:find|source|procure|buy))\s+(.+?)\s+(?:to\s+use\s+in|for\s+(?:making|building|producing|manufacturing|assembling|fabricating|use\s+in|our))\s+(.+)/i
     )
-    if (p2) {
-      const raw = p2[1].replace(/[.?!]+$/, '').trim()
-      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
-      return { material, product: p2[2]?.trim() || null, isNL: true }
-    }
+    if (p2) return { material: clean(p2[1]), product: p2[2].replace(/[.?!]+$/, '').trim(), isNL: true }
 
-    // Pattern 3: "source/find/procure X for Y"
+    // ── Pattern 3: "I need/want/require Y" with optional "for X" at end
     const p3 = q.match(
-      /^(?:source|find|procure|buy|purchase|get)\s+(.+?)(?:\s+for\s+(.+))?$/i
+      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:need|want|require|am\s+seeking|are\s+seeking|am\s+looking\s+for|are\s+looking\s+for|looking\s+to\s+(?:source|buy|procure|find|get))\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p3) {
-      const raw = p3[1].replace(/[.?!]+$/, '').trim()
-      const material = raw.replace(/\s+for\s+(?:it|them|this|that|those|these)\s*$/i, '').trim()
-      return { material, product: p3[2]?.trim() || null, isNL: true }
-    }
+    if (p3) return { material: clean(p3[1]), product: p3[2] ? clean(p3[2]) : null, isNL: true }
 
-    // Pattern 4: "X for manufacturing/making Y"
+    // ── Pattern 4: "source/find/procure/buy/purchase/get/order Y for X"
     const p4 = q.match(
-      /^(.+?)\s+for\s+(?:manufacturing|making|producing|building|use in)\s+(.+)$/i
+      /^(?:(?:i|we)\s+(?:want\s+to\s+|need\s+to\s+|am\s+trying\s+to\s+|are\s+trying\s+to\s+)?)?(?:source|find|procure|buy|purchase|get|order|import|supply)\s+(.+?)(?:\s+for\s+(.+))?$/i
     )
-    if (p4) return { material: p4[1].trim(), product: p4[2].trim(), isNL: true }
+    if (p4) return { material: clean(p4[1]), product: p4[2] ? clean(p4[2]) : null, isNL: true }
 
-    // Heuristic: looks like natural language (first-person or long sentence with procurement verb)
+    // ── Pattern 5: "Y for manufacturing/making/use in X" (material first)
+    const p5 = q.match(
+      /^(.+?)\s+for\s+(?:manufacturing|making|producing|building|assembling|use\s+in|application\s+in)\s+(.+)$/i
+    )
+    if (p5) return { material: clean(p5[1]), product: p5[2].replace(/[.?!]+$/, '').trim(), isNL: true }
+
+    // ── Pattern 6: "our company/team needs Y" or "we are sourcing Y"
+    const p6 = q.match(
+      /^(?:our\s+(?:company|team|factory|plant|facility)\s+)?(?:needs?|requires?|is\s+sourcing|is\s+looking\s+for|is\s+seeking)\s+(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p6) return { material: clean(p6[1]), product: p6[2] ? clean(p6[2]) : null, isNL: true }
+
+    // ── Pattern 7: "help me find/source/procure Y"
+    const p7 = q.match(
+      /^(?:can\s+you\s+)?help\s+(?:me|us)\s+(?:find|source|procure|identify|locate)\s+(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p7) return { material: clean(p7[1]), product: p7[2] ? clean(p7[2]) : null, isNL: true }
+
+    // ── Pattern 8: "where can I find/buy/source Y"
+    const p8 = q.match(
+      /^where\s+(?:can\s+(?:i|we)|do\s+(?:i|we))\s+(?:find|buy|get|source|procure|order)\s+(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p8) return { material: clean(p8[1]), product: p8[2] ? clean(p8[2]) : null, isNL: true }
+
+    // ── Pattern 9: "looking for a supplier of Y" or "looking for Y supplier"
+    const p9 = q.match(
+      /^(?:(?:i\s+(?:am\s+)?|we\s+(?:are\s+)?)?looking\s+for)\s+(?:a\s+)?(?:supplier|vendor|manufacturer|source|producer)\s+(?:of\s+|for\s+)?(.+?)(?:\s+for\s+(.+))?$/i
+    )
+    if (p9) return { material: clean(p9[1]), product: p9[2] ? clean(p9[2]) : null, isNL: true }
+
+    // ── Pattern 10: "I am trying to make X" (no explicit material → product is the focus)
+    const p10 = q.match(
+      /^(?:(?:i|we)\s+(?:am\s+|are\s+)?)?(?:trying\s+to\s+|planning\s+to\s+|going\s+to\s+)?(?:make|build|produce|manufacture|develop|create|design)\s+(.+)$/i
+    )
+    if (p10) return { material: clean(p10[1]), product: null, isNL: true }
+
+    // ── Heuristic fallback: strip first-person/company preamble from the front
     const ql = q.toLowerCase()
-    const nlStarters = ["i am", "i'm", "i need", "i want", "we need", "we want", "we are", "our company", "looking for", "help me", "can you find"]
+    const nlStarters = [
+      "i am ", "i'm ", "i need ", "i want ", "i would like ", "i'd like ",
+      "we need ", "we want ", "we are ", "we're ", "our company ", "our team ",
+      "our factory ", "our plant ", "looking for ", "trying to find ",
+      "can you help ", "help me ", "help us ", "please find ", "please source ",
+      "searching for ", "in search of ",
+    ]
     const looksNatural =
       nlStarters.some(s => ql.startsWith(s)) ||
-      (q.split(' ').length > 7 && /\b(need|want|require|looking|source|find|procure)\b/i.test(q))
+      (q.split(' ').length > 6 && /\b(need|want|require|looking|source|find|procure|buy|purchase|supply)\b/i.test(q))
 
     if (looksNatural) {
-      const cleaned = q
-        .replace(/^(?:i\s+(?:am\s+)?(?:looking\s+for|looking\s+to\s+(?:find|buy|source|procure)|need|want|require))\s+/i, '')
-        .replace(/^(?:we\s+(?:need|want|are\s+looking\s+for))\s+/i, '')
-        .replace(/^(?:help\s+me\s+(?:find|source|procure))\s+/i, '')
-        .replace(/[.?!]+$/, '')
-        .trim()
+      const preamble = [
+        /^(?:i\s+(?:am\s+)?(?:looking\s+for|looking\s+to\s+(?:find|buy|source|procure)|need|want|require|would\s+like|'d\s+like))\s+/i,
+        /^(?:we\s+(?:are\s+looking\s+for|need|want|require|are\s+seeking))\s+/i,
+        /^(?:our\s+(?:company|team|factory|plant|facility)\s+(?:needs?|is\s+looking\s+for|is\s+seeking))\s+/i,
+        /^(?:help\s+(?:me|us)\s+(?:find|source|procure|get))\s+/i,
+        /^(?:please\s+(?:find|source|procure|help\s+(?:me|us)\s+find))\s+/i,
+        /^(?:searching\s+for|in\s+search\s+of)\s+/i,
+        /^(?:trying\s+to\s+(?:find|source|procure|buy|get))\s+/i,
+        /^(?:can\s+you\s+(?:help\s+(?:me|us)\s+find|find|source))\s+/i,
+        /^(?:i\s+am|we\s+are|i'm|we're)\s+/i,
+      ]
+      let cleaned = q
+      for (const rx of preamble) cleaned = cleaned.replace(rx, '')
+      cleaned = clean(cleaned)
       return { material: cleaned, product: null, isNL: true }
     }
 

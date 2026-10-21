@@ -3528,6 +3528,327 @@ export function categorizeQuery(query) {
     'paper'
   ])) return 'wood_paper'
 
+  // ── BROAD FALLBACK ──────────────────────────────────────────────────────────
+  // Catches plain-noun queries that slip through the specific keyword lists.
+  // Each entry is a [category, [...terms]] pair checked in priority order.
+  // Terms are substring-matched against q (already lowercased).
+  const broadFallback = [
+    // Metals & materials — high traffic, check early
+    ['metals', ['steel tube', 'steel rod', 'steel bar', 'steel sheet', 'steel pipe',
+      'steel plate', 'steel strip', 'steel coil', 'steel rail', 'steel wire',
+      'steel angle', 'steel channel', 'steel beam', 'steel structure',
+      'stainless tube', 'stainless sheet', 'stainless bar', 'stainless rod',
+      'aluminum tube', 'aluminum bar', 'aluminum sheet', 'aluminum plate',
+      'aluminum extrusion', 'aluminium tube', 'aluminium sheet', 'aluminium bar',
+      'aluminium extrusion', 'copper tube', 'copper rod', 'copper sheet',
+      'copper wire', 'brass rod', 'brass tube', 'brass fitting',
+      'bronze bushing', 'bronze bearing', 'titanium bar', 'titanium plate',
+      'zinc die', 'magnesium casting',
+      'metal tube', 'metal rod', 'metal sheet', 'metal bar', 'metal pipe',
+      'metal bracket', 'metal part', 'metal component', 'metal stamping',
+      'metal fabrication', 'metal casting', 'metal forging',
+      'threaded rod', 'structural steel', 'hot rolled', 'cold rolled',
+      'galvanized steel', 'galvanised steel', 'coated steel']],
+
+    // Plastics — high traffic
+    ['plastics', ['plastic', 'polymer', 'polypropylene', 'polyethylene',
+      'polycarbonate', 'polystyrene', 'polyurethane', 'polyamide',
+      'polyester resin', 'epoxy resin', 'acrylic resin',
+      'nylon', 'abs', 'pvc', 'tpe', 'peek', 'pom',
+      'hdpe', 'ldpe', 'lldpe', 'petg', 'pmma',
+      'rubber', 'silicone', 'elastomer', 'latex', 'epdm', 'neoprene',
+      'foam', 'vinyl', 'fiberglass', 'carbon fiber', 'composite',
+      'injection mold', 'blow mold', 'roto mold', 'thermoform',
+      'resin', 'overmold', 'insert mold', 'plastic cap', 'plastic cover',
+      'plastic fitting', 'plastic bracket', 'plastic enclosure',
+      'plastic housing', 'plastic part', 'plastic component',
+      'endcap', 'end cap', 'end-cap', 'plastic plug',
+      'plastic collar', 'plastic sleeve', 'plastic clip',
+      'plastic rail', 'plastic profile', 'plastic strip',
+      'gasket', 'o-ring', 'seal rubber', 'grommet',
+      'bushing', 'washer rubber', 'diaphragm']],
+
+    // Electronics
+    ['electronics', ['circuit board', 'pcb', 'pcba', 'printed circuit',
+      'capacitor', 'resistor', 'inductor', 'transformer',
+      'transistor', 'diode', 'mosfet', 'igbt', 'thyristor',
+      'ic ', 'integrated circuit', 'microcontroller', 'microprocessor',
+      'fpga', 'dsp', 'asic', 'memory chip', 'flash memory', 'dram',
+      'led driver', 'power module', 'dc-dc', 'ac-dc', 'power supply',
+      'inverter', 'ups', 'connector', 'relay', 'switch electronic',
+      'lcd', 'oled', 'display', 'touchscreen', 'touch panel',
+      'antenna', 'rf', 'wireless module', 'bluetooth module', 'wifi module',
+      'sensor module', 'camera module', 'gps module',
+      'wire harness', 'cable assembly', 'coaxial', 'ethernet',
+      'heat sink', 'thermal pad', 'enclosure electronic',
+      'electronic component', 'electronic part', 'electronic assembly']],
+
+    // Packaging
+    ['packaging', ['corrugated box', 'cardboard box', 'shipping box',
+      'folding carton', 'rigid box', 'gift box', 'mailer',
+      'plastic bottle', 'glass bottle', 'pet bottle', 'hdpe bottle',
+      'jar', 'container packaging', 'pail', 'drum packaging',
+      'flexible pouch', 'stand up pouch', 'sachet', 'pillow bag',
+      'shrink sleeve', 'shrink label', 'pressure sensitive label',
+      'paper bag', 'woven bag', 'bulk bag', 'fibc', 'supersack',
+      'blister pack', 'clamshell packaging', 'thermoformed tray',
+      'foam tray', 'egg carton', 'pizza box',
+      'stretch film', 'shrink film', 'bubble wrap', 'air pillow',
+      'pallet', 'pallet wrap', 'strapping', 'packaging tape',
+      'cap', 'closure', 'lid', 'seal packaging', 'spout',
+      'box', 'carton', 'pouch', 'bag', 'packaging']],
+
+    // Textiles & apparel
+    ['textiles', ['fabric', 'textile', 'yarn', 'thread', 'fiber',
+      'cotton fabric', 'polyester fabric', 'nylon fabric', 'wool fabric',
+      'woven fabric', 'knit fabric', 'nonwoven fabric', 'felt fabric',
+      'denim', 'canvas', 'linen', 'silk', 'velvet', 'fleece',
+      'spandex', 'lycra', 'elastane',
+      'webbing', 'strap textile', 'ribbon', 'tape textile',
+      'zipper', 'velcro', 'hook and loop', 'button',
+      'garment', 'apparel', 'clothing', 'uniform', 'workwear',
+      'sportswear', 'activewear', 'outerwear', 'innerwear',
+      'embroidery', 'printing fabric', 'dyeing']],
+
+    // Chemicals
+    ['chemicals', ['chemical', 'solvent', 'acetone', 'methanol', 'ethanol',
+      'toluene', 'xylene', 'isopropanol', 'ipa ',
+      'acid', 'sulfuric acid', 'hydrochloric', 'nitric acid', 'phosphoric',
+      'alkali', 'caustic soda', 'sodium hydroxide', 'potassium hydroxide',
+      'catalyst', 'reagent', 'intermediate chemical',
+      'adhesive', 'sealant', 'epoxy adhesive', 'cyanoacrylate', 'silicone adhesive',
+      'lubricant', 'grease', 'cutting fluid', 'coolant', 'antifreeze',
+      'surfactant', 'detergent', 'emulsifier', 'wetting agent',
+      'pigment', 'dye', 'colorant', 'ink chemical',
+      'flame retardant', 'antioxidant', 'uv stabilizer',
+      'release agent', 'mold release', 'flux chemical', 'cleaning agent']],
+
+    // Construction
+    ['construction', ['concrete', 'cement', 'ready mix', 'precast',
+      'rebar', 'reinforcing bar', 'deformed bar', 'mesh wire',
+      'brick', 'block', 'stone', 'tile', 'paver',
+      'sand', 'gravel', 'aggregate', 'crushed stone',
+      'roofing', 'shingle', 'membrane roofing', 'waterproofing',
+      'insulation', 'thermal insulation', 'acoustic insulation',
+      'drywall', 'gypsum board', 'plaster', 'stucco',
+      'structural beam', 'i-beam', 'h-beam', 'channel',
+      'pipe pvc', 'hdpe pipe', 'steel pipe construction',
+      'conduit', 'electrical conduit', 'duct',
+      'window frame', 'door frame', 'curtain wall',
+      'scaffolding', 'formwork', 'shoring']],
+
+    // Food & beverage
+    ['food', ['food grade', 'food ingredient', 'food additive',
+      'flour', 'wheat flour', 'rice flour', 'corn starch',
+      'sugar', 'glucose', 'fructose', 'sucrose', 'sweetener',
+      'vegetable oil', 'palm oil', 'soy oil', 'canola oil', 'sunflower oil',
+      'salt', 'seasoning', 'spice', 'herb', 'flavoring', 'flavor extract',
+      'preservative', 'stabilizer food', 'emulsifier food',
+      'protein powder', 'whey protein', 'soy protein', 'pea protein',
+      'milk powder', 'dairy', 'cheese', 'butter', 'cream',
+      'meat', 'chicken', 'beef', 'pork', 'seafood', 'fish',
+      'vegetable', 'fruit', 'grain', 'rice', 'soy bean', 'corn',
+      'coffee', 'tea', 'cocoa', 'chocolate', 'confection',
+      'snack', 'biscuit', 'cracker', 'cereal', 'pasta',
+      'beverage', 'juice', 'concentrate', 'syrup']],
+
+    // Medical & pharma
+    ['medical', ['medical device', 'surgical', 'disposable medical',
+      'catheter', 'iv bag', 'iv tubing', 'syringe', 'needle',
+      'glove nitrile', 'glove latex', 'surgical glove',
+      'mask medical', 'n95', 'ppe',
+      'bandage', 'wound care', 'dressing', 'suture',
+      'implant', 'prosthetic', 'orthopedic', 'dental',
+      'diagnostic', 'test kit', 'reagent medical',
+      'pharmaceutical', 'drug', 'active ingredient', 'api pharma',
+      'excipient', 'tablet', 'capsule', 'vial', 'ampoule',
+      'blister medical', 'medical packaging', 'sterile']],
+
+    // Automotive (broad)
+    ['automotive', ['auto part', 'auto component', 'automotive part',
+      'car part', 'vehicle part', 'oem part',
+      'engine part', 'transmission part', 'drivetrain',
+      'body panel', 'stamped part auto', 'trim', 'molding auto',
+      'interior part', 'exterior part', 'underhood',
+      'seat', 'headliner', 'door panel',
+      'lighting auto', 'headlamp', 'taillight', 'fog lamp',
+      'wire harness auto', 'ecu', 'sensor auto',
+      'mirror', 'wiper', 'glass auto']],
+
+    // Machinery & industrial equipment
+    ['machinery', ['machine', 'equipment', 'pump', 'compressor',
+      'conveyor', 'gearbox', 'reducer', 'drive',
+      'motor', 'servo motor', 'stepper motor', 'ac motor', 'dc motor',
+      'cylinder hydraulic', 'cylinder pneumatic', 'actuator',
+      'valve', 'solenoid valve', 'control valve', 'ball valve',
+      'bearing', 'roller bearing', 'ball bearing', 'linear bearing',
+      'hydraulic', 'pneumatic', 'fitting hydraulic', 'hose hydraulic',
+      'industrial equipment', 'process equipment']],
+
+    // Furniture
+    ['furniture', ['furniture', 'chair', 'table', 'desk', 'workstation',
+      'shelf', 'shelving', 'cabinet', 'wardrobe', 'drawer',
+      'sofa', 'couch', 'mattress', 'bed frame', 'headboard',
+      'cushion', 'upholstery', 'foam mattress',
+      'outdoor furniture', 'garden furniture', 'patio']],
+
+    // Agriculture
+    ['agriculture', ['fertilizer', 'npk', 'urea', 'ammonium', 'potash',
+      'pesticide', 'herbicide', 'fungicide', 'insecticide',
+      'seed', 'crop protection', 'agricultural chemical',
+      'irrigation', 'drip tape', 'sprinkler',
+      'greenhouse', 'grow bag', 'mulch film',
+      'animal feed', 'livestock feed', 'poultry feed', 'fish feed']],
+
+    // Renewable energy
+    ['renewable_energy', ['solar panel', 'solar module', 'photovoltaic',
+      'wind turbine', 'wind blade', 'wind tower',
+      'solar inverter', 'battery storage', 'energy storage',
+      'solar cell', 'solar frame', 'solar bracket',
+      'ev charger', 'charging station', 'power bank industrial']],
+
+    // Robotics & automation
+    ['robotics_automation', ['robot', 'robotic arm', 'collaborative robot', 'cobot',
+      'automation', 'plc', 'hmi', 'scada', 'mes',
+      'vision system', 'machine vision', 'barcode scanner',
+      'servo drive', 'encoder', 'linear guide', 'ball screw',
+      'end effector', 'gripper']],
+
+    // Telecom
+    ['telecom', ['fiber optic cable', 'optical cable', 'fiber cable',
+      'network cable', 'ethernet cable', 'coaxial cable',
+      'telecom equipment', 'base station', 'antenna tower',
+      'router', 'switch network', 'server rack', 'data center',
+      '5g equipment', 'small cell', 'optical transceiver']],
+
+    // HVAC
+    ['hvac', ['air conditioning', 'hvac', 'chiller', 'cooling unit',
+      'heat pump', 'heat exchanger', 'boiler',
+      'ductwork', 'air handler', 'fan coil',
+      'refrigerant', 'compressor hvac',
+      'ventilation', 'exhaust fan', 'air filter']],
+
+    // Paint & coatings
+    ['paint_coatings', ['paint', 'coating', 'primer', 'varnish',
+      'lacquer', 'powder coat', 'epoxy coat',
+      'galvanizing', 'electroplating', 'plating',
+      'anodizing', 'chrome plating', 'zinc plating',
+      'industrial coating', 'protective coating', 'anti-corrosion']],
+
+    // Glass & ceramics
+    ['glass_ceramics', ['glass', 'tempered glass', 'laminated glass',
+      'borosilicate', 'optical glass', 'glass fiber',
+      'ceramic', 'porcelain', 'refractory', 'alumina ceramic',
+      'zirconia', 'silicon carbide ceramic',
+      'fine ceramic', 'technical ceramic', 'advanced ceramic']],
+
+    // Wood & paper
+    ['wood_paper', ['wood', 'lumber', 'timber', 'hardwood', 'softwood',
+      'plywood', 'mdf', 'particle board', 'osb',
+      'veneer', 'laminate', 'melamine board',
+      'paper', 'cardboard', 'kraft paper', 'tissue paper',
+      'paperboard', 'corrugated medium', 'pulp']],
+
+    // Defense & military
+    ['defense_military', ['ballistic', 'armor plate', 'kevlar', 'body armor',
+      'military', 'defense', 'tactical', 'weapon', 'ammunition',
+      'night vision', 'optic military', 'drone military']],
+
+    // Cosmetics
+    ['cosmetics', ['cosmetic', 'skincare', 'beauty product', 'fragrance',
+      'perfume', 'lotion', 'cream cosmetic', 'serum', 'moisturizer',
+      'shampoo', 'conditioner', 'hair care', 'body wash',
+      'makeup', 'foundation', 'lipstick', 'mascara',
+      'nail polish', 'sunscreen', 'essential oil cosmetic']],
+
+    // Sports & outdoor
+    ['sports_outdoor', ['sport', 'athletic', 'fitness', 'gym equipment',
+      'bicycle', 'cycling', 'outdoor gear', 'camping',
+      'helmet', 'protective gear sport', 'glove sport',
+      'shoe sport', 'apparel sport']],
+
+    // Consumer goods
+    ['consumer_goods', ['household', 'home appliance', 'kitchen appliance',
+      'small appliance', 'vacuum', 'blender', 'coffee maker',
+      'cleaning product', 'detergent household', 'disinfectant',
+      'personal care', 'hygiene product']],
+
+    // Energy / oil & gas
+    ['energy_oil_gas', ['oil field', 'gas field', 'petroleum', 'crude oil',
+      'pipeline', 'drill', 'wellhead', 'christmas tree oil',
+      'flange', 'valve oil', 'pump oil', 'offshore',
+      'lng', 'lpg', 'natural gas equipment']],
+
+    // Water treatment
+    ['water_treatment', ['water treatment', 'wastewater', 'filtration',
+      'reverse osmosis', 'membrane filtration', 'desalination',
+      'uv sterilization', 'chlorination', 'water pump', 'water pipe']],
+
+    // Maritime
+    ['maritime', ['marine', 'ship', 'vessel', 'boat', 'offshore platform',
+      'hull', 'propeller', 'anchor', 'mooring', 'dock',
+      'marine coating', 'antifouling']],
+
+    // Railway
+    ['railway', ['railway', 'railroad', 'train', 'rail track', 'locomotive',
+      'rail fastening', 'sleeper', 'rail wheel', 'bogie']],
+
+    // Nutraceuticals
+    ['nutraceuticals', ['supplement', 'vitamin', 'mineral supplement',
+      'probiotic', 'prebiotic', 'omega-3', 'fish oil supplement',
+      'protein supplement', 'herbal extract', 'botanical']],
+
+    // Printing
+    ['printing_media', ['print', 'ink printing', 'offset printing', 'flexo',
+      'gravure', 'digital printing', 'label printing', 'wide format']],
+
+    // Scientific instruments
+    ['instruments_scientific', ['laboratory equipment', 'lab instrument',
+      'analytical instrument', 'microscope', 'spectrometer',
+      'chromatograph', 'centrifuge', 'autoclave', 'incubator lab',
+      'pipette', 'test tube', 'flask', 'beaker']],
+
+    // Cold chain
+    ['cold_chain', ['cold chain', 'refrigerated transport', 'refrigerated storage',
+      'frozen food transport', 'temperature controlled', 'cold room',
+      'refrigerated container', 'reefer']],
+
+    // Pet & animal
+    ['pet_animal', ['pet food', 'dog food', 'cat food', 'bird feed',
+      'pet product', 'pet care', 'veterinary', 'animal health',
+      'livestock', 'aquaculture']],
+
+    // Mining
+    ['mining', ['mining equipment', 'mining machine', 'drill bit mining',
+      'crusher', 'conveyor mining', 'ore', 'mineral processing',
+      'excavator', 'loader mining', 'haul truck']],
+
+    // Luxury goods
+    ['luxury_goods', ['luxury', 'watch component', 'jewelry', 'precious metal',
+      'gold', 'silver jewelry', 'leather luxury', 'crystal', 'fine goods']],
+
+    // Toys & games
+    ['toys_games', ['toy', 'game piece', 'puzzle', 'action figure',
+      'doll', 'stuffed animal', 'board game', 'educational toy',
+      'toy plastic', 'toy electronic']],
+
+    // Aerospace
+    ['aerospace', ['aerospace', 'aircraft', 'aviation', 'helicopter',
+      'drone', 'uav', 'satellite', 'rocket', 'spacecraft',
+      'airframe', 'fuselage', 'wing structure', 'landing gear aerospace',
+      'turbine blade aerospace', 'composite aerospace']],
+
+    // Semiconductor
+    ['semiconductor', ['semiconductor', 'chip', 'wafer', 'silicon wafer',
+      'monocrystalline', 'photomask', 'leadframe',
+      'ic package', 'die bond', 'wire bond semiconductor',
+      'epitaxial', 'cvd', 'pvd']],
+  ]
+
+  for (const [cat, terms] of broadFallback) {
+    if (terms.some(t => q.includes(t))) return cat
+  }
+
   // No catalog match: callers must ask for clarification, not invent a category.
   return null
 }
